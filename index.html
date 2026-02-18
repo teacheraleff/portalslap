@@ -1998,6 +1998,22 @@
                 var doc = await firebaseDb.collection('users').doc(currentUser.uid).collection('streaks').doc('completed').get();
                 if (doc.exists) {
                     userStreaksCache = doc.data() || {};
+                    var needsSave = false;
+                    var keys = Object.keys(userStreaksCache);
+                    for (var k of keys) {
+                        if (k.match(/^\d+_\w+$/) && !k.startsWith('starter')) {
+                            var newKey = 'starter1_' + k;
+                            if (!userStreaksCache[newKey]) {
+                                userStreaksCache[newKey] = true;
+                                needsSave = true;
+                            }
+                            delete userStreaksCache[k];
+                            needsSave = true;
+                        }
+                    }
+                    if (needsSave) {
+                        await firebaseDb.collection('users').doc(currentUser.uid).collection('streaks').doc('completed').set(userStreaksCache);
+                    }
                 } else {
                     userStreaksCache = {};
                 }
@@ -2022,9 +2038,7 @@
         }
 
         function isStreakDone(aulaId, mode) {
-            if (userStreaksCache[currentLevel + '_' + aulaId + '_' + mode]) return true;
-            if (currentLevel === 'starter1' && userStreaksCache[aulaId + '_' + mode]) return true;
-            return false;
+            return !!userStreaksCache[currentLevel + '_' + aulaId + '_' + mode];
         }
 
         const helpTexts = {
@@ -3293,7 +3307,7 @@
                             ${hangmanWrong >= 6 ? '<line x1="120" y1="110" x2="140" y2="140" stroke="#8671d1" stroke-width="3"/>' : ''}
                         </svg>
                         <div class="text-3xl font-bold tracking-widest text-stone-800">${wordDisplay}</div>
-                        <div class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg text-sm font-medium">💡 ${hangmanHint}</div>
+                        <div class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg text-sm font-medium inline-flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5C8.26 12.26 8.72 13.02 8.91 14"/></svg> ${hangmanHint}</div>
                         <div class="text-sm text-stone-500">Erros: ${hangmanWrong}/${hangmanMaxWrong}</div>
                     </div>
                     <div class="flex flex-col items-center gap-3">
