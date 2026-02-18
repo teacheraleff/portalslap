@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLAP | Portal do Aluno - Starter 1</title>
+    <title>SLAP | Portal do Aluno</title>
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/dqfi22uz0/image/upload/v1749543469/SLAP_FAVICON_AMARELO_coilvj.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -299,12 +299,13 @@
                         <span class="jmap-sublevel">Iniciante</span>
                         <span class="jmap-badge-active">Selecionar</span>
                     </div>
-                    <div class="jmap-snode jmap-locked" data-testid="button-level-starter2">
-                        <div class="jmap-circle jmap-circle-locked">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <div class="jmap-snode jmap-current" onclick="enterLevel('starter2')" data-testid="button-level-starter2">
+                        <div class="jmap-circle jmap-circle-active pulse-glow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                         </div>
                         <span class="jmap-name">Starter 2</span>
                         <span class="jmap-sublevel">Básico</span>
+                        <span class="jmap-badge-active">Selecionar</span>
                     </div>
                     <div class="jmap-snode jmap-locked" data-testid="button-level-freshman1">
                         <div class="jmap-circle jmap-circle-locked">
@@ -625,6 +626,7 @@
                     <button onclick="showDetailTab('grades')" id="tab-grades" class="teacher-tab active" data-testid="button-tab-grades">Notas</button>
                     <button onclick="showDetailTab('streaks')" id="tab-streaks" class="teacher-tab" data-testid="button-tab-streaks">Streaks</button>
                     <button onclick="showDetailTab('links')" id="tab-links" class="teacher-tab" data-testid="button-tab-links">Links</button>
+                    <button onclick="showDetailTab('level')" id="tab-level" class="teacher-tab" data-testid="button-tab-level">N&#237;vel</button>
                     <button onclick="showDetailTab('approval')" id="tab-approval" class="teacher-tab" data-testid="button-tab-approval">Status</button>
                 </div>
 
@@ -683,6 +685,19 @@
                     </div>
                 </div>
 
+                <div id="detail-tab-level" style="display: none;">
+                    <div style="padding: 0.75rem 0;">
+                        <p style="font-size: 0.8rem; color: #44403c; margin-bottom: 0.75rem; font-weight: 500;">N&#237;vel atual do aluno:</p>
+                        <select id="student-level-select" style="width: 100%; padding: 0.5rem 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.5rem; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; background: white; cursor: pointer;" data-testid="select-student-level">
+                            <option value="starter1">Starter 1 - Iniciante</option>
+                            <option value="starter2">Starter 2 - B&#225;sico</option>
+                        </select>
+                        <p style="font-size: 0.65rem; color: #a8a29e; margin-top: 0.4rem;">O aluno poder&#225; acessar este n&#237;vel e todos os anteriores.</p>
+                        <button onclick="saveStudentLevel()" style="background: #8671d1; color: white; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 0.75rem; width: 100%;" data-testid="button-save-level">Salvar N&#237;vel</button>
+                        <p id="level-save-feedback" style="display: none; font-size: 0.7rem; text-align: center; margin-top: 0.5rem;"></p>
+                    </div>
+                </div>
+
                 <div id="detail-tab-approval" style="display: none;">
                     <div style="text-align: center; padding: 1rem 0;">
                         <p style="font-size: 0.8rem; color: #44403c; margin-bottom: 0.75rem;">Status atual: <strong id="detail-approval-status" data-testid="text-approval-status"></strong></p>
@@ -731,7 +746,7 @@
 
                 <button onclick="document.getElementById('rules-modal').classList.add('active'); closeSidebar();" class="sidebar-item" data-testid="button-sidebar-rules">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                    Manual de Regras
+                    Boas Pr&#225;ticas
                 </button>
 
                 <a href="#" id="sidebar-recorded-link" target="_blank" class="sidebar-item" data-testid="link-sidebar-recorded">
@@ -834,12 +849,14 @@
     <!-- RULES POPUP -->
     <div id="rules-modal" class="modal-overlay" onclick="if(event.target === this) this.classList.remove('active')">
         <div class="modal-content">
-            <h3 class="text-xl font-black text-stone-800 mb-5 text-center">Manual de Regras</h3>
+            <h3 class="text-xl font-black text-stone-800 mb-5 text-center">Boas Pr&#225;ticas</h3>
             <div class="space-y-5 text-left text-stone-600 text-sm leading-relaxed">
-                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">1</div><p><strong>Acesso Individual:</strong> Não compartilhe sua senha. Monitoramos acessos por IP.</p></div>
-                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">2</div><p><strong>Frequência:</strong> A evolução vem da prática constante. Tente completar um módulo de Homework após cada aula.</p></div>
-                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">3</div><p><strong>Prints:</strong> Ao completar um Streak de 5, tire um print e envie para seu teacher.</p></div>
-                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">4</div><p><strong>Listening:</strong> Use fones de ouvido para captar os detalhes.</p></div>
+                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">1</div><p><strong>Acesso Individual:</strong> N&#227;o compartilhe sua senha. Monitoramos acessos por IP.</p></div>
+                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">2</div><p><strong>Frequ&#234;ncia:</strong> A evolu&#231;&#227;o vem da pr&#225;tica constante. Tente completar um m&#243;dulo de Homework ap&#243;s cada aula.</p></div>
+                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">3</div><p><strong>Listening:</strong> Use fones de ouvido para captar os detalhes nas atividades com &#225;udio.</p></div>
+                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">4</div><p><strong>Revis&#227;o:</strong> Refazer atividades j&#225; conclu&#237;das &#233; uma das melhores formas de fixar o conte&#250;do.</p></div>
+                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">5</div><p><strong>Pronun&#231;a:</strong> Repita em voz alta as palavras e frases dos exerc&#237;cios. Falar &#233; treinar!</p></div>
+                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">6</div><p><strong>Consist&#234;ncia:</strong> Estudar um pouco todo dia vale mais do que estudar muito de vez em quando. Mantenha seu streak!</p></div>
             </div>
             <button class="action-button w-full mt-8" onclick="document.getElementById('rules-modal').classList.remove('active')">Entendi, vamos lá!</button>
         </div>
@@ -1241,6 +1258,8 @@
 
         function handleLogout() {
             if (firebaseAuth) {
+                currentUser = null;
+                showScreen('login');
                 firebaseAuth.signOut();
             }
         }
@@ -1347,10 +1366,10 @@
                             statusEl.style.color = '#16a34a';
                             statusEl.style.border = '1px solid #bbf7d0';
                         } else {
-                            statusEl.textContent = 'REPROVADO';
-                            statusEl.style.background = '#fef2f2';
-                            statusEl.style.color = '#ef4444';
-                            statusEl.style.border = '1px solid #fecaca';
+                            statusEl.textContent = 'PENDENTE';
+                            statusEl.style.background = '#fef9c3';
+                            statusEl.style.color = '#a16207';
+                            statusEl.style.border = '1px solid #fde68a';
                         }
                     } else {
                         var partialTotal = total > 0 ? total : '--';
@@ -1459,6 +1478,8 @@
                 btnEl.style.color = 'white';
             }
 
+            document.getElementById('student-level-select').value = student.currentLevel || 'starter1';
+
             showDetailTab('grades');
             await loadStudentGrades(uid);
             await loadStudentStreaks(uid);
@@ -1474,6 +1495,7 @@
             document.getElementById('detail-tab-grades').style.display = tab === 'grades' ? 'block' : 'none';
             document.getElementById('detail-tab-streaks').style.display = tab === 'streaks' ? 'block' : 'none';
             document.getElementById('detail-tab-links').style.display = tab === 'links' ? 'block' : 'none';
+            document.getElementById('detail-tab-level').style.display = tab === 'level' ? 'block' : 'none';
             document.getElementById('detail-tab-approval').style.display = tab === 'approval' ? 'block' : 'none';
             document.querySelectorAll('.teacher-tab').forEach(function(t) { t.classList.remove('active'); });
             document.getElementById('tab-' + tab).classList.add('active');
@@ -1642,6 +1664,26 @@
             }
         }
 
+        async function saveStudentLevel() {
+            if (!selectedStudentUid) return;
+            var level = document.getElementById('student-level-select').value;
+            var feedback = document.getElementById('level-save-feedback');
+            try {
+                await firebaseDb.collection('users').doc(selectedStudentUid).update({ currentLevel: level });
+                var student = allStudentsCache.find(function(s) { return s.uid === selectedStudentUid; });
+                if (student) student.currentLevel = level;
+                feedback.textContent = 'N\u00edvel salvo com sucesso!';
+                feedback.style.color = '#16a34a';
+                feedback.style.display = 'block';
+                setTimeout(function() { feedback.style.display = 'none'; }, 2500);
+            } catch(e) {
+                console.error('Erro ao salvar n\u00edvel:', e);
+                feedback.textContent = 'Erro ao salvar. Tente novamente.';
+                feedback.style.color = '#ef4444';
+                feedback.style.display = 'block';
+            }
+        }
+
         async function loadStudentLinks() {
             if (!firebaseDb || !firebaseAuth.currentUser) return;
             try {
@@ -1690,15 +1732,73 @@
         }
 
         function enterLevel(level) {
-            if (level === 'starter1') {
+            if (level === 'starter1' || level === 'starter2') {
+                currentLevel = level;
                 showScreen('app');
                 const displayName = currentUser.displayName || currentUser.email.split('@')[0];
                 const firstName = displayName.split(' ')[0];
                 document.getElementById('sidebar-user-name').textContent = firstName;
+                var levelLabel = level === 'starter2' ? 'Starter 2' : 'Starter 1';
+                document.getElementById('grades-level-label').textContent = levelLabel;
+                var headerTitle = document.querySelector('#main-header h1');
+                if (headerTitle) headerTitle.textContent = 'Portal do Aluno - ' + levelLabel;
                 renderDashboard();
                 loadStudentLinks();
                 loadUserAvatar();
             }
+        }
+
+        function updateJourneyMap(assignedLevel) {
+            var allLevels = ['starter1', 'starter2', 'freshman1', 'freshman2', 'sophomore1', 'sophomore2', 'senior1', 'senior2', 'acc'];
+            var levelTestIds = {
+                'starter1': 'button-level-starter1',
+                'starter2': 'button-level-starter2',
+                'freshman1': 'button-level-freshman1',
+                'freshman2': 'button-level-freshman2',
+                'sophomore1': 'button-level-sophomore1',
+                'sophomore2': 'button-level-sophomore2',
+                'senior1': 'button-level-senior1',
+                'senior2': 'button-level-senior2',
+                'acc': 'button-level-acc'
+            };
+            var assignedIdx = allLevels.indexOf(assignedLevel);
+            if (assignedIdx === -1) assignedIdx = 0;
+
+            var boltIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
+            var lockIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+
+            allLevels.forEach(function(lvl, idx) {
+                var node = document.querySelector('[data-testid="' + levelTestIds[lvl] + '"]');
+                if (!node) return;
+                var circle = node.querySelector('.jmap-circle');
+
+                if (idx <= assignedIdx) {
+                    node.className = 'jmap-snode jmap-current';
+                    node.onclick = function() { enterLevel(lvl); };
+                    node.style.cursor = 'pointer';
+                    circle.className = 'jmap-circle jmap-circle-active pulse-glow';
+                    circle.innerHTML = boltIcon;
+                    var badge = node.querySelector('.jmap-badge-active');
+                    if (!badge) {
+                        badge = document.createElement('span');
+                        badge.className = 'jmap-badge-active';
+                        node.appendChild(badge);
+                    }
+                    badge.textContent = 'Selecionar';
+                } else {
+                    node.className = 'jmap-snode jmap-locked';
+                    node.onclick = null;
+                    node.style.cursor = 'default';
+                    if (lvl === 'acc') {
+                        circle.className = 'jmap-circle jmap-circle-trophy';
+                    } else {
+                        circle.className = 'jmap-circle jmap-circle-locked';
+                    }
+                    circle.innerHTML = lockIcon;
+                    var badge = node.querySelector('.jmap-badge-active');
+                    if (badge) badge.remove();
+                }
+            });
         }
 
         async function checkUserApproval(user) {
@@ -1715,7 +1815,7 @@
                     return { approved: false, role: 'student' };
                 }
                 var data = doc.data();
-                return { approved: data.approved === true, role: data.role || 'student' };
+                return { approved: data.approved === true, role: data.role || 'student', currentLevel: data.currentLevel || 'starter1' };
             } catch (e) {
                 console.error('Erro ao verificar aprovação:', e);
                 return { approved: false, role: 'student' };
@@ -1734,6 +1834,7 @@
                     syncChunksStreaks();
                     const displayName = user.displayName || user.email.split('@')[0];
                     document.getElementById('journey-user-name').textContent = displayName;
+                    updateJourneyMap(result.currentLevel || 'starter1');
                     showScreen('journey');
                 } else {
                     document.getElementById('pending-user-email').textContent = user.email;
@@ -1845,6 +1946,130 @@
         } 
 
         // --- APP DATA ---
+        var currentLevel = 'starter1';
+
+        const aulaStarter2 = [
+            { id: 1, name: "Open House", hasHomework: false, desc: "Aula introdut\u00f3ria do Starter 2." },
+            { id: 2, name: "Frequency", hasHomework: true, desc: "Aprenda advérbios de frequência em inglês." },
+            { id: 3, name: "Routine", hasHomework: true, desc: "Pratique vocabulário e frases sobre rotina diária." },
+            { id: 4, name: "Why & Because", hasHomework: true, desc: "Treine perguntas com Why e respostas com Because." },
+            { id: 5, name: "Places In Town", hasHomework: true, desc: "Vocabulário de lugares na cidade." },
+            { id: 6, name: "Prepositions Of Place", hasHomework: true, desc: "Pratique in, on, at, next to, between, behind..." },
+            { id: 7, name: "In, On, At + Transportations", hasHomework: true, desc: "Preposições com meios de transporte." },
+            { id: 8, name: "Possessives", hasHomework: true, desc: "Treine o uso do possessivo com 's e of." },
+            { id: 9, name: "Parts of the House", hasHomework: true, desc: "Vocabulário dos cômodos da casa." },
+            { id: 10, name: "Furniture & Chores", hasHomework: true, desc: "Móveis e tarefas domésticas em inglês." },
+            { id: 11, name: "Present Continuous", hasHomework: true, desc: "Pratique o presente contínuo: am/is/are + -ing." },
+            { id: 12, name: "Present Continuous For Future", hasHomework: true, desc: "Use o presente contínuo para falar de planos futuros." },
+            { id: 13, name: "Many & Much", hasHomework: true, desc: "Aprenda quando usar many e much." },
+            { id: 14, name: "Restaurant Pt. 1", hasHomework: true, desc: "Vocabulário e frases para restaurante." },
+            { id: 15, name: "Restaurant Pt. 2", hasHomework: true, desc: "Continue praticando situações em restaurante." },
+            { id: 16, name: "Midterm Test", hasHomework: false, desc: "Prova intermediária do módulo." },
+            { id: 17, name: "Future Simple", hasHomework: true, desc: "Pratique o futuro simples com will." },
+            { id: 18, name: "MT Correction", hasHomework: false, desc: "Correção da prova intermediária." },
+            { id: 19, name: "What Will You Do?", hasHomework: true, desc: "Treine perguntas e respostas com will." },
+            { id: 20, name: "Occupations", hasHomework: true, desc: "Vocabulário de profissões em inglês." },
+            { id: 21, name: "False Friends", hasHomework: true, desc: "Cuidado com os falsos cognatos!" },
+            { id: 22, name: "Agreeing & Disagreeing", hasHomework: true, desc: "Aprenda a concordar e discordar em inglês." },
+            { id: 23, name: "Describing People", hasHomework: true, desc: "Descreva pessoas usando adjetivos em inglês." },
+            { id: 24, name: "Movie Genres", hasHomework: true, desc: "Vocabulário de gêneros de filmes." },
+            { id: 25, name: "Presentation", hasHomework: false, desc: "Aula de apresentação oral." },
+            { id: 26, name: "Prepositions Of Time", hasHomework: true, desc: "Pratique in, on, at com tempo e datas." },
+            { id: 27, name: "Fast Food & Tastes", hasHomework: true, desc: "Vocabulário de fast food e sabores." },
+            { id: 28, name: "Weather", hasHomework: true, desc: "Aprenda a falar sobre o clima em inglês." },
+            { id: 29, name: "Kahoot Review", hasHomework: false, desc: "Revisão interativa com Kahoot." },
+            { id: 30, name: "Listening Test", hasHomework: false, desc: "Prova de compreensão auditiva." },
+            { id: 31, name: "Grammar Test", hasHomework: false, desc: "Prova de gramática do módulo." },
+            { id: 32, name: "GT & LT Correction", hasHomework: false, desc: "Correção das provas de gramática e listening." },
+            { id: 33, name: "OT Review", hasHomework: false, desc: "Revisão para a prova oral." },
+            { id: 34, name: "Oral Test Day 1", hasHomework: false, desc: "Primeiro dia da prova oral." },
+            { id: 35, name: "Oral Test Day 2", hasHomework: false, desc: "Segundo dia da prova oral." },
+            { id: 36, name: "General Feedback", hasHomework: false, desc: "Feedback geral do módulo." }
+        ];
+
+        const quizDataStarter2 = {
+            11: [ // Present Continuous (15 perguntas)
+                {q: "Complete: 'She ____ reading a book right now.'", options: [{text:"is", isCorrect:true}, {text:"are", isCorrect:false}, {text:"am", isCorrect:false}, {text:"be", isCorrect:false}], rationale: "She + is (terceira pessoa do singular)."},
+                {q: "Escolha a frase correta no Present Continuous:", options: [{text:"I am study English", isCorrect:false}, {text:"I am studying English", isCorrect:true}, {text:"I studying English", isCorrect:false}, {text:"I study English now", isCorrect:false}], rationale: "Present Continuous = am/is/are + verbo-ing."},
+                {q: "Complete: 'They ____ playing soccer at the moment.'", options: [{text:"is", isCorrect:false}, {text:"am", isCorrect:false}, {text:"are", isCorrect:true}, {text:"be", isCorrect:false}], rationale: "They + are."},
+                {q: "Qual frase está no Present Continuous?", options: [{text:"She works every day", isCorrect:false}, {text:"She is working right now", isCorrect:true}, {text:"She worked yesterday", isCorrect:false}, {text:"She will work tomorrow", isCorrect:false}], rationale: "'is working' = am/is/are + -ing = Present Continuous."},
+                {q: "Complete a negativa: 'He ____ watching TV.'", options: [{text:"isn't", isCorrect:true}, {text:"aren't", isCorrect:false}, {text:"don't", isCorrect:false}, {text:"doesn't", isCorrect:false}], rationale: "Negativa no Present Continuous: He + isn't + verbo-ing."},
+                {q: "Escolha a pergunta correta no Present Continuous:", options: [{text:"Do you eating?", isCorrect:false}, {text:"Are you eating?", isCorrect:true}, {text:"You are eating?", isCorrect:false}, {text:"Is you eating?", isCorrect:false}], rationale: "Pergunta: Are + you + verbo-ing?"},
+                {q: "Qual é a forma -ing de 'run'?", options: [{text:"runing", isCorrect:false}, {text:"running", isCorrect:true}, {text:"runeing", isCorrect:false}, {text:"runing", isCorrect:false}], rationale: "Run dobra o 'n' antes de -ing: running."},
+                {q: "Complete: 'We ____ not listening to music.'", options: [{text:"is", isCorrect:false}, {text:"am", isCorrect:false}, {text:"are", isCorrect:true}, {text:"do", isCorrect:false}], rationale: "We + are not (aren't)."},
+                {q: "Qual é a forma -ing de 'make'?", options: [{text:"makeing", isCorrect:false}, {text:"makking", isCorrect:false}, {text:"making", isCorrect:true}, {text:"mading", isCorrect:false}], rationale: "Verbos terminados em 'e' perdem o 'e' e ganham -ing: making."},
+                {q: "Escolha a tradução correta: 'Ele está cozinhando agora.'", options: [{text:"He cooks now", isCorrect:false}, {text:"He is cooking now", isCorrect:true}, {text:"He cooked now", isCorrect:false}, {text:"He cook now", isCorrect:false}], rationale: "Ação acontecendo agora = Present Continuous."},
+                {q: "Complete: '____ she sleeping?'", options: [{text:"Are", isCorrect:false}, {text:"Is", isCorrect:true}, {text:"Am", isCorrect:false}, {text:"Do", isCorrect:false}], rationale: "She + Is na pergunta."},
+                {q: "Qual palavra indica que devemos usar Present Continuous?", options: [{text:"yesterday", isCorrect:false}, {text:"always", isCorrect:false}, {text:"right now", isCorrect:true}, {text:"last week", isCorrect:false}], rationale: "'Right now' indica ação acontecendo neste momento."},
+                {q: "Qual é a forma -ing de 'sit'?", options: [{text:"siting", isCorrect:false}, {text:"sitting", isCorrect:true}, {text:"sitin", isCorrect:false}, {text:"sitteing", isCorrect:false}], rationale: "Sit dobra o 't' antes de -ing: sitting."},
+                {q: "Complete: 'I ____ writing a message to my friend.'", options: [{text:"is", isCorrect:false}, {text:"are", isCorrect:false}, {text:"am", isCorrect:true}, {text:"be", isCorrect:false}], rationale: "I + am."},
+                {q: "Escolha a frase INCORRETA:", options: [{text:"She is dancing", isCorrect:false}, {text:"They are singing", isCorrect:false}, {text:"He are playing", isCorrect:true}, {text:"I am reading", isCorrect:false}], rationale: "He + is, não 'are'. O correto seria 'He is playing'."}
+            ],
+            12: [ // Present Continuous For Future Situations (15 perguntas)
+                {q: "Complete: 'I ____ meeting my friend tomorrow.'", options: [{text:"is", isCorrect:false}, {text:"am", isCorrect:true}, {text:"are", isCorrect:false}, {text:"will", isCorrect:false}], rationale: "I + am + verbo-ing para planos futuros."},
+                {q: "Qual frase usa o Present Continuous para o futuro?", options: [{text:"I study every day", isCorrect:false}, {text:"I studied yesterday", isCorrect:false}, {text:"I am traveling next week", isCorrect:true}, {text:"I will study later", isCorrect:false}], rationale: "'am traveling next week' = plano futuro com Present Continuous."},
+                {q: "Complete: 'She ____ leaving on Friday.'", options: [{text:"are", isCorrect:false}, {text:"is", isCorrect:true}, {text:"am", isCorrect:false}, {text:"do", isCorrect:false}], rationale: "She + is para planos já decididos."},
+                {q: "Quando usamos Present Continuous para o futuro?", options: [{text:"Para previsões", isCorrect:false}, {text:"Para planos já organizados", isCorrect:true}, {text:"Para hábitos", isCorrect:false}, {text:"Para fatos científicos", isCorrect:false}], rationale: "Usamos para planos e compromissos já marcados."},
+                {q: "Complete: 'We ____ having dinner with our parents tonight.'", options: [{text:"is", isCorrect:false}, {text:"am", isCorrect:false}, {text:"are", isCorrect:true}, {text:"do", isCorrect:false}], rationale: "We + are para plano de hoje à noite."},
+                {q: "Escolha a frase correta para um plano futuro:", options: [{text:"They flying to London next month", isCorrect:false}, {text:"They are flying to London next month", isCorrect:true}, {text:"They fly to London next month", isCorrect:false}, {text:"They is flying to London next month", isCorrect:false}], rationale: "They + are + verbo-ing + marcador de tempo futuro."},
+                {q: "Qual marcador de tempo indica futuro?", options: [{text:"yesterday", isCorrect:false}, {text:"last week", isCorrect:false}, {text:"right now", isCorrect:false}, {text:"tomorrow", isCorrect:true}], rationale: "'Tomorrow' indica um plano para o dia seguinte."},
+                {q: "Complete: '____ you coming to the party on Saturday?'", options: [{text:"Is", isCorrect:false}, {text:"Am", isCorrect:false}, {text:"Are", isCorrect:true}, {text:"Do", isCorrect:false}], rationale: "Are + you para perguntar sobre planos."},
+                {q: "Escolha a tradução: 'Eu estou viajando na próxima semana.'", options: [{text:"I travel next week", isCorrect:false}, {text:"I am traveling next week", isCorrect:true}, {text:"I traveled next week", isCorrect:false}, {text:"I will traveling next week", isCorrect:false}], rationale: "Plano organizado = Present Continuous + marcador futuro."},
+                {q: "Complete: 'He ____ starting a new job on Monday.'", options: [{text:"are", isCorrect:false}, {text:"am", isCorrect:false}, {text:"is", isCorrect:true}, {text:"do", isCorrect:false}], rationale: "He + is para plano confirmado."},
+                {q: "Qual frase NÃO usa Present Continuous para o futuro?", options: [{text:"I am meeting her later", isCorrect:false}, {text:"She is cooking right now", isCorrect:true}, {text:"We are moving next month", isCorrect:false}, {text:"They are visiting us tomorrow", isCorrect:false}], rationale: "'Right now' indica presente, não futuro."},
+                {q: "Complete a negativa: 'I ____ not working tomorrow.'", options: [{text:"is", isCorrect:false}, {text:"are", isCorrect:false}, {text:"am", isCorrect:true}, {text:"do", isCorrect:false}], rationale: "I + am not para negar plano futuro."},
+                {q: "Escolha a frase correta:", options: [{text:"She is go to the dentist tomorrow", isCorrect:false}, {text:"She is going to the dentist tomorrow", isCorrect:true}, {text:"She going to the dentist tomorrow", isCorrect:false}, {text:"She are going to the dentist tomorrow", isCorrect:false}], rationale: "She + is + going (verbo-ing)."},
+                {q: "Complete: 'What ____ you doing this weekend?'", options: [{text:"is", isCorrect:false}, {text:"am", isCorrect:false}, {text:"are", isCorrect:true}, {text:"do", isCorrect:false}], rationale: "What + are + you + doing para perguntar planos."},
+                {q: "Escolha o melhor contexto para 'I am having lunch with Ana on Sunday':", options: [{text:"Uma previsão", isCorrect:false}, {text:"Um plano já combinado", isCorrect:true}, {text:"Um hábito diário", isCorrect:false}, {text:"Uma ação no passado", isCorrect:false}], rationale: "Present Continuous para futuro = plano já combinado."}
+            ],
+            13: [ // Many & Much (15 perguntas)
+                {q: "Complete: 'How ____ water do you drink per day?'", options: [{text:"many", isCorrect:false}, {text:"much", isCorrect:true}, {text:"lot", isCorrect:false}, {text:"some", isCorrect:false}], rationale: "Water é incontável, então usamos 'much'."},
+                {q: "Complete: 'How ____ books do you have?'", options: [{text:"much", isCorrect:false}, {text:"many", isCorrect:true}, {text:"lot", isCorrect:false}, {text:"any", isCorrect:false}], rationale: "Books é contável (plural), então usamos 'many'."},
+                {q: "Qual substantivo é INCONTÁVEL?", options: [{text:"apple", isCorrect:false}, {text:"chair", isCorrect:false}, {text:"money", isCorrect:true}, {text:"dog", isCorrect:false}], rationale: "Money (dinheiro) é incontável em inglês."},
+                {q: "Complete: 'There aren't ____ students in the class today.'", options: [{text:"much", isCorrect:false}, {text:"many", isCorrect:true}, {text:"a lot", isCorrect:false}, {text:"more", isCorrect:false}], rationale: "Students é contável, então usamos 'many'."},
+                {q: "Complete: 'I don't have ____ time.'", options: [{text:"many", isCorrect:false}, {text:"much", isCorrect:true}, {text:"a lot", isCorrect:false}, {text:"few", isCorrect:false}], rationale: "Time é incontável, então usamos 'much'."},
+                {q: "Escolha a frase correta:", options: [{text:"How much friends do you have?", isCorrect:false}, {text:"How many friends do you have?", isCorrect:true}, {text:"How lot friends do you have?", isCorrect:false}, {text:"How few friends do you have?", isCorrect:false}], rationale: "Friends é contável = many."},
+                {q: "Qual substantivo é CONTÁVEL?", options: [{text:"rice", isCorrect:false}, {text:"sugar", isCorrect:false}, {text:"milk", isCorrect:false}, {text:"egg", isCorrect:true}], rationale: "Egg (ovo) é contável: one egg, two eggs."},
+                {q: "Complete: 'There isn't ____ sugar in my coffee.'", options: [{text:"many", isCorrect:false}, {text:"much", isCorrect:true}, {text:"few", isCorrect:false}, {text:"several", isCorrect:false}], rationale: "Sugar é incontável = much."},
+                {q: "Complete: 'She has ____ cats at home.'", options: [{text:"much", isCorrect:false}, {text:"many", isCorrect:true}, {text:"a much", isCorrect:false}, {text:"lot", isCorrect:false}], rationale: "Cats é contável = many."},
+                {q: "Qual alternativa pode substituir 'many' e 'much' em frases afirmativas?", options: [{text:"few", isCorrect:false}, {text:"little", isCorrect:false}, {text:"a lot of", isCorrect:true}, {text:"some of", isCorrect:false}], rationale: "'A lot of' funciona com contáveis e incontáveis."},
+                {q: "Complete: 'Do you eat ____ fruit?'", options: [{text:"many", isCorrect:false}, {text:"much", isCorrect:true}, {text:"few", isCorrect:false}, {text:"several", isCorrect:false}], rationale: "Fruit (fruta em geral) é incontável = much."},
+                {q: "Complete: 'How ____ languages do you speak?'", options: [{text:"much", isCorrect:false}, {text:"many", isCorrect:true}, {text:"lot", isCorrect:false}, {text:"any", isCorrect:false}], rationale: "Languages é contável = many."},
+                {q: "Escolha a frase INCORRETA:", options: [{text:"I don't have much money", isCorrect:false}, {text:"There are many people here", isCorrect:false}, {text:"How much chairs are there?", isCorrect:true}, {text:"She doesn't drink much coffee", isCorrect:false}], rationale: "Chairs é contável, deveria ser 'How many chairs'."},
+                {q: "Complete: 'We don't have ____ homework today.'", options: [{text:"many", isCorrect:false}, {text:"much", isCorrect:true}, {text:"few", isCorrect:false}, {text:"several", isCorrect:false}], rationale: "Homework é incontável = much."},
+                {q: "Qual regra é correta?", options: [{text:"Much para contáveis, Many para incontáveis", isCorrect:false}, {text:"Many para contáveis, Much para incontáveis", isCorrect:true}, {text:"Many e Much são a mesma coisa", isCorrect:false}, {text:"Much é só para perguntas", isCorrect:false}], rationale: "Many = contáveis (plural). Much = incontáveis."}
+            ],
+            17: [ // Future Simple (15 perguntas)
+                {q: "Complete: 'I ____ help you tomorrow.'", options: [{text:"will", isCorrect:true}, {text:"am", isCorrect:false}, {text:"do", isCorrect:false}, {text:"was", isCorrect:false}], rationale: "Futuro simples: will + verbo base."},
+                {q: "Escolha a forma negativa correta:", options: [{text:"I willn't go", isCorrect:false}, {text:"I won't go", isCorrect:true}, {text:"I don't will go", isCorrect:false}, {text:"I not will go", isCorrect:false}], rationale: "Negativa do will: won't (will not)."},
+                {q: "Complete: 'She ____ be a great doctor one day.'", options: [{text:"will", isCorrect:true}, {text:"is", isCorrect:false}, {text:"was", isCorrect:false}, {text:"does", isCorrect:false}], rationale: "Previsão sobre o futuro = will + verbo base."},
+                {q: "Qual frase está no Future Simple?", options: [{text:"I am studying now", isCorrect:false}, {text:"I studied yesterday", isCorrect:false}, {text:"I will study later", isCorrect:true}, {text:"I study every day", isCorrect:false}], rationale: "'will study' = futuro simples."},
+                {q: "Complete a pergunta: '____ you come to the party?'", options: [{text:"Do", isCorrect:false}, {text:"Are", isCorrect:false}, {text:"Will", isCorrect:true}, {text:"Did", isCorrect:false}], rationale: "Pergunta no futuro: Will + sujeito + verbo base?"},
+                {q: "Quando usamos 'will' para decisões?", options: [{text:"Para planos antigos", isCorrect:false}, {text:"Para decisões tomadas no momento", isCorrect:true}, {text:"Para hábitos", isCorrect:false}, {text:"Para o passado", isCorrect:false}], rationale: "Will é usado para decisões espontâneas."},
+                {q: "Complete: 'It ____ rain tomorrow.'", options: [{text:"will", isCorrect:true}, {text:"is", isCorrect:false}, {text:"does", isCorrect:false}, {text:"did", isCorrect:false}], rationale: "Previsão do tempo = will + verbo base."},
+                {q: "Escolha a tradução: 'Eu não irei ao cinema.'", options: [{text:"I don't go to the cinema", isCorrect:false}, {text:"I won't go to the cinema", isCorrect:true}, {text:"I am not going to the cinema", isCorrect:false}, {text:"I didn't go to the cinema", isCorrect:false}], rationale: "Negativa no futuro simples: won't + verbo base."},
+                {q: "Complete: 'They ____ arrive at 8 o'clock.'", options: [{text:"will", isCorrect:true}, {text:"are", isCorrect:false}, {text:"does", isCorrect:false}, {text:"has", isCorrect:false}], rationale: "They + will + verbo base."},
+                {q: "Qual é a forma contraída de 'will not'?", options: [{text:"willn't", isCorrect:false}, {text:"won't", isCorrect:true}, {text:"wouldn't", isCorrect:false}, {text:"wont", isCorrect:false}], rationale: "Will not = won't."},
+                {q: "Complete: 'I think it ____ be sunny this weekend.'", options: [{text:"will", isCorrect:true}, {text:"is", isCorrect:false}, {text:"was", isCorrect:false}, {text:"does", isCorrect:false}], rationale: "'I think' + will = opinião sobre o futuro."},
+                {q: "Escolha a frase correta:", options: [{text:"She will goes to school", isCorrect:false}, {text:"She will go to school", isCorrect:true}, {text:"She will going to school", isCorrect:false}, {text:"She will went to school", isCorrect:false}], rationale: "Will + verbo na forma base (sem -s, -ing ou -ed)."},
+                {q: "Complete: '____ it be expensive?'", options: [{text:"Does", isCorrect:false}, {text:"Is", isCorrect:false}, {text:"Will", isCorrect:true}, {text:"Did", isCorrect:false}], rationale: "Pergunta no futuro: Will + sujeito + verbo base?"},
+                {q: "Qual palavra costuma acompanhar o Future Simple?", options: [{text:"yesterday", isCorrect:false}, {text:"now", isCorrect:false}, {text:"tomorrow", isCorrect:true}, {text:"ago", isCorrect:false}], rationale: "'Tomorrow' indica tempo futuro."},
+                {q: "Escolha a frase INCORRETA:", options: [{text:"I will call you later", isCorrect:false}, {text:"She will helps us", isCorrect:true}, {text:"They won't come", isCorrect:false}, {text:"Will he be there?", isCorrect:false}], rationale: "Após 'will', o verbo fica na forma base: 'help', não 'helps'."}
+            ]
+        };
+
+        function getActiveAulas() {
+            return currentLevel === 'starter2' ? aulaStarter2 : aulaNames;
+        }
+
+        function getActiveQuizData() {
+            return currentLevel === 'starter2' ? quizDataStarter2 : quizData;
+        }
+
+        function getLevelTag() {
+            return currentLevel === 'starter2' ? 'STARTER 2' : 'STARTER 1';
+        }
+
         const aulaNames = [
             { id: 1, name: "Open House", hasHomework: false, desc: "Aula introdutória do curso." },
             { id: 2, name: "Feelings", hasHomework: true, specialMode: 'flashcards', desc: "Pratique vocabulário de sentimentos e emoções." },
@@ -2048,7 +2273,7 @@
             // Dictation data
             4: { dictation: ["one two three", "four five six", "seven eight nine", "ten one five", "three six nine", "two four eight", "five seven ten", "one four seven", "six eight two", "three five one", "nine two six", "four seven three", "eight ten five", "two nine four", "seven one eight"], isNumberCombo: true },
             5: { dictation: ["eleven twelve thirteen", "fourteen fifteen sixteen", "seventeen eighteen nineteen", "twenty eleven fourteen", "thirteen sixteen nineteen", "twelve fifteen eighteen", "seventeen twenty eleven", "fourteen thirteen twelve", "nineteen sixteen fifteen", "eighteen eleven twenty", "twelve seventeen fourteen", "fifteen nineteen thirteen", "sixteen eighteen twelve", "twenty thirteen seventeen", "eleven fifteen nineteen"], isNumberCombo: true },
-            6: { dictation: ["CAR", "DOG", "CAT", "BUS", "SUN", "HAT", "PEN", "RED", "BOX", "CUP", "BOOK", "TREE", "FISH", "BIRD", "HAND", "STAR", "MOON", "BALL", "CAKE", "MILK"], isSpelling: true },
+            6: { dictation: ["CAR", "DOG", "CAT", "BUS", "SUN", "HAT", "PEN", "RED", "BOX", "CUP", "BOOK", "TREE", "FISH", "BIRD", "HAND", "STAR", "MOON", "BALL", "CAKE", "MILK", "BILL", "DOOR", "RING", "LAMP"], isSpelling: true },
             7: { dictation: ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"] },
             8: { dictation: ["run", "walk", "eat", "drink", "sleep", "work", "play", "read", "write", "speak"] },
             9: { dictation: ["happy", "sad", "big", "small", "hot", "cold", "fast", "slow", "good", "bad"] },
@@ -2243,6 +2468,57 @@
                 {q: "Escolha a pergunta correta para saber onde alguém mora:", options: [{text:"Where you live?", isCorrect:false}, {text:"Where do you live?", isCorrect:true}, {text:"Where are you live?", isCorrect:false}, {text:"Where is you live?", isCorrect:false}], rationale: "'Where do you live?' é a pergunta correta com o auxiliar 'do'."},
                 {q: "Complete: 'I am ____. I am from China.'", options: [{text:"Chinish", isCorrect:false}, {text:"Chinian", isCorrect:false}, {text:"Chinese", isCorrect:true}, {text:"Chines", isCorrect:false}], rationale: "China = Chinese."},
                 {q: "Escolha a frase correta sobre nacionalidade:", options: [{text:"He is Spanish. He is from Spain.", isCorrect:true}, {text:"He is Spain. He is from Spanish.", isCorrect:false}, {text:"He is Spainish. He is from Spain.", isCorrect:false}, {text:"He is Spanich. He is from Spain.", isCorrect:false}], rationale: "Spain = Spanish. O país é Spain e a nacionalidade é Spanish."}
+            ],
+            16: [ // CAN E CAN'T (15 perguntas)
+                {q: "Complete a frase: 'I ____ speak English.'", options: [{text:"am", isCorrect:false}, {text:"do", isCorrect:false}, {text:"can", isCorrect:true}, {text:"have", isCorrect:false}], rationale: "Usamos 'can' para expressar habilidade: I can speak English."},
+                {q: "Escolha a forma negativa correta: 'She ____ drive a car.'", options: [{text:"can not", isCorrect:false}, {text:"don't can", isCorrect:false}, {text:"can't", isCorrect:true}, {text:"doesn't can", isCorrect:false}], rationale: "A forma negativa de 'can' é 'can't' (cannot)."},
+                {q: "Escolha a pergunta correta:", options: [{text:"Do you can swim?", isCorrect:false}, {text:"Can you swim?", isCorrect:true}, {text:"Are you can swim?", isCorrect:false}, {text:"You can swim?", isCorrect:false}], rationale: "Perguntas com 'can': Can + sujeito + verbo."},
+                {q: "Complete: 'He ____ play the guitar very well.'", options: [{text:"cans", isCorrect:false}, {text:"can", isCorrect:true}, {text:"is can", isCorrect:false}, {text:"do can", isCorrect:false}], rationale: "'Can' nunca recebe -s, mesmo com he/she/it."},
+                {q: "Escolha a resposta correta: — Can they cook?", options: [{text:"Yes, they can", isCorrect:true}, {text:"Yes, they do can", isCorrect:false}, {text:"Yes, they cans", isCorrect:false}, {text:"Yes, they are can", isCorrect:false}], rationale: "Resposta curta: Yes, they can."},
+                {q: "Complete a frase: 'We ____ run very fast.'", options: [{text:"can't", isCorrect:true}, {text:"don't can", isCorrect:false}, {text:"aren't can", isCorrect:false}, {text:"not can", isCorrect:false}], rationale: "A negativa é 'can't' (cannot), nunca 'don't can'."},
+                {q: "Qual frase está correta?", options: [{text:"She can to dance", isCorrect:false}, {text:"She can dances", isCorrect:false}, {text:"She can dance", isCorrect:true}, {text:"She cans dance", isCorrect:false}], rationale: "Depois de 'can' o verbo fica na forma base, sem 'to' e sem -s."},
+                {q: "Complete: '____ he speak French?'", options: [{text:"Does", isCorrect:false}, {text:"Is", isCorrect:false}, {text:"Can", isCorrect:true}, {text:"Do", isCorrect:false}], rationale: "Perguntas sobre habilidade: Can + sujeito + verbo."},
+                {q: "Escolha a frase correta:", options: [{text:"I can't to swim", isCorrect:false}, {text:"I can't swim", isCorrect:true}, {text:"I don't can swim", isCorrect:false}, {text:"I amn't can swim", isCorrect:false}], rationale: "Can't + verbo na forma base, sem 'to'."},
+                {q: "Complete: 'My baby ____ walk yet.'", options: [{text:"don't can", isCorrect:false}, {text:"isn't can", isCorrect:false}, {text:"can't", isCorrect:true}, {text:"not can", isCorrect:false}], rationale: "A negativa correta é 'can't'."},
+                {q: "Escolha a resposta correta: — Can you play soccer?", options: [{text:"No, I don't can", isCorrect:false}, {text:"No, I can't", isCorrect:true}, {text:"No, I am not can", isCorrect:false}, {text:"No, I not can", isCorrect:false}], rationale: "Resposta negativa curta: No, I can't."},
+                {q: "Complete: 'She ____ sing beautifully.'", options: [{text:"can", isCorrect:true}, {text:"cans", isCorrect:false}, {text:"is can", isCorrect:false}, {text:"does can", isCorrect:false}], rationale: "'Can' é igual para todos os sujeitos, nunca 'cans'."},
+                {q: "Qual é a diferença entre 'can' e 'can't'?", options: [{text:"Can = não consigo / Can't = consigo", isCorrect:false}, {text:"Can = consigo / Can't = não consigo", isCorrect:true}, {text:"São iguais", isCorrect:false}, {text:"Can't é mais formal que can", isCorrect:false}], rationale: "Can = habilidade positiva, Can't = habilidade negativa."},
+                {q: "Escolha a frase correta:", options: [{text:"They can plays tennis", isCorrect:false}, {text:"They can play tennis", isCorrect:true}, {text:"They cans play tennis", isCorrect:false}, {text:"They can to play tennis", isCorrect:false}], rationale: "Can + verbo na forma base, sem -s e sem 'to'."},
+                {q: "Complete: 'My grandmother ____ use the computer.'", options: [{text:"can't", isCorrect:true}, {text:"don't can", isCorrect:false}, {text:"isn't can", isCorrect:false}, {text:"doesn't can", isCorrect:false}], rationale: "A negativa de 'can' é sempre 'can't', nunca com 'do/does/is'."}
+            ],
+            24: [ // POSSESSIVE ADJECTIVES (15 perguntas)
+                {q: "Complete: '____ name is Daniela.' (eu)", options: [{text:"I", isCorrect:false}, {text:"Me", isCorrect:false}, {text:"My", isCorrect:true}, {text:"Mine", isCorrect:false}], rationale: "My = meu/minha (adjetivo possessivo). Vem antes do substantivo."},
+                {q: "Complete: 'What is ____ name?' (você)", options: [{text:"you", isCorrect:false}, {text:"your", isCorrect:true}, {text:"yours", isCorrect:false}, {text:"you're", isCorrect:false}], rationale: "Your = seu/sua. Adjetivo possessivo sempre vem antes do substantivo."},
+                {q: "Complete: '____ car is very fast.' (dele)", options: [{text:"He", isCorrect:false}, {text:"Him", isCorrect:false}, {text:"His", isCorrect:true}, {text:"He's", isCorrect:false}], rationale: "His = dele. Adjetivo possessivo de 'he'."},
+                {q: "Complete: '____ dress is beautiful.' (dela)", options: [{text:"She", isCorrect:false}, {text:"Her", isCorrect:true}, {text:"Hers", isCorrect:false}, {text:"She's", isCorrect:false}], rationale: "Her = dela. Adjetivo possessivo de 'she'."},
+                {q: "Complete: '____ house is big.' (nosso)", options: [{text:"We", isCorrect:false}, {text:"Us", isCorrect:false}, {text:"Our", isCorrect:true}, {text:"Ours", isCorrect:false}], rationale: "Our = nosso/nossa. Adjetivo possessivo de 'we'."},
+                {q: "Complete: '____ dog is very friendly.' (deles)", options: [{text:"They", isCorrect:false}, {text:"Them", isCorrect:false}, {text:"Their", isCorrect:true}, {text:"Theirs", isCorrect:false}], rationale: "Their = deles/delas. Adjetivo possessivo de 'they'."},
+                {q: "Complete: 'The cat is eating ____ food.' (dele - do gato)", options: [{text:"it", isCorrect:false}, {text:"its", isCorrect:true}, {text:"it's", isCorrect:false}, {text:"his", isCorrect:false}], rationale: "Its = dele/dela (para coisas e animais). Cuidado: it's = it is."},
+                {q: "Qual é a diferença entre 'your' e 'you're'?", options: [{text:"São iguais", isCorrect:false}, {text:"'Your' = possessivo, 'you're' = you are", isCorrect:true}, {text:"'You're' é mais informal", isCorrect:false}, {text:"'Your' é para plural", isCorrect:false}], rationale: "Your = seu (possessivo). You're = you are (contração)."},
+                {q: "Escolha a frase correta:", options: [{text:"She loves she dog", isCorrect:false}, {text:"She loves hers dog", isCorrect:false}, {text:"She loves her dog", isCorrect:true}, {text:"She loves she's dog", isCorrect:false}], rationale: "Her + substantivo = adjetivo possessivo. 'She loves her dog.'"},
+                {q: "Complete: 'I forgot ____ keys at home.' (meu)", options: [{text:"mine", isCorrect:false}, {text:"me", isCorrect:false}, {text:"my", isCorrect:true}, {text:"I", isCorrect:false}], rationale: "My + substantivo = adjetivo possessivo antes do nome."},
+                {q: "Complete: 'They love ____ children very much.' (deles)", options: [{text:"them", isCorrect:false}, {text:"theirs", isCorrect:false}, {text:"their", isCorrect:true}, {text:"they", isCorrect:false}], rationale: "Their + substantivo = adjetivo possessivo."},
+                {q: "Qual é a diferença entre 'its' e 'it's'?", options: [{text:"São iguais", isCorrect:false}, {text:"'Its' = possessivo, 'it's' = it is", isCorrect:true}, {text:"'It's' é possessivo", isCorrect:false}, {text:"'Its' é contração", isCorrect:false}], rationale: "Its = dele/dela (possessivo). It's = it is (contração)."},
+                {q: "Complete: 'He always does ____ homework.' (dele)", options: [{text:"him", isCorrect:false}, {text:"he", isCorrect:false}, {text:"his", isCorrect:true}, {text:"he's", isCorrect:false}], rationale: "His + substantivo = adjetivo possessivo de 'he'."},
+                {q: "Escolha a frase correta:", options: [{text:"We like we teacher", isCorrect:false}, {text:"We like ours teacher", isCorrect:false}, {text:"We like our teacher", isCorrect:true}, {text:"We like us teacher", isCorrect:false}], rationale: "Our + substantivo = adjetivo possessivo. 'We like our teacher.'"},
+                {q: "Complete: 'Is this ____ phone?' (você)", options: [{text:"you", isCorrect:false}, {text:"yours", isCorrect:false}, {text:"your", isCorrect:true}, {text:"you're", isCorrect:false}], rationale: "Your + substantivo = adjetivo possessivo. 'Is this your phone?'"}
+            ],
+            25: [ // POSSESSIVE PRONOUNS (15 perguntas)
+                {q: "Complete: 'This book is ____.' (eu)", options: [{text:"my", isCorrect:false}, {text:"me", isCorrect:false}, {text:"mine", isCorrect:true}, {text:"I", isCorrect:false}], rationale: "Mine = meu/minha (pronome possessivo, substitui 'my + noun')."},
+                {q: "Escolha a frase correta:", options: [{text:"This car is your", isCorrect:false}, {text:"This car is yours", isCorrect:true}, {text:"This car is you", isCorrect:false}, {text:"This car is your's", isCorrect:false}], rationale: "Yours = seu/sua (pronome possessivo). Nunca leva apóstrofo."},
+                {q: "Complete: 'That phone is ____.' (dele)", options: [{text:"him", isCorrect:false}, {text:"he", isCorrect:false}, {text:"his", isCorrect:true}, {text:"her", isCorrect:false}], rationale: "His = dele (pronome possessivo). 'His' serve como adjetivo e pronome."},
+                {q: "Complete: 'The bag is ____.' (dela)", options: [{text:"she", isCorrect:false}, {text:"her", isCorrect:false}, {text:"hers", isCorrect:true}, {text:"she's", isCorrect:false}], rationale: "Hers = dela (pronome possessivo). 'Her' é adjetivo, 'hers' é pronome."},
+                {q: "Complete: 'This house is ____.' (nosso)", options: [{text:"our", isCorrect:false}, {text:"ours", isCorrect:true}, {text:"us", isCorrect:false}, {text:"we", isCorrect:false}], rationale: "Ours = nosso/nossa (pronome possessivo). 'Our' é adjetivo possessivo."},
+                {q: "Complete: 'Those seats are ____.' (deles)", options: [{text:"them", isCorrect:false}, {text:"their", isCorrect:false}, {text:"theirs", isCorrect:true}, {text:"they", isCorrect:false}], rationale: "Theirs = deles/delas (pronome possessivo). 'Their' é adjetivo."},
+                {q: "Qual é a diferença entre 'my' e 'mine'?", options: [{text:"São iguais", isCorrect:false}, {text:"'My' vem antes do substantivo, 'mine' substitui o substantivo", isCorrect:true}, {text:"'Mine' é mais formal", isCorrect:false}, {text:"'My' é para objetos, 'mine' é para pessoas", isCorrect:false}], rationale: "My book (adjetivo + substantivo) = The book is mine (pronome sozinho)."},
+                {q: "Escolha a frase correta:", options: [{text:"Is this pen your or mine?", isCorrect:false}, {text:"Is this pen yours or mine?", isCorrect:true}, {text:"Is this pen your's or my?", isCorrect:false}, {text:"Is this pen you or my?", isCorrect:false}], rationale: "Yours e mine são pronomes possessivos que substituem 'your pen' e 'my pen'."},
+                {q: "Complete: 'Her dress is blue. ____ is red.' (meu)", options: [{text:"My", isCorrect:false}, {text:"Mine", isCorrect:true}, {text:"Me", isCorrect:false}, {text:"I", isCorrect:false}], rationale: "Mine substitui 'my dress': Mine is red = My dress is red."},
+                {q: "Escolha a alternativa correta:", options: [{text:"A friend of mine", isCorrect:true}, {text:"A friend of my", isCorrect:false}, {text:"A friend of me", isCorrect:false}, {text:"A friend of I", isCorrect:false}], rationale: "'A friend of mine' é a expressão correta (um amigo meu)."},
+                {q: "Complete: 'I have my keys. Do you have ____?'", options: [{text:"your", isCorrect:false}, {text:"yours", isCorrect:true}, {text:"you", isCorrect:false}, {text:"your's", isCorrect:false}], rationale: "Yours substitui 'your keys'. Pronomes possessivos nunca levam apóstrofo."},
+                {q: "Complete: 'Our car is white. ____ is black.' (deles)", options: [{text:"Their", isCorrect:false}, {text:"Theirs", isCorrect:true}, {text:"Them", isCorrect:false}, {text:"They", isCorrect:false}], rationale: "Theirs substitui 'their car': Theirs is black."},
+                {q: "Qual frase está correta?", options: [{text:"The dog is their's", isCorrect:false}, {text:"The dog is theirs", isCorrect:true}, {text:"The dog is them", isCorrect:false}, {text:"The dog is they", isCorrect:false}], rationale: "Theirs nunca leva apóstrofo. Pronomes possessivos não usam apóstrofo."},
+                {q: "Complete: 'His bike is new. ____ is old.' (dela)", options: [{text:"Her", isCorrect:false}, {text:"Hers", isCorrect:true}, {text:"She", isCorrect:false}, {text:"She's", isCorrect:false}], rationale: "Hers substitui 'her bike': Hers is old."},
+                {q: "Escolha a frase correta:", options: [{text:"This laptop is our", isCorrect:false}, {text:"This laptop is us", isCorrect:false}, {text:"This laptop is we", isCorrect:false}, {text:"This laptop is ours", isCorrect:true}], rationale: "Ours = nosso (pronome possessivo que substitui 'our laptop')."}
             ]
         };
 
@@ -2257,8 +2533,9 @@
         }
 
         function getQuizDataForModule(id) {
-            if (quizData[id]) {
-                const shuffled = shuffleArray(quizData[id]);
+            const activeQuiz = getActiveQuizData();
+            if (activeQuiz[id]) {
+                const shuffled = shuffleArray(activeQuiz[id]);
                 return shuffled.slice(0, 10);
             }
 
@@ -2340,6 +2617,7 @@
 
         window.showDashboard = function() {
             if (wsTimer) { clearInterval(wsTimer); wsTimer = null; }
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             document.getElementById('main-header').classList.remove('hidden');
             document.getElementById('dashboard-view').classList.remove('hidden');
             document.getElementById('generator-view').classList.add('hidden');
@@ -2387,7 +2665,10 @@
 
         function renderDashboard() {
             const container = document.getElementById('level-cards-container');
-            container.innerHTML = aulaNames.map(aula => {
+            const activeAulas = getActiveAulas();
+            const activeQuiz = getActiveQuizData();
+            const levelTag = getLevelTag();
+            container.innerHTML = activeAulas.map(aula => {
                 let studyLabel = '';
                 if (aula.specialMode === 'flashcards') studyLabel = 'FLASHCARDS';
                 else if (aula.specialMode === 'listening') studyLabel = 'LISTENING';
@@ -2395,20 +2676,21 @@
                 else if (aula.specialMode === 'mistake') studyLabel = 'DETETIVE';
                 else if (aula.specialMode === 'scramble') studyLabel = 'SCRAMBLE';
 
+                const isS1 = currentLevel === 'starter1';
                 const sBtn = studyLabel ? `<button class="secondary-button-sm" onclick="openStudy(${aula.id})">${studyLabel}</button>` : '';
-                const tBtn = (aula.id === 23) ? `<button class="secondary-button-sm" onclick="openFlashcards(23)">FLASHCARDS</button>` : '';
+                const tBtn = (isS1 && aula.id === 23) ? `<button class="secondary-button-sm" onclick="openFlashcards(23)">FLASHCARDS</button>` : '';
                 const dBtn = (aula.thirdBtn === 'dictation') ? `<button class="secondary-button-sm" onclick="openDictation(${aula.id})">DITADO</button>` : '';
-                const hBtn = ([6, 23, 26].includes(aula.id)) ? `<button class="secondary-button-sm" onclick="openHangman(${aula.id})">FORCA</button>` : '';
-                const cBtn = ([12, 14].includes(aula.id)) ? `<button class="secondary-button-sm" onclick="openWordSearch(${aula.id})">CAÇA-PALAVRAS</button>` : '';
+                const hBtn = (isS1 && [6, 23, 26].includes(aula.id)) ? `<button class="secondary-button-sm" onclick="openHangman(${aula.id})">FORCA</button>` : '';
+                const cBtn = (isS1 && [12, 14].includes(aula.id)) ? `<button class="secondary-button-sm" onclick="openWordSearch(${aula.id})">CAÇA-PALAVRAS</button>` : '';
 
                 let allStreaks = [];
-                if (aula.hasHomework && aula.id <= 10) allStreaks.push({ label: 'Homework', done: isStreakDone(aula.id, 'homework') });
+                if (aula.hasHomework && activeQuiz[aula.id]) allStreaks.push({ label: 'Homework', done: isStreakDone(aula.id, 'homework') });
                 if (aula.specialMode === 'chunks') allStreaks.push({ label: 'Chunks', done: isStreakDone(aula.id, 'chunks') });
                 if (aula.specialMode === 'scramble') allStreaks.push({ label: 'Scramble', done: isStreakDone(aula.id, 'scramble') });
                 if (aula.specialMode === 'mistake') allStreaks.push({ label: 'Detetive', done: isStreakDone(aula.id, 'mistake') });
                 if (aula.thirdBtn === 'dictation') allStreaks.push({ label: 'Ditado', done: isStreakDone(aula.id, 'dictation') });
-                if ([6, 23, 26].includes(aula.id)) allStreaks.push({ label: 'Forca', done: isStreakDone(aula.id, 'hangman') });
-                if ([12, 14].includes(aula.id)) allStreaks.push({ label: 'Caça-Palavras', done: isStreakDone(aula.id, 'wordsearch') });
+                if (isS1 && [6, 23, 26].includes(aula.id)) allStreaks.push({ label: 'Forca', done: isStreakDone(aula.id, 'hangman') });
+                if (isS1 && [12, 14].includes(aula.id)) allStreaks.push({ label: 'Caça-Palavras', done: isStreakDone(aula.id, 'wordsearch') });
                 const streakHtml = allStreaks.length > 0 ? `<div style="display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.5rem;">${allStreaks.map(s => s.done
                     ? `<span style="font-size: 0.6rem; font-weight: 700; color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 0.1rem 0.4rem; border-radius: 1rem; display: inline-flex; align-items: center; gap: 0.2rem;" data-testid="streak-done-${s.label}"><svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='#16a34a' stroke-width='3'><polyline points='20 6 9 17 4 12'/></svg> ${s.label}</span>`
                     : `<span style="font-size: 0.6rem; font-weight: 700; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 0.1rem 0.4rem; border-radius: 1rem; display: inline-flex; align-items: center; gap: 0.2rem;" data-testid="streak-pending-${s.label}"><svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='#dc2626' stroke-width='2'><circle cx='12' cy='12' r='10'/><line x1='15' y1='9' x2='9' y2='15'/><line x1='9' y1='9' x2='15' y2='15'/></svg> ${s.label}</span>`
@@ -2422,14 +2704,14 @@
                         </div>
                     ` : `<img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1760657894/SLAP_ICON_PRETO_2_2_tv8bmp.png" alt="Logo" class="absolute top-4 right-4 w-8 h-8 opacity-10">`}
                     <div>
-                        <span class="module-tag">STARTER 1 - HW AULA ${String(aula.id).padStart(2, '0')}</span>
+                        <span class="module-tag">${levelTag} - HW AULA ${String(aula.id).padStart(2, '0')}</span>
                         <h3 class="text-xl font-bold text-stone-800 mb-2 mt-2">${aula.name}</h3>
                         <p class="text-stone-500 text-sm mb-3">${aula.desc}</p>
                         ${streakHtml}
                     </div>
                     <div class="flex flex-wrap gap-1.5">
                         ${sBtn} ${tBtn} ${dBtn} ${hBtn} ${cBtn}
-                        <button class="action-button-sm uppercase" ${(!aula.hasHomework || aula.id > 10) ? 'disabled' : `onclick="openPractice(${aula.id})"`}>HOMEWORK</button>
+                        <button class="action-button-sm uppercase" ${(!aula.hasHomework || !activeQuiz[aula.id]) ? 'disabled' : `onclick="openPractice(${aula.id})"`}>HOMEWORK</button>
                     </div>
                 </div>`
             }).join('');
@@ -2439,11 +2721,11 @@
             currentAulaId = id; 
             currentStudyMode = 'homework';
             questionsPool = shuffle([...getQuizDataForModule(id)]);
-            const aula = aulaNames.find(a => a.id === id);
+            const aula = getActiveAulas().find(a => a.id === id);
             document.getElementById('main-header').classList.add('hidden');
             document.getElementById('dashboard-view').classList.add('hidden');
             document.getElementById('generator-view').classList.remove('hidden');
-            document.getElementById('current-hw-display').textContent = "Homework: " + aulaNames.find(a => a.id===id).name;
+            document.getElementById('current-hw-display').textContent = "Homework: " + aula.name;
             quizStreak = 0; renderQuizStreak(); loadNextQuestion();
         };
 
@@ -2526,7 +2808,8 @@
         }
 
         window.openStudy = function(id) {
-            const aula = aulaNames.find(a => a.id === id);
+            const aula = getActiveAulas().find(a => a.id === id);
+            currentAulaId = id;
             document.getElementById('main-header').classList.add('hidden');
             document.getElementById('dashboard-view').classList.add('hidden');
             document.getElementById('study-view').classList.remove('hidden');
@@ -2538,8 +2821,8 @@
             titleArea.textContent = aula.name;
             statusArea.textContent = "";
             currentIdx = 0;
-            currentStreak = 0; // Reset streak
-            renderStreakBar(); // Initial render
+            currentStreak = 0;
+            renderStreakBar();
 
             if (aula.specialMode === 'flashcards') {
                 currentStudyMode = 'flashcards';
@@ -2571,7 +2854,7 @@
         };
 
         window.openFlashcards = function(id) {
-            const aula = aulaNames.find(a => a.id === id);
+            const aula = getActiveAulas().find(a => a.id === id);
             currentStudyMode = 'flashcards';
             document.getElementById('main-header').classList.add('hidden');
             document.getElementById('dashboard-view').classList.add('hidden');
@@ -2584,7 +2867,8 @@
         let isSpellingMode = false;
         let isNumberComboMode = false;
         window.openDictation = function(id) {
-             const aula = aulaNames.find(a => a.id === id);
+             const aula = getActiveAulas().find(a => a.id === id);
+             currentAulaId = id;
              currentStudyMode = 'dictation';
              isSpellingMode = gamesData[id].isSpelling || false;
              isNumberComboMode = gamesData[id].isNumberCombo || false;
@@ -2846,6 +3130,7 @@
         let usedWordSearchIndices = [];
 
         window.openWordSearch = function(moduleId) {
+            currentAulaId = moduleId;
             currentStudyMode = 'wordsearch';
             currentWordSearchList = wordSearchData[moduleId] || [];
             wordSearchStreak = 0;
@@ -3596,7 +3881,7 @@
                 playCorrectSound();
             } else {
                 input.classList.add('wrong');
-                fb.innerHTML = `<button class="action-button" onclick="currentStreak=0; currentIdx=0; currentShuffledData=shuffle([...currentShuffledData]); renderDictation()">Começar Novamente</button>`;
+                fb.innerHTML = `<p class="text-red-600 font-bold mb-2">Resposta correta: <span class="text-stone-800">${correct}</span></p><button class="action-button" onclick="currentStreak=0; currentIdx=0; currentShuffledData=shuffle([...currentShuffledData]); renderDictation()">Começar Novamente</button>`;
                 fb.className = "mt-4 block";
                 currentStreak = 0;
                 playIncorrectSound();
