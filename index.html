@@ -539,52 +539,16 @@
 
     <!-- GRADES MODAL -->
     <div id="grades-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 20000; align-items: center; justify-content: center; padding: 1rem;">
-        <div style="background: white; border-radius: 1rem; max-width: 420px; width: 100%; padding: 1.5rem; box-shadow: 0 8px 32px rgba(0,0,0,0.2); position: relative;" data-testid="modal-grades">
-            <button onclick="closeGradesModal()" data-testid="button-close-grades" style="position: absolute; top: 0.75rem; right: 0.75rem; background: none; border: none; cursor: pointer; color: #78716c; font-size: 1.25rem; line-height: 1;">
+        <div style="background: white; border-radius: 1rem; max-width: 420px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 1.5rem; box-shadow: 0 8px 32px rgba(0,0,0,0.2); position: relative;" data-testid="modal-grades">
+            <button onclick="closeGradesModal()" data-testid="button-close-grades" style="position: absolute; top: 0.75rem; right: 0.75rem; background: none; border: none; cursor: pointer; color: #78716c; font-size: 1.25rem; line-height: 1; z-index: 1;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
             <div style="text-align: center; margin-bottom: 1rem;">
                 <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1759294967/SLAP_TIPO_PRETO_2_kismg9.png" alt="SLAP Logo" style="width: 70px; margin: 0 auto 0.75rem;">
                 <h3 style="font-size: 1.15rem; font-weight: 800; color: #1c1917; font-family: 'DM Sans', sans-serif;">Minhas Notas</h3>
-                <p style="font-size: 0.7rem; color: #78716c; margin-top: 0.25rem;" id="grades-level-label">Starter 1</p>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.6rem 0.75rem;">
-                    <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Midterm Test</span>
-                    <span style="font-size: 0.75rem; color: #78716c; background: #f5f5f4; padding: 0.15rem 0.5rem; border-radius: 1rem; font-weight: 600;" data-testid="text-grade-midterm">-- / 20</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.6rem 0.75rem;">
-                    <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Listening Test</span>
-                    <span style="font-size: 0.75rem; color: #78716c; background: #f5f5f4; padding: 0.15rem 0.5rem; border-radius: 1rem; font-weight: 600;" data-testid="text-grade-listening">-- / 20</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.6rem 0.75rem;">
-                    <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Grammar Test</span>
-                    <span style="font-size: 0.75rem; color: #78716c; background: #f5f5f4; padding: 0.15rem 0.5rem; border-radius: 1rem; font-weight: 600;" data-testid="text-grade-grammar">-- / 20</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.6rem 0.75rem;">
-                    <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Oral Test</span>
-                    <span style="font-size: 0.75rem; color: #78716c; background: #f5f5f4; padding: 0.15rem 0.5rem; border-radius: 1rem; font-weight: 600;" data-testid="text-grade-oral">-- / 20</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.6rem 0.75rem;">
-                    <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Assiduidade</span>
-                    <span style="font-size: 0.75rem; color: #78716c; background: #f5f5f4; padding: 0.15rem 0.5rem; border-radius: 1rem; font-weight: 600;" data-testid="text-grade-attendance">-- / 10</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.6rem 0.75rem;">
-                    <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Participação</span>
-                    <span style="font-size: 0.75rem; color: #78716c; background: #f5f5f4; padding: 0.15rem 0.5rem; border-radius: 1rem; font-weight: 600;" data-testid="text-grade-participation">-- / 10</span>
-                </div>
-            </div>
-
-            <div style="margin-top: 0.75rem; padding: 0.65rem 0.75rem; background: #f5f3ff; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 0.85rem; font-weight: 800; color: #44403c;">Total</span>
-                <span style="font-size: 0.85rem; font-weight: 800; color: #44403c;" id="student-grade-total" data-testid="text-student-grade-total">-- / 100</span>
-            </div>
-
-            <div style="text-align: center; margin-top: 0.5rem;">
-                <span id="student-grade-status" data-testid="text-student-grade-status" style="font-size: 0.75rem; font-weight: 800; padding: 0.2rem 0.75rem; border-radius: 1rem; display: inline-block;"></span>
-            </div>
-
-            <div style="margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: #fef9c3; border-radius: 0.5rem; display: flex; align-items: flex-start; gap: 0.4rem;">
+            <div id="student-grades-content"></div>
+            <div style="margin-top: 0.75rem; padding: 0.5rem 0.75rem; background: #fef9c3; border-radius: 0.5rem; display: flex; align-items: flex-start; gap: 0.4rem;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a16207" stroke-width="2" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 <p style="font-size: 0.7rem; color: #854d0e; line-height: 1.4;" data-testid="text-grade-notice">Para ser aprovado para o próximo nível, é necessário somar no mínimo <strong>70 pontos</strong> de 100.</p>
             </div>
@@ -631,33 +595,34 @@
                 </div>
 
                 <div id="detail-tab-grades">
+                    <div id="grade-level-tabs" style="display: flex; gap: 0.35rem; margin-bottom: 0.75rem; flex-wrap: wrap;"></div>
                     <div style="display: flex; flex-direction: column; gap: 0.5rem;" id="teacher-grades-form">
                         <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
-                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Midterm Test <span style="color: #a8a29e; font-size: 0.65rem;">(máx 20)</span></span>
+                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Midterm Test <span style="color: #a8a29e; font-size: 0.65rem;">(max 20)</span></span>
                             <input type="number" min="0" max="20" id="grade-midterm" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-midterm">
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
-                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Listening Test <span style="color: #a8a29e; font-size: 0.65rem;">(máx 20)</span></span>
+                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Listening Test <span style="color: #a8a29e; font-size: 0.65rem;">(max 20)</span></span>
                             <input type="number" min="0" max="20" id="grade-listening" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-listening">
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
-                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Grammar Test <span style="color: #a8a29e; font-size: 0.65rem;">(máx 20)</span></span>
+                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Grammar Test <span style="color: #a8a29e; font-size: 0.65rem;">(max 20)</span></span>
                             <input type="number" min="0" max="20" id="grade-grammar" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-grammar">
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
-                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Oral Test <span style="color: #a8a29e; font-size: 0.65rem;">(máx 20)</span></span>
+                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Oral Test <span style="color: #a8a29e; font-size: 0.65rem;">(max 20)</span></span>
                             <input type="number" min="0" max="20" id="grade-oral" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-oral">
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
-                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Assiduidade <span style="color: #a8a29e; font-size: 0.65rem;">(máx 10)</span></span>
+                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Assiduidade <span style="color: #a8a29e; font-size: 0.65rem;">(max 10)</span></span>
                             <input type="number" min="0" max="10" id="grade-attendance" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-attendance">
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
-                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Participação <span style="color: #a8a29e; font-size: 0.65rem;">(máx 10)</span></span>
+                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Participação <span style="color: #a8a29e; font-size: 0.65rem;">(max 10)</span></span>
                             <input type="number" min="0" max="10" id="grade-participation" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-participation">
                         </div>
                     </div>
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.75rem;">
                         <span style="font-size: 0.8rem; font-weight: 700; color: #44403c;" id="grade-total-display" data-testid="text-grade-total">Total: 0 / 100</span>
                         <button onclick="saveStudentGrades()" style="background: #8671d1; color: white; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;" data-testid="button-save-grades">Salvar Notas</button>
                     </div>
@@ -671,6 +636,7 @@
                 </div>
 
                 <div id="detail-tab-links" style="display: none;">
+                    <div id="links-level-tabs" style="display: flex; gap: 0.35rem; margin-bottom: 0.75rem; flex-wrap: wrap;"></div>
                     <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                         <div>
                             <label style="font-size: 0.7rem; font-weight: 700; color: #78716c; margin-bottom: 0.2rem; display: block;">Link do CP (Baixar CP)</label>
@@ -753,6 +719,13 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
                     Aulas Gravadas
                 </a>
+
+                <div style="height: 1px; background: #e7e5e4; margin: 0.35rem 0.75rem;"></div>
+
+                <button onclick="showScreen('journey'); closeSidebar();" class="sidebar-item" style="color: #8671d1;" data-testid="button-sidebar-levels">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Trocar de N&#237;vel
+                </button>
             </div>
 
             <div style="padding: 0.75rem 1rem; border-top: 1px solid #e7e5e4; display: flex; justify-content: center;">
@@ -1327,61 +1300,87 @@
         async function openGradesModal() {
             var modal = document.getElementById('grades-modal');
             modal.style.display = 'flex';
-            var totalEl = document.getElementById('student-grade-total');
-            var statusEl = document.getElementById('student-grade-status');
-            totalEl.textContent = '-- / 100';
-            totalEl.style.color = '#44403c';
-            statusEl.textContent = '';
-            statusEl.style.background = 'none';
-            if (firebaseDb && currentUser) {
-                try {
-                    var doc = await firebaseDb.collection('users').doc(currentUser.uid).collection('grades').doc('current').get();
+            var container = document.getElementById('student-grades-content');
+            container.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 1rem 0;">Carregando notas...</p>';
+            if (!firebaseDb || !currentUser) return;
+            try {
+                var userDoc = await firebaseDb.collection('users').doc(currentUser.uid).get();
+                var userData = userDoc.exists ? userDoc.data() : {};
+                var assignedLevel = userData.currentLevel || 'starter1';
+                var studentLevels = ['starter1', 'starter2', 'freshman1', 'freshman2', 'sophomore1', 'sophomore2', 'senior1', 'senior2'];
+                var lvlLabels = { starter1: 'Starter 1', starter2: 'Starter 2', freshman1: 'Freshman 1', freshman2: 'Freshman 2', sophomore1: 'Sophomore 1', sophomore2: 'Sophomore 2', senior1: 'Senior 1', senior2: 'Senior 2' };
+                var assignedIdx = studentLevels.indexOf(assignedLevel);
+                if (assignedIdx === -1) assignedIdx = 0;
+
+                var gradeLabels = [
+                    { key: 'midterm', name: 'Midterm Test', max: 20 },
+                    { key: 'listening', name: 'Listening Test', max: 20 },
+                    { key: 'grammar', name: 'Grammar Test', max: 20 },
+                    { key: 'oral', name: 'Oral Test', max: 20 },
+                    { key: 'attendance', name: 'Assiduidade', max: 10 },
+                    { key: 'participation', name: 'Participação', max: 10 }
+                ];
+                function gradeDisplay(val, max) {
+                    return (val !== undefined && val !== null && val !== '' ? val : '--') + ' / ' + max;
+                }
+
+                var html = '';
+                for (var i = assignedIdx; i >= 0; i--) {
+                    var lvl = studentLevels[i];
+                    var doc = await firebaseDb.collection('users').doc(currentUser.uid).collection('grades').doc(lvl).get();
                     var g = doc.exists ? doc.data() : {};
-                    var fields = ['midterm', 'listening', 'grammar', 'oral', 'attendance', 'participation'];
-                    var maxVals = { midterm: 20, listening: 20, grammar: 20, oral: 20, attendance: 10, participation: 10 };
-                    function gradeDisplay(val, max) {
-                        return (val !== undefined && val !== null && val !== '' ? val : '--') + ' / ' + max;
+                    if (!doc.exists && lvl === 'starter1') {
+                        var oldDoc = await firebaseDb.collection('users').doc(currentUser.uid).collection('grades').doc('current').get();
+                        if (oldDoc.exists) g = oldDoc.data() || {};
                     }
-                    document.querySelector('[data-testid="text-grade-midterm"]').textContent = gradeDisplay(g.midterm, 20);
-                    document.querySelector('[data-testid="text-grade-listening"]').textContent = gradeDisplay(g.listening, 20);
-                    document.querySelector('[data-testid="text-grade-grammar"]').textContent = gradeDisplay(g.grammar, 20);
-                    document.querySelector('[data-testid="text-grade-oral"]').textContent = gradeDisplay(g.oral, 20);
-                    document.querySelector('[data-testid="text-grade-attendance"]').textContent = gradeDisplay(g.attendance, 10);
-                    document.querySelector('[data-testid="text-grade-participation"]').textContent = gradeDisplay(g.participation, 10);
-                    var allFilled = true;
                     var total = 0;
-                    fields.forEach(function(f) {
-                        if (g[f] === undefined || g[f] === null || g[f] === '') {
+                    var allFilled = true;
+                    gradeLabels.forEach(function(gl) {
+                        if (g[gl.key] === undefined || g[gl.key] === null || g[gl.key] === '') {
                             allFilled = false;
                         } else {
-                            total += parseFloat(g[f]);
+                            total += parseFloat(g[gl.key]);
                         }
                     });
+                    var statusHtml = '';
+                    var totalDisplay = '';
+                    var totalColor = '#44403c';
                     if (allFilled) {
-                        totalEl.textContent = total + ' / 100';
-                        totalEl.style.color = total >= 70 ? '#16a34a' : '#ef4444';
+                        totalDisplay = total + ' / 100';
+                        totalColor = total >= 70 ? '#16a34a' : '#ef4444';
                         if (total >= 70) {
-                            statusEl.textContent = 'APROVADO';
-                            statusEl.style.background = '#f0fdf4';
-                            statusEl.style.color = '#16a34a';
-                            statusEl.style.border = '1px solid #bbf7d0';
+                            statusHtml = '<span style="font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 1rem; background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0;">APROVADO</span>';
                         } else {
-                            statusEl.textContent = 'PENDENTE';
-                            statusEl.style.background = '#fef9c3';
-                            statusEl.style.color = '#a16207';
-                            statusEl.style.border = '1px solid #fde68a';
+                            statusHtml = '<span style="font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 1rem; background: #fef9c3; color: #a16207; border: 1px solid #fde68a;">PENDENTE</span>';
                         }
                     } else {
-                        var partialTotal = total > 0 ? total : '--';
-                        totalEl.textContent = partialTotal + ' / 100';
-                        statusEl.textContent = 'PENDENTE';
-                        statusEl.style.background = '#fef9c3';
-                        statusEl.style.color = '#a16207';
-                        statusEl.style.border = '1px solid #fde68a';
+                        totalDisplay = (total > 0 ? total : '--') + ' / 100';
+                        statusHtml = '<span style="font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 1rem; background: #fef9c3; color: #a16207; border: 1px solid #fde68a;">PENDENTE</span>';
                     }
-                } catch(e) {
-                    console.warn('Erro ao carregar notas:', e);
+
+                    html += '<div style="margin-bottom: 1rem; border: 1.5px solid #e7e5e4; border-radius: 0.75rem; overflow: hidden;" data-testid="card-grades-' + lvl + '">';
+                    html += '<div style="background: #f5f3ff; padding: 0.5rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">';
+                    html += '<span style="font-size: 0.85rem; font-weight: 800; color: #44403c;" data-testid="text-grade-level-' + lvl + '">' + lvlLabels[lvl] + '</span>';
+                    html += statusHtml;
+                    html += '</div>';
+                    html += '<div style="padding: 0.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.35rem;">';
+                    gradeLabels.forEach(function(gl) {
+                        html += '<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0;">';
+                        html += '<span style="font-size: 0.78rem; color: #44403c; font-weight: 500;">' + gl.name + '</span>';
+                        html += '<span style="font-size: 0.73rem; color: #78716c; background: #f5f5f4; padding: 0.1rem 0.4rem; border-radius: 1rem; font-weight: 600;" data-testid="text-grade-' + gl.key + '-' + lvl + '">' + gradeDisplay(g[gl.key], gl.max) + '</span>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                    html += '<div style="padding: 0.4rem 0.75rem; background: #fafaf9; border-top: 1px solid #e7e5e4; display: flex; justify-content: space-between; align-items: center;">';
+                    html += '<span style="font-size: 0.8rem; font-weight: 800; color: #44403c;">Total</span>';
+                    html += '<span style="font-size: 0.8rem; font-weight: 800; color: ' + totalColor + ';" data-testid="text-grade-total-' + lvl + '">' + totalDisplay + '</span>';
+                    html += '</div>';
+                    html += '</div>';
                 }
+                container.innerHTML = html;
+            } catch(e) {
+                console.warn('Erro ao carregar notas:', e);
+                container.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.8rem; padding: 1rem 0;">Erro ao carregar notas</p>';
             }
         }
         function closeGradesModal() {
@@ -1480,6 +1479,10 @@
 
             document.getElementById('student-level-select').value = student.currentLevel || 'starter1';
 
+            selectedGradeLevel = student.currentLevel || 'starter1';
+            renderGradeLevelTabs(student.currentLevel || 'starter1');
+            selectedLinksLevel = student.currentLevel || 'starter1';
+            renderLinksLevelTabs(student.currentLevel || 'starter1');
             showDetailTab('grades');
             await loadStudentGrades(uid);
             await loadStudentStreaks(uid);
@@ -1501,16 +1504,72 @@
             document.getElementById('tab-' + tab).classList.add('active');
         }
 
+        var selectedGradeLevel = 'starter1';
+        var selectedLinksLevel = 'starter1';
+        var allLevelsList = ['starter1', 'starter2', 'freshman1', 'freshman2', 'sophomore1', 'sophomore2', 'senior1', 'senior2'];
+        var allLevelLabels = { starter1: 'Starter 1', starter2: 'Starter 2', freshman1: 'Freshman 1', freshman2: 'Freshman 2', sophomore1: 'Sophomore 1', sophomore2: 'Sophomore 2', senior1: 'Senior 1', senior2: 'Senior 2', acc: 'ACC' };
+
+        function renderGradeLevelTabs(studentLevel) {
+            var container = document.getElementById('grade-level-tabs');
+            var assignedIdx = allLevelsList.indexOf(studentLevel);
+            if (assignedIdx === -1) assignedIdx = 0;
+            var html = '';
+            for (var i = 0; i <= assignedIdx; i++) {
+                var lvl = allLevelsList[i];
+                var isActive = lvl === selectedGradeLevel;
+                html += '<button onclick="switchGradeLevel(\'' + lvl + '\')" data-testid="button-grade-level-' + lvl + '" style="padding: 0.3rem 0.6rem; font-size: 0.7rem; font-weight: 700; border-radius: 0.375rem; cursor: pointer; font-family: \'DM Sans\', sans-serif; border: 1.5px solid ' + (isActive ? '#8671d1' : '#d6d3d1') + '; background: ' + (isActive ? '#8671d1' : 'white') + '; color: ' + (isActive ? 'white' : '#78716c') + ';">' + allLevelLabels[lvl] + '</button>';
+            }
+            container.innerHTML = html;
+        }
+
+        window.switchGradeLevel = function(lvl) {
+            selectedGradeLevel = lvl;
+            if (!selectedStudentUid || !allStudentsCache) return;
+            var student = allStudentsCache.find(function(s) { return s.uid === selectedStudentUid; });
+            var studentLevel = (student && student.currentLevel) || 'starter1';
+            renderGradeLevelTabs(studentLevel);
+            loadStudentGrades(selectedStudentUid);
+        };
+
+        function renderLinksLevelTabs(studentLevel) {
+            var container = document.getElementById('links-level-tabs');
+            var assignedIdx = allLevelsList.indexOf(studentLevel);
+            if (assignedIdx < 0) assignedIdx = 0;
+            var html = '';
+            for (var i = 0; i <= assignedIdx; i++) {
+                var lvl = allLevelsList[i];
+                var isActive = lvl === selectedLinksLevel;
+                html += '<button onclick="switchLinksLevel(\'' + lvl + '\')" style="padding: 0.3rem 0.6rem; border-radius: 0.4rem; font-size: 0.7rem; font-weight: 700; cursor: pointer; border: 1.5px solid ' + (isActive ? '#8671d1' : '#e7e5e4') + '; background: ' + (isActive ? '#8671d1' : 'white') + '; color: ' + (isActive ? 'white' : '#78716c') + '; font-family: \'DM Sans\', sans-serif;" data-testid="tab-links-' + lvl + '">' + allLevelLabels[lvl] + '</button>';
+            }
+            container.innerHTML = html;
+        }
+
+        window.switchLinksLevel = function(lvl) {
+            selectedLinksLevel = lvl;
+            if (!selectedStudentUid || !allStudentsCache) return;
+            var student = allStudentsCache.find(function(s) { return s.uid === selectedStudentUid; });
+            var studentLevel = (student && student.currentLevel) || 'starter1';
+            renderLinksLevelTabs(studentLevel);
+            loadStudentLinksForTeacher(selectedStudentUid);
+        };
+
         async function loadStudentGrades(uid) {
             try {
-                var doc = await firebaseDb.collection('users').doc(uid).collection('grades').doc('current').get();
+                var doc = await firebaseDb.collection('users').doc(uid).collection('grades').doc(selectedGradeLevel).get();
                 var grades = doc.exists ? doc.data() : {};
-                document.getElementById('grade-midterm').value = grades.midterm !== undefined ? grades.midterm : '';
-                document.getElementById('grade-listening').value = grades.listening !== undefined ? grades.listening : '';
-                document.getElementById('grade-grammar').value = grades.grammar !== undefined ? grades.grammar : '';
-                document.getElementById('grade-oral').value = grades.oral !== undefined ? grades.oral : '';
-                document.getElementById('grade-attendance').value = grades.attendance !== undefined ? grades.attendance : '';
-                document.getElementById('grade-participation').value = grades.participation !== undefined ? grades.participation : '';
+                if (!doc.exists && selectedGradeLevel === 'starter1') {
+                    var oldDoc = await firebaseDb.collection('users').doc(uid).collection('grades').doc('current').get();
+                    if (oldDoc.exists) {
+                        grades = oldDoc.data() || {};
+                        await firebaseDb.collection('users').doc(uid).collection('grades').doc('starter1').set(grades);
+                    }
+                }
+                document.getElementById('grade-midterm').value = grades.midterm !== undefined && grades.midterm !== null ? grades.midterm : '';
+                document.getElementById('grade-listening').value = grades.listening !== undefined && grades.listening !== null ? grades.listening : '';
+                document.getElementById('grade-grammar').value = grades.grammar !== undefined && grades.grammar !== null ? grades.grammar : '';
+                document.getElementById('grade-oral').value = grades.oral !== undefined && grades.oral !== null ? grades.oral : '';
+                document.getElementById('grade-attendance').value = grades.attendance !== undefined && grades.attendance !== null ? grades.attendance : '';
+                document.getElementById('grade-participation').value = grades.participation !== undefined && grades.participation !== null ? grades.participation : '';
                 updateGradeTotal();
             } catch(e) {
                 console.warn('Erro ao carregar notas:', e);
@@ -1556,7 +1615,7 @@
                     participation: parseGradeVal('grade-participation'),
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
-                await firebaseDb.collection('users').doc(selectedStudentUid).collection('grades').doc('current').set(grades);
+                await firebaseDb.collection('users').doc(selectedStudentUid).collection('grades').doc(selectedGradeLevel).set(grades);
                 fb.textContent = 'Notas salvas com sucesso!';
                 fb.style.color = '#16a34a';
                 setTimeout(function() { fb.style.display = 'none'; }, 2000);
@@ -1624,8 +1683,16 @@
 
         async function loadStudentLinksForTeacher(uid) {
             try {
-                var doc = await firebaseDb.collection('users').doc(uid).get();
+                var doc = await firebaseDb.collection('users').doc(uid).collection('links').doc(selectedLinksLevel).get();
                 var data = doc.exists ? doc.data() : {};
+                if (!doc.exists && selectedLinksLevel === 'starter1') {
+                    var userDoc = await firebaseDb.collection('users').doc(uid).get();
+                    var userData = userDoc.exists ? userDoc.data() : {};
+                    if (userData.cpLink || userData.recordedLink) {
+                        data = { cpLink: userData.cpLink || '', recordedLink: userData.recordedLink || '' };
+                        await firebaseDb.collection('users').doc(uid).collection('links').doc('starter1').set(data);
+                    }
+                }
                 document.getElementById('student-cp-link').value = data.cpLink || '';
                 document.getElementById('student-recorded-link').value = data.recordedLink || '';
             } catch(e) {
@@ -1642,15 +1709,10 @@
             try {
                 var cpLink = document.getElementById('student-cp-link').value.trim();
                 var recordedLink = document.getElementById('student-recorded-link').value.trim();
-                await firebaseDb.collection('users').doc(selectedStudentUid).update({
+                await firebaseDb.collection('users').doc(selectedStudentUid).collection('links').doc(selectedLinksLevel).set({
                     cpLink: cpLink,
                     recordedLink: recordedLink
                 });
-                var student = allStudentsCache.find(function(s) { return s.uid === selectedStudentUid; });
-                if (student) {
-                    student.cpLink = cpLink;
-                    student.recordedLink = recordedLink;
-                }
                 fb.textContent = 'Links salvos com sucesso!';
                 fb.style.color = '#16a34a';
                 setTimeout(function() { fb.style.display = 'none'; }, 2000);
@@ -1715,8 +1777,17 @@
         async function loadStudentLinks() {
             if (!firebaseDb || !firebaseAuth.currentUser) return;
             try {
-                var doc = await firebaseDb.collection('users').doc(firebaseAuth.currentUser.uid).get();
+                var uid = firebaseAuth.currentUser.uid;
+                var doc = await firebaseDb.collection('users').doc(uid).collection('links').doc(currentLevel).get();
                 var data = doc.exists ? doc.data() : {};
+                if (!doc.exists && currentLevel === 'starter1') {
+                    var userDoc = await firebaseDb.collection('users').doc(uid).get();
+                    var userData = userDoc.exists ? userDoc.data() : {};
+                    if (userData.cpLink || userData.recordedLink) {
+                        data = { cpLink: userData.cpLink || '', recordedLink: userData.recordedLink || '' };
+                        await firebaseDb.collection('users').doc(uid).collection('links').doc('starter1').set(data);
+                    }
+                }
                 var cpEl = document.getElementById('sidebar-cp-link');
                 if (cpEl) cpEl.href = data.cpLink || '#';
                 var recordedEl = document.getElementById('sidebar-recorded-link');
@@ -1767,7 +1838,6 @@
                 const firstName = displayName.split(' ')[0];
                 document.getElementById('sidebar-user-name').textContent = firstName;
                 var levelLabel = level === 'starter2' ? 'Starter 2' : 'Starter 1';
-                document.getElementById('grades-level-label').textContent = levelLabel;
                 var headerTitle = document.querySelector('#main-header h1');
                 if (headerTitle) headerTitle.textContent = 'Portal do Aluno - ' + levelLabel;
                 renderDashboard();
