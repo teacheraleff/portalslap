@@ -1572,20 +1572,48 @@
             try {
                 var doc = await firebaseDb.collection('users').doc(uid).collection('streaks').doc('completed').get();
                 var streaks = doc.exists ? doc.data() : {};
-                var keys = Object.keys(streaks);
+                var keys = Object.keys(streaks).filter(function(k) { return streaks[k] === true; });
                 if (keys.length === 0) {
                     container.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 1rem 0;">Nenhum streak completado ainda</p>';
                     return;
                 }
+                var student = allStudentsCache.find(function(s) { return s.uid === uid; });
+                var studentLevel = (student && student.currentLevel) || 'starter1';
+                var aulaList = studentLevel === 'starter2' ? aulaStarter2 : aulaNames;
                 var modeNames = { homework: 'Homework', flashcards: 'Flashcards', listening: 'Listening', chunks: 'Chunks', scramble: 'Scramble', mistake: 'Detetive', dictation: 'Ditado', hangman: 'Forca', wordsearch: 'Caça-Palavras' };
-                container.innerHTML = keys.map(function(key) {
+                var levelNames = { starter1: 'Starter 1', starter2: 'Starter 2', freshman1: 'Freshman 1', freshman2: 'Freshman 2', sophomore1: 'Sophomore 1', sophomore2: 'Sophomore 2', senior1: 'Senior 1', senior2: 'Senior 2', acc: 'ACC' };
+                var parsed = keys.map(function(key) {
                     var parts = key.split('_');
-                    var aulaId = parts[0];
-                    var mode = parts.slice(1).join('_');
-                    var modeName = modeNames[mode] || mode;
+                    var level, aulaId, mode;
+                    if (parts.length >= 3 && levelNames[parts[0]]) {
+                        level = parts[0];
+                        aulaId = parseInt(parts[1]) || 0;
+                        mode = parts.slice(2).join('_');
+                    } else if (parts.length >= 3 && levelNames[parts[0] + parts[1]]) {
+                        level = parts[0] + parts[1];
+                        aulaId = parseInt(parts[2]) || 0;
+                        mode = parts.slice(3).join('_');
+                    } else {
+                        level = 'starter1';
+                        aulaId = parseInt(parts[0]) || 0;
+                        mode = parts.slice(1).join('_');
+                    }
+                    return { level: level, aulaId: aulaId, mode: mode };
+                });
+                parsed.sort(function(a, b) {
+                    if (a.level !== b.level) return (a.level || '').localeCompare(b.level || '');
+                    return a.aulaId - b.aulaId;
+                });
+                container.innerHTML = parsed.map(function(item) {
+                    var modeName = modeNames[item.mode] || item.mode;
+                    var lvlLabel = levelNames[item.level] || item.level;
+                    var aulaListForLevel = item.level === 'starter2' ? aulaStarter2 : aulaNames;
+                    var aula = aulaListForLevel.find(function(a) { return a.id === item.aulaId; });
+                    var aulaTitle = aula ? aula.name : '';
+                    var label = lvlLabel + ' - Aula ' + item.aulaId + (aulaTitle ? ' (' + aulaTitle + ')' : '') + ' - ' + modeName;
                     return '<div style="display: flex; align-items: center; gap: 0.4rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">' +
                         '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' +
-                        '<span style="font-size: 0.8rem; font-weight: 600; color: #166534;">Aula ' + aulaId + ' - ' + modeName + '</span>' +
+                        '<span style="font-size: 0.8rem; font-weight: 600; color: #166534;">' + label + '</span>' +
                     '</div>';
                 }).join('');
             } catch(e) {
@@ -1910,8 +1938,10 @@
         }
 
         async function markStreakDone(aulaId, mode) {
-            var key = aulaId + '_' + mode;
+            var key = currentLevel + '_' + aulaId + '_' + mode;
             userStreaksCache[key] = true;
+            var oldKey = aulaId + '_' + mode;
+            if (userStreaksCache[oldKey]) delete userStreaksCache[oldKey];
             if (firebaseDb && currentUser) {
                 try {
                     await firebaseDb.collection('users').doc(currentUser.uid).collection('streaks').doc('completed').set(userStreaksCache);
@@ -1922,7 +1952,7 @@
         }
 
         function isStreakDone(aulaId, mode) {
-            return !!userStreaksCache[aulaId + '_' + mode];
+            return !!userStreaksCache[currentLevel + '_' + aulaId + '_' + mode] || !!userStreaksCache[aulaId + '_' + mode];
         }
 
         const helpTexts = {
