@@ -2050,7 +2050,7 @@
 
         const aulaStarter2 = [
             { id: 1, name: "Open House", hasHomework: false, desc: "Aula introdut\u00f3ria do Starter 2." },
-            { id: 2, name: "Frequency", hasHomework: true, desc: "Aprenda advérbios de frequência em inglês." },
+            { id: 2, name: "Frequency", hasHomework: true, specialMode: 'flashcards', thirdBtn: 'chunks', desc: "Aprenda advérbios de frequência em inglês." },
             { id: 3, name: "Routine", hasHomework: true, desc: "Pratique vocabulário e frases sobre rotina diária." },
             { id: 4, name: "Why & Because", hasHomework: true, desc: "Treine perguntas com Why e respostas com Because." },
             { id: 5, name: "Places In Town", hasHomework: true, desc: "Vocabulário de lugares na cidade." },
@@ -2058,7 +2058,7 @@
             { id: 7, name: "In, On, At + Transportations", hasHomework: true, desc: "Preposições com meios de transporte." },
             { id: 8, name: "Possessives", hasHomework: true, desc: "Treine o uso do possessivo com 's e of." },
             { id: 9, name: "Parts of the House", hasHomework: true, desc: "Vocabulário dos cômodos da casa." },
-            { id: 10, name: "Furniture & Chores", hasHomework: true, desc: "Móveis e tarefas domésticas em inglês." },
+            { id: 10, name: "Furniture & Chores", hasHomework: true, specialMode: 'flashcards', desc: "Móveis e tarefas domésticas em inglês." },
             { id: 11, name: "Present Continuous", hasHomework: true, desc: "Pratique o presente contínuo: am/is/are + -ing." },
             { id: 12, name: "Present Continuous For Future", hasHomework: true, desc: "Use o presente contínuo para falar de planos futuros." },
             { id: 13, name: "Many & Much", hasHomework: true, desc: "Aprenda quando usar many e much." },
@@ -2072,7 +2072,7 @@
             { id: 21, name: "False Friends", hasHomework: true, desc: "Cuidado com os falsos cognatos!" },
             { id: 22, name: "Agreeing & Disagreeing", hasHomework: true, desc: "Aprenda a concordar e discordar em inglês." },
             { id: 23, name: "Describing People", hasHomework: true, desc: "Descreva pessoas usando adjetivos em inglês." },
-            { id: 24, name: "Movie Genres", hasHomework: true, desc: "Vocabulário de gêneros de filmes." },
+            { id: 24, name: "Movie Genres", hasHomework: true, specialMode: 'listening', thirdBtn: 'hangman', desc: "Vocabulário de gêneros de filmes.", items: [{n:"Action",w:"Ação"},{n:"Comedy",w:"Comédia"},{n:"Drama",w:"Drama"},{n:"Horror",w:"Terror"},{n:"Romance",w:"Romance"},{n:"Thriller",w:"Suspense"},{n:"Science Fiction",w:"Ficção Científica"},{n:"Animation",w:"Animação"},{n:"Adventure",w:"Aventura"},{n:"Fantasy",w:"Fantasia"},{n:"Documentary",w:"Documentário"},{n:"Musical",w:"Musical"},{n:"Mystery",w:"Mistério"},{n:"Western",w:"Faroeste"},{n:"Crime",w:"Crime"},{n:"War",w:"Guerra"},{n:"Biography",w:"Biografia"},{n:"Family",w:"Família"},{n:"Superhero",w:"Super-herói"},{n:"Historical",w:"Histórico"}] },
             { id: 25, name: "Presentation", hasHomework: false, desc: "Aula de apresentação oral." },
             { id: 26, name: "Prepositions Of Time", hasHomework: true, desc: "Pratique in, on, at com tempo e datas." },
             { id: 27, name: "Fast Food & Tastes", hasHomework: true, desc: "Vocabulário de fast food e sabores." },
@@ -2139,6 +2139,74 @@
                 {q: "Complete: 'We don't have ____ homework today.'", options: [{text:"many", isCorrect:false}, {text:"much", isCorrect:true}, {text:"few", isCorrect:false}, {text:"several", isCorrect:false}], rationale: "Homework é incontável = much."},
                 {q: "Qual regra é correta?", options: [{text:"Much para contáveis, Many para incontáveis", isCorrect:false}, {text:"Many para contáveis, Much para incontáveis", isCorrect:true}, {text:"Many e Much são a mesma coisa", isCorrect:false}, {text:"Much é só para perguntas", isCorrect:false}], rationale: "Many = contáveis (plural). Much = incontáveis."}
             ],
+            2: [ // Frequency - Adverbs of Frequency & How often (15 perguntas)
+                {q: "Complete: 'I ____ go to the gym. I go every day.'", options: [{text:"always", isCorrect:true}, {text:"never", isCorrect:false}, {text:"rarely", isCorrect:false}, {text:"sometimes", isCorrect:false}], rationale: "'Every day' indica 100% de frequência = always."},
+                {q: "Qual advérbio de frequência indica 0%?", options: [{text:"always", isCorrect:false}, {text:"usually", isCorrect:false}, {text:"sometimes", isCorrect:false}, {text:"never", isCorrect:true}], rationale: "Never = nunca = 0% de frequência."},
+                {q: "Complete: 'How ____ do you study English?'", options: [{text:"many", isCorrect:false}, {text:"much", isCorrect:false}, {text:"often", isCorrect:true}, {text:"long", isCorrect:false}], rationale: "'How often' é usado para perguntar sobre frequência."},
+                {q: "Onde fica o advérbio de frequência na frase?", options: [{text:"Depois do verbo principal", isCorrect:false}, {text:"Antes do verbo principal", isCorrect:true}, {text:"No final da frase", isCorrect:false}, {text:"No início da frase sempre", isCorrect:false}], rationale: "Advérbios de frequência vêm antes do verbo principal: 'I always study'."},
+                {q: "Complete: 'She ____ eats breakfast. She prefers just coffee.'", options: [{text:"always", isCorrect:false}, {text:"usually", isCorrect:false}, {text:"rarely", isCorrect:true}, {text:"often", isCorrect:false}], rationale: "Rarely = raramente. Ela quase nunca come café da manhã."},
+                {q: "Responda: 'How often do you go to the beach?' - 'I go ____.'", options: [{text:"twice a month", isCorrect:true}, {text:"at 3 o'clock", isCorrect:false}, {text:"with my friends", isCorrect:false}, {text:"to Copacabana", isCorrect:false}], rationale: "'How often' pergunta frequência, a resposta deve indicar frequência."},
+                {q: "Escolha a frase correta:", options: [{text:"I go always to school", isCorrect:false}, {text:"I always go to school", isCorrect:true}, {text:"Always I go to school", isCorrect:false}, {text:"I go to always school", isCorrect:false}], rationale: "Advérbio de frequência vem antes do verbo principal: 'always go'."},
+                {q: "Qual é a ordem correta de frequência (do maior para o menor)?", options: [{text:"always > usually > sometimes > never", isCorrect:true}, {text:"never > sometimes > usually > always", isCorrect:false}, {text:"usually > always > sometimes > never", isCorrect:false}, {text:"sometimes > usually > always > never", isCorrect:false}], rationale: "Always (100%) > Usually (80%) > Sometimes (50%) > Never (0%)."},
+                {q: "Complete: 'He is ____ late for class. The teacher is angry.'", options: [{text:"never", isCorrect:false}, {text:"rarely", isCorrect:false}, {text:"always", isCorrect:true}, {text:"sometimes", isCorrect:false}], rationale: "O professor está bravo porque ele está SEMPRE atrasado."},
+                {q: "Com o verbo 'to be', onde fica o advérbio?", options: [{text:"Antes do verbo to be", isCorrect:false}, {text:"Depois do verbo to be", isCorrect:true}, {text:"No final da frase", isCorrect:false}, {text:"Antes do sujeito", isCorrect:false}], rationale: "Com 'to be', o advérbio vem DEPOIS: 'She is always happy'."},
+                {q: "Complete: 'How often does he exercise?' - 'He ____ exercises.'", options: [{text:"three times a week", isCorrect:false}, {text:"never", isCorrect:true}, {text:"on Monday", isCorrect:false}, {text:"at the gym", isCorrect:false}], rationale: "A resposta com advérbio de frequência antes do verbo: 'He never exercises'."},
+                {q: "Escolha a tradução correta de 'Com que frequência você viaja?'", options: [{text:"How much do you travel?", isCorrect:false}, {text:"How often do you travel?", isCorrect:true}, {text:"How many do you travel?", isCorrect:false}, {text:"How long do you travel?", isCorrect:false}], rationale: "'Com que frequência' = 'How often'."},
+                {q: "Complete: 'They ____ watch TV at night. Maybe 2 or 3 times a week.'", options: [{text:"always", isCorrect:false}, {text:"never", isCorrect:false}, {text:"sometimes", isCorrect:true}, {text:"rarely", isCorrect:false}], rationale: "2-3 vezes por semana = às vezes = sometimes."},
+                {q: "Escolha a frase INCORRETA:", options: [{text:"She usually drinks tea", isCorrect:false}, {text:"I never eat meat", isCorrect:false}, {text:"He often is tired", isCorrect:true}, {text:"We sometimes go to the park", isCorrect:false}], rationale: "Com 'to be', o advérbio vem depois: 'He is often tired', não 'He often is tired'."},
+                {q: "Complete: 'How often do you cook?' - '____.'", options: [{text:"I cook pasta", isCorrect:false}, {text:"In the kitchen", isCorrect:false}, {text:"Every day", isCorrect:true}, {text:"With my mom", isCorrect:false}], rationale: "'How often' pede resposta de frequência: 'Every day' (todo dia)."}
+            ],
+            6: [ // Prepositions Of Place (15 perguntas)
+                {q: "Complete: 'The cat is ____ the table.'", options: [{text:"on", isCorrect:true}, {text:"at", isCorrect:false}, {text:"to", isCorrect:false}, {text:"of", isCorrect:false}], rationale: "On = em cima de. O gato está em cima da mesa."},
+                {q: "Complete: 'The ball is ____ the box.'", options: [{text:"on", isCorrect:false}, {text:"in", isCorrect:true}, {text:"at", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "In = dentro de. A bola está dentro da caixa."},
+                {q: "Complete: 'She is standing ____ the door.'", options: [{text:"in front of", isCorrect:true}, {text:"in", isCorrect:false}, {text:"on", isCorrect:false}, {text:"below", isCorrect:false}], rationale: "In front of = na frente de."},
+                {q: "Complete: 'The bank is ____ the supermarket and the pharmacy.'", options: [{text:"next to", isCorrect:false}, {text:"between", isCorrect:true}, {text:"behind", isCorrect:false}, {text:"under", isCorrect:false}], rationale: "Between = entre dois lugares."},
+                {q: "Complete: 'The dog is ____ the chair.'", options: [{text:"under", isCorrect:true}, {text:"on", isCorrect:false}, {text:"in", isCorrect:false}, {text:"between", isCorrect:false}], rationale: "Under = embaixo de."},
+                {q: "Complete: 'The school is ____ the hospital.'", options: [{text:"next to", isCorrect:true}, {text:"in", isCorrect:false}, {text:"under", isCorrect:false}, {text:"on", isCorrect:false}], rationale: "Next to = ao lado de."},
+                {q: "Complete: 'The garden is ____ the house.'", options: [{text:"behind", isCorrect:true}, {text:"on", isCorrect:false}, {text:"in", isCorrect:false}, {text:"between", isCorrect:false}], rationale: "Behind = atrás de."},
+                {q: "Qual preposição significa 'em cima de'?", options: [{text:"in", isCorrect:false}, {text:"under", isCorrect:false}, {text:"on", isCorrect:true}, {text:"behind", isCorrect:false}], rationale: "On = em cima de / sobre."},
+                {q: "Complete: 'The lamp is ____ the desk.'", options: [{text:"above", isCorrect:true}, {text:"under", isCorrect:false}, {text:"behind", isCorrect:false}, {text:"between", isCorrect:false}], rationale: "Above = acima de (sem tocar)."},
+                {q: "Complete: 'There is a mirror ____ the wall.'", options: [{text:"on", isCorrect:true}, {text:"in", isCorrect:false}, {text:"under", isCorrect:false}, {text:"next to", isCorrect:false}], rationale: "On the wall = na parede (preso à superfície)."},
+                {q: "Complete: 'The park is ____ the library.'", options: [{text:"opposite", isCorrect:true}, {text:"under", isCorrect:false}, {text:"in", isCorrect:false}, {text:"on", isCorrect:false}], rationale: "Opposite = em frente / do lado oposto."},
+                {q: "Escolha a frase correta:", options: [{text:"The book is in the shelf", isCorrect:false}, {text:"The book is on the shelf", isCorrect:true}, {text:"The book is at the shelf", isCorrect:false}, {text:"The book is to the shelf", isCorrect:false}], rationale: "On the shelf = na prateleira (em cima da superfície)."},
+                {q: "Complete: 'The shoes are ____ the bed.'", options: [{text:"on", isCorrect:false}, {text:"under", isCorrect:true}, {text:"above", isCorrect:false}, {text:"in front of", isCorrect:false}], rationale: "Under the bed = embaixo da cama."},
+                {q: "Qual é a tradução de 'between'?", options: [{text:"atrás de", isCorrect:false}, {text:"em cima de", isCorrect:false}, {text:"entre", isCorrect:true}, {text:"ao lado de", isCorrect:false}], rationale: "Between = entre (dois elementos)."},
+                {q: "Escolha a frase INCORRETA:", options: [{text:"The cat is under the table", isCorrect:false}, {text:"The picture is on the wall", isCorrect:false}, {text:"She is in front of the school", isCorrect:false}, {text:"The book is between the shelf", isCorrect:true}], rationale: "Between precisa de dois elementos: 'between A and B'. A frase correta seria 'on the shelf'."}
+            ],
+            7: [ // In, On, At + Transportations (15 perguntas)
+                {q: "Complete: 'I go to work ____ bus.'", options: [{text:"by", isCorrect:true}, {text:"in", isCorrect:false}, {text:"on", isCorrect:false}, {text:"at", isCorrect:false}], rationale: "By + transporte (sem artigo) = meio de transporte: by bus."},
+                {q: "Complete: 'She is ____ the car.'", options: [{text:"in", isCorrect:true}, {text:"on", isCorrect:false}, {text:"at", isCorrect:false}, {text:"by", isCorrect:false}], rationale: "In the car = dentro do carro (espaço fechado e pequeno)."},
+                {q: "Complete: 'They are ____ the bus.'", options: [{text:"on", isCorrect:true}, {text:"in", isCorrect:false}, {text:"at", isCorrect:false}, {text:"by", isCorrect:false}], rationale: "On the bus = no ônibus (transporte grande onde você fica de pé/sentado)."},
+                {q: "Complete: 'He goes to school ____ foot.'", options: [{text:"on", isCorrect:true}, {text:"by", isCorrect:false}, {text:"in", isCorrect:false}, {text:"at", isCorrect:false}], rationale: "On foot = a pé (expressão fixa)."},
+                {q: "Quando usamos 'in' com transporte?", options: [{text:"Com transportes grandes como ônibus e avião", isCorrect:false}, {text:"Com transportes pequenos como carro e táxi", isCorrect:true}, {text:"Quando estamos na parada de ônibus", isCorrect:false}, {text:"Nunca usamos 'in' com transporte", isCorrect:false}], rationale: "In = transportes pequenos e fechados: in the car, in the taxi."},
+                {q: "Complete: 'We traveled ____ plane.'", options: [{text:"by", isCorrect:true}, {text:"in", isCorrect:false}, {text:"on", isCorrect:false}, {text:"at", isCorrect:false}], rationale: "By plane = de avião (meio de transporte geral)."},
+                {q: "Complete: 'She is ____ the train.'", options: [{text:"on", isCorrect:true}, {text:"in", isCorrect:false}, {text:"at", isCorrect:false}, {text:"by", isCorrect:false}], rationale: "On the train = no trem (transporte grande)."},
+                {q: "Escolha a frase correta:", options: [{text:"I am on the taxi", isCorrect:false}, {text:"I am in the taxi", isCorrect:true}, {text:"I am at the taxi", isCorrect:false}, {text:"I am by the taxi", isCorrect:false}], rationale: "In the taxi = no táxi (veículo pequeno e fechado)."},
+                {q: "Complete: 'He arrived ____ the bus stop.'", options: [{text:"at", isCorrect:true}, {text:"in", isCorrect:false}, {text:"on", isCorrect:false}, {text:"by", isCorrect:false}], rationale: "At the bus stop = no ponto de ônibus (local específico)."},
+                {q: "Quando usamos 'on' com transporte?", options: [{text:"Com carro e táxi", isCorrect:false}, {text:"Com ônibus, trem, avião e bicicleta", isCorrect:true}, {text:"Apenas com bicicleta", isCorrect:false}, {text:"Nunca usamos 'on' com transporte", isCorrect:false}], rationale: "On = transportes grandes ou abertos: on the bus, on the plane, on a bike."},
+                {q: "Complete: 'She goes to work ____ bicycle.'", options: [{text:"by", isCorrect:true}, {text:"in", isCorrect:false}, {text:"at", isCorrect:false}, {text:"on", isCorrect:false}], rationale: "By bicycle = de bicicleta (meio de transporte sem artigo)."},
+                {q: "Complete: 'I was ____ the airplane when it started to rain.'", options: [{text:"on", isCorrect:true}, {text:"in", isCorrect:false}, {text:"at", isCorrect:false}, {text:"by", isCorrect:false}], rationale: "On the airplane = dentro do avião (transporte grande)."},
+                {q: "Escolha a frase INCORRETA:", options: [{text:"She goes by car", isCorrect:false}, {text:"He is in the bus", isCorrect:true}, {text:"They are on the train", isCorrect:false}, {text:"I arrived at the station", isCorrect:false}], rationale: "O correto é 'on the bus' (transporte grande), não 'in the bus'."},
+                {q: "Complete: 'He is waiting ____ the airport.'", options: [{text:"at", isCorrect:true}, {text:"on", isCorrect:false}, {text:"in", isCorrect:false}, {text:"by", isCorrect:false}], rationale: "At the airport = no aeroporto (local/ponto específico)."},
+                {q: "Qual alternativa usa 'in' corretamente?", options: [{text:"She is in the motorcycle", isCorrect:false}, {text:"He is in the car", isCorrect:true}, {text:"They are in the bus", isCorrect:false}, {text:"We are in the bicycle", isCorrect:false}], rationale: "In the car = correto. Carro é veículo pequeno e fechado."}
+            ],
+            8: [ // Possessives - Genitive Case, Possessive Pronouns & Adjectives (15 perguntas)
+                {q: "Complete: 'This is ____  book.' (dela)", options: [{text:"she", isCorrect:false}, {text:"her", isCorrect:true}, {text:"hers", isCorrect:false}, {text:"she's", isCorrect:false}], rationale: "Her = adjetivo possessivo (antes do substantivo): her book."},
+                {q: "Complete: 'The car is ____.' (deles)", options: [{text:"they", isCorrect:false}, {text:"their", isCorrect:false}, {text:"theirs", isCorrect:true}, {text:"them", isCorrect:false}], rationale: "Theirs = pronome possessivo (sem substantivo depois): The car is theirs."},
+                {q: "Complete: 'This is ____ house.' (de João)", options: [{text:"João", isCorrect:false}, {text:"João's", isCorrect:true}, {text:"Joãos", isCorrect:false}, {text:"of João", isCorrect:false}], rationale: "Genitive case: nome + 's = João's house."},
+                {q: "Qual é o adjetivo possessivo de 'I'?", options: [{text:"me", isCorrect:false}, {text:"mine", isCorrect:false}, {text:"my", isCorrect:true}, {text:"I's", isCorrect:false}], rationale: "I = my (adjetivo possessivo): my book, my car."},
+                {q: "Complete: 'That phone is ____.' (meu)", options: [{text:"my", isCorrect:false}, {text:"me", isCorrect:false}, {text:"I", isCorrect:false}, {text:"mine", isCorrect:true}], rationale: "Mine = pronome possessivo (substitui my + substantivo): It's mine."},
+                {q: "Complete: '____ dog is very friendly.' (deles)", options: [{text:"Theirs", isCorrect:false}, {text:"They", isCorrect:false}, {text:"Their", isCorrect:true}, {text:"Them", isCorrect:false}], rationale: "Their = adjetivo possessivo (antes do substantivo): their dog."},
+                {q: "Complete: 'This is my ____ room.' (do irmão)", options: [{text:"brother", isCorrect:false}, {text:"brother's", isCorrect:true}, {text:"brothers", isCorrect:false}, {text:"of brother", isCorrect:false}], rationale: "Genitive case com 's: my brother's room."},
+                {q: "Qual é a diferença entre 'your' e 'yours'?", options: [{text:"São iguais", isCorrect:false}, {text:"Your vem antes do substantivo, yours vem sozinho", isCorrect:true}, {text:"Yours vem antes do substantivo", isCorrect:false}, {text:"Your é mais formal", isCorrect:false}], rationale: "Your = adjetivo (your car). Yours = pronome (it's yours)."},
+                {q: "Complete: 'Are these shoes ____?' (dele)", options: [{text:"he", isCorrect:false}, {text:"him", isCorrect:false}, {text:"his", isCorrect:true}, {text:"he's", isCorrect:false}], rationale: "His = pronome possessivo e adjetivo possessivo (mesma forma): his shoes / they're his."},
+                {q: "Escolha a frase correta:", options: [{text:"The children's toys are new", isCorrect:true}, {text:"The childrens toys are new", isCorrect:false}, {text:"The childrens' toys are new", isCorrect:false}, {text:"The children toys are new", isCorrect:false}], rationale: "Plural irregular: children + 's = children's toys."},
+                {q: "Complete: '____ name is Maria.' (dela)", options: [{text:"She", isCorrect:false}, {text:"Hers", isCorrect:false}, {text:"Her", isCorrect:true}, {text:"She's", isCorrect:false}], rationale: "Her = adjetivo possessivo antes do substantivo: Her name."},
+                {q: "Complete: 'Is this bag ____?' (sua/tua)", options: [{text:"your", isCorrect:false}, {text:"yours", isCorrect:true}, {text:"you", isCorrect:false}, {text:"you're", isCorrect:false}], rationale: "Yours = pronome possessivo (sem substantivo depois)."},
+                {q: "Complete: 'My ____ car is red.' (do pai)", options: [{text:"father", isCorrect:false}, {text:"fathers", isCorrect:false}, {text:"father's", isCorrect:true}, {text:"of father", isCorrect:false}], rationale: "Genitive case: father's car = o carro do pai."},
+                {q: "Qual é o pronome possessivo de 'we'?", options: [{text:"our", isCorrect:false}, {text:"us", isCorrect:false}, {text:"ours", isCorrect:true}, {text:"we's", isCorrect:false}], rationale: "We = our (adjetivo) / ours (pronome): our house / it's ours."},
+                {q: "Escolha a frase INCORRETA:", options: [{text:"This is her bag", isCorrect:false}, {text:"The bag is hers", isCorrect:false}, {text:"This is the teacher's desk", isCorrect:false}, {text:"This is mine book", isCorrect:true}], rationale: "Mine é pronome, não adjetivo. O correto seria 'This is my book' ou 'This book is mine'."}
+            ],
             17: [ // Future Simple (15 perguntas)
                 {q: "Complete: 'I ____ help you tomorrow.'", options: [{text:"will", isCorrect:true}, {text:"am", isCorrect:false}, {text:"do", isCorrect:false}, {text:"was", isCorrect:false}], rationale: "Futuro simples: will + verbo base."},
                 {q: "Escolha a forma negativa correta:", options: [{text:"I willn't go", isCorrect:false}, {text:"I won't go", isCorrect:true}, {text:"I don't will go", isCorrect:false}, {text:"I not will go", isCorrect:false}], rationale: "Negativa do will: won't (will not)."},
@@ -2155,6 +2223,23 @@
                 {q: "Complete: '____ it be expensive?'", options: [{text:"Does", isCorrect:false}, {text:"Is", isCorrect:false}, {text:"Will", isCorrect:true}, {text:"Did", isCorrect:false}], rationale: "Pergunta no futuro: Will + sujeito + verbo base?"},
                 {q: "Qual palavra costuma acompanhar o Future Simple?", options: [{text:"yesterday", isCorrect:false}, {text:"now", isCorrect:false}, {text:"tomorrow", isCorrect:true}, {text:"ago", isCorrect:false}], rationale: "'Tomorrow' indica tempo futuro."},
                 {q: "Escolha a frase INCORRETA:", options: [{text:"I will call you later", isCorrect:false}, {text:"She will helps us", isCorrect:true}, {text:"They won't come", isCorrect:false}, {text:"Will he be there?", isCorrect:false}], rationale: "Após 'will', o verbo fica na forma base: 'help', não 'helps'."}
+            ],
+            4: [ // Why & Because (15 perguntas)
+                {q: "Complete: '____ are you happy?' - 'Because I passed my test!'", options: [{text:"Why", isCorrect:true}, {text:"Because", isCorrect:false}, {text:"What", isCorrect:false}, {text:"How", isCorrect:false}], rationale: "'Why' é usado para fazer perguntas sobre motivo/razão."},
+                {q: "Complete: '____ do you study English?' - 'Because I want to travel.'", options: [{text:"Why", isCorrect:true}, {text:"Because", isCorrect:false}, {text:"Where", isCorrect:false}, {text:"When", isCorrect:false}], rationale: "'Why' pergunta o motivo; 'Because' responde."},
+                {q: "Complete: 'I like pizza ____ it's delicious.'", options: [{text:"why", isCorrect:false}, {text:"because", isCorrect:true}, {text:"but", isCorrect:false}, {text:"so", isCorrect:false}], rationale: "'Because' introduz a razão/explicação."},
+                {q: "Complete: 'She is tired ____ she worked all day.'", options: [{text:"why", isCorrect:false}, {text:"because", isCorrect:true}, {text:"and", isCorrect:false}, {text:"but", isCorrect:false}], rationale: "'Because' explica o motivo de ela estar cansada."},
+                {q: "Qual é a tradução de 'Why'?", options: [{text:"Quando", isCorrect:false}, {text:"Onde", isCorrect:false}, {text:"Por quê", isCorrect:true}, {text:"Como", isCorrect:false}], rationale: "Why = Por quê (para perguntar razão/motivo)."},
+                {q: "Qual é a tradução de 'Because'?", options: [{text:"Mas", isCorrect:false}, {text:"Então", isCorrect:false}, {text:"Porque", isCorrect:true}, {text:"Quando", isCorrect:false}], rationale: "Because = Porque (para dar a razão/resposta)."},
+                {q: "Complete: 'Why do you like soccer?' - '____ it's fun and exciting.'", options: [{text:"Why", isCorrect:false}, {text:"Because", isCorrect:true}, {text:"But", isCorrect:false}, {text:"And", isCorrect:false}], rationale: "A resposta a 'Why' começa com 'Because'."},
+                {q: "Escolha a opinião correta usando 'because':", options: [{text:"I think dogs are great because they are loyal", isCorrect:true}, {text:"I think dogs are great why they are loyal", isCorrect:false}, {text:"I think dogs are great so they are loyal", isCorrect:false}, {text:"I think dogs are great and why loyal", isCorrect:false}], rationale: "Para justificar uma opinião usamos 'because' + razão."},
+                {q: "Complete: 'Why is she crying?' - 'Because she ____ her phone.'", options: [{text:"lost", isCorrect:true}, {text:"lose", isCorrect:false}, {text:"losing", isCorrect:false}, {text:"loses", isCorrect:false}], rationale: "'Because she lost her phone' = Porque ela perdeu o celular."},
+                {q: "Escolha a frase correta para dar uma opinião:", options: [{text:"I like summer why it's warm", isCorrect:false}, {text:"I like summer because it's warm", isCorrect:true}, {text:"I like summer because warm", isCorrect:false}, {text:"I like summer so because warm", isCorrect:false}], rationale: "Estrutura: opinião + because + frase completa com razão."},
+                {q: "Complete: 'Why don't you eat meat?' - 'Because I ____ a vegetarian.'", options: [{text:"am", isCorrect:true}, {text:"is", isCorrect:false}, {text:"are", isCorrect:false}, {text:"be", isCorrect:false}], rationale: "I + am. 'Because I am a vegetarian.'"},
+                {q: "Qual frase expressa uma opinião com justificativa?", options: [{text:"I think chocolate is the best", isCorrect:false}, {text:"I think chocolate is the best because it makes me happy", isCorrect:true}, {text:"Why chocolate is the best", isCorrect:false}, {text:"Chocolate because best", isCorrect:false}], rationale: "Opinião completa: 'I think... because...' com justificativa."},
+                {q: "Complete: 'Why ____ he late every day?'", options: [{text:"is", isCorrect:true}, {text:"do", isCorrect:false}, {text:"does", isCorrect:false}, {text:"are", isCorrect:false}], rationale: "Why + is + he (com verbo to be na pergunta)."},
+                {q: "Complete: 'I don't like horror movies ____ they are scary.'", options: [{text:"why", isCorrect:false}, {text:"because", isCorrect:true}, {text:"but", isCorrect:false}, {text:"when", isCorrect:false}], rationale: "'Because they are scary' = porque são assustadores."},
+                {q: "Escolha a resposta correta para: 'Why do you wake up early?'", options: [{text:"Because I go to school at 7", isCorrect:true}, {text:"Why I go to school at 7", isCorrect:false}, {text:"I wake up early and school", isCorrect:false}, {text:"Because early school why", isCorrect:false}], rationale: "Resposta com 'Because' + frase completa explicando o motivo."}
             ]
         };
 
@@ -2292,8 +2377,70 @@
             ]
         };
 
+        const flashcardsDataStarter2 = {
+            10: [
+                { front: "Sofá", back: "Sofa / Couch" },
+                { front: "Cadeira", back: "Chair" },
+                { front: "Mesa", back: "Table" },
+                { front: "Cama", back: "Bed" },
+                { front: "Guarda-roupa", back: "Wardrobe" },
+                { front: "Estante", back: "Bookshelf" },
+                { front: "Escrivaninha", back: "Desk" },
+                { front: "Cômoda", back: "Dresser" },
+                { front: "Tapete", back: "Rug / Carpet" },
+                { front: "Espelho", back: "Mirror" },
+                { front: "Luminária", back: "Lamp" },
+                { front: "Cortina", back: "Curtain" },
+                { front: "Travesseiro", back: "Pillow" },
+                { front: "Cobertor", back: "Blanket" },
+                { front: "Prateleira", back: "Shelf" },
+                { front: "Poltrona", back: "Armchair" },
+                { front: "Lavar a louça", back: "Do the dishes" },
+                { front: "Varrer o chão", back: "Sweep the floor" },
+                { front: "Passar aspirador", back: "Vacuum" },
+                { front: "Lavar roupa", back: "Do the laundry" },
+                { front: "Passar roupa", back: "Iron the clothes" },
+                { front: "Arrumar a cama", back: "Make the bed" },
+                { front: "Tirar o lixo", back: "Take out the trash" },
+                { front: "Cozinhar", back: "Cook" },
+                { front: "Limpar o banheiro", back: "Clean the bathroom" },
+                { front: "Organizar o quarto", back: "Tidy up the room" },
+                { front: "Cortar a grama", back: "Mow the lawn" },
+                { front: "Regar as plantas", back: "Water the plants" }
+            ],
+            2: [
+                { front: "Sempre", back: "Always" },
+                { front: "Geralmente", back: "Usually" },
+                { front: "Frequentemente", back: "Often" },
+                { front: "Às vezes", back: "Sometimes" },
+                { front: "Raramente", back: "Rarely" },
+                { front: "Quase nunca", back: "Hardly ever" },
+                { front: "Nunca", back: "Never" },
+                { front: "Com que frequência?", back: "How often?" },
+                { front: "Todo dia", back: "Every day" },
+                { front: "Toda semana", back: "Every week" },
+                { front: "Todo mês", back: "Every month" },
+                { front: "Uma vez por semana", back: "Once a week" },
+                { front: "Duas vezes por semana", back: "Twice a week" },
+                { front: "Três vezes por mês", back: "Three times a month" },
+                { front: "De vez em quando", back: "Once in a while" },
+                { front: "Normalmente", back: "Normally" },
+                { front: "Quase sempre", back: "Almost always" },
+                { front: "Constantemente", back: "Constantly" },
+                { front: "Regularmente", back: "Regularly" },
+                { front: "Ocasionalmente", back: "Occasionally" },
+                { front: "Dia sim, dia não", back: "Every other day" },
+                { front: "Nos finais de semana", back: "On weekends" },
+                { front: "Durante a semana", back: "During the week" },
+                { front: "De segunda a sexta", back: "From Monday to Friday" }
+            ]
+        };
+
+        function getActiveFlashcards() {
+            return currentLevel === 'starter2' ? flashcardsDataStarter2 : flashcardsData;
+        }
+
         const chunksData = {
-            // Asking About Names (module 3)
             3: [
                 { en: "What's your name?", pt: "Qual é o seu nome?" }, 
                 { en: "What's your first name?", pt: "Qual é o seu primeiro nome?" }, 
@@ -2307,6 +2454,21 @@
                 { en: "I'm from Brazil.", pt: "Eu sou do Brasil." }
             ]
         };
+
+        const chunksDataStarter2 = {
+            2: [
+                { en: "I always wake up early.", pt: "Eu sempre acordo cedo." },
+                { en: "She never eats fast food.", pt: "Ela nunca come fast food." },
+                { en: "We usually study at night.", pt: "Nós geralmente estudamos à noite." },
+                { en: "He sometimes plays video games.", pt: "Ele às vezes joga videogame." },
+                { en: "They rarely go to the gym.", pt: "Eles raramente vão à academia." },
+                { en: "How often do you read books?", pt: "Com que frequência você lê livros?" }
+            ]
+        };
+
+        function getActiveChunks() {
+            return currentLevel === 'starter2' ? chunksDataStarter2 : chunksData;
+        }
 
         const gamesData = {
             // Demonstrative Pronouns (module 10)
@@ -2746,14 +2908,15 @@
 
         async function syncChunksStreaks() {
             if (!firebaseDb || !currentUser) return;
-            for (const aulaIdStr of Object.keys(chunksData)) {
+            var activeChunks = getActiveChunks();
+            for (const aulaIdStr of Object.keys(activeChunks)) {
                 const aulaId = parseInt(aulaIdStr);
                 if (isStreakDone(aulaId, 'chunks')) continue;
                 try {
                     const doc = await firebaseDb.collection('users').doc(currentUser.uid).collection('chunksAnswers').doc(String(aulaId)).get();
                     if (doc.exists) {
                         const saved = doc.data() || {};
-                        const total = chunksData[aulaId].length;
+                        const total = activeChunks[aulaId].length;
                         if (Object.keys(saved).length >= total) {
                             await markStreakDone(aulaId, 'chunks');
                             renderDashboard();
@@ -2780,7 +2943,8 @@
                 const sBtn = studyLabel ? `<button class="secondary-button-sm" onclick="openStudy(${aula.id})">${studyLabel}</button>` : '';
                 const tBtn = (isS1 && aula.id === 23) ? `<button class="secondary-button-sm" onclick="openFlashcards(23)">FLASHCARDS</button>` : '';
                 const dBtn = (aula.thirdBtn === 'dictation') ? `<button class="secondary-button-sm" onclick="openDictation(${aula.id})">DITADO</button>` : '';
-                const hBtn = (isS1 && [6, 23, 26].includes(aula.id)) ? `<button class="secondary-button-sm" onclick="openHangman(${aula.id})">FORCA</button>` : '';
+                const chBtn = (aula.thirdBtn === 'chunks') ? `<button class="secondary-button-sm" onclick="openChunksThird(${aula.id})">CHUNKS</button>` : '';
+                const hBtn = ((isS1 && [6, 23, 26].includes(aula.id)) || aula.thirdBtn === 'hangman') ? `<button class="secondary-button-sm" onclick="openHangman(${aula.id})">FORCA</button>` : '';
                 const cBtn = (isS1 && [12, 14].includes(aula.id)) ? `<button class="secondary-button-sm" onclick="openWordSearch(${aula.id})">CAÇA-PALAVRAS</button>` : '';
 
                 let allStreaks = [];
@@ -2789,7 +2953,8 @@
                 if (aula.specialMode === 'scramble') allStreaks.push({ label: 'Scramble', done: isStreakDone(aula.id, 'scramble') });
                 if (aula.specialMode === 'mistake') allStreaks.push({ label: 'Detetive', done: isStreakDone(aula.id, 'mistake') });
                 if (aula.thirdBtn === 'dictation') allStreaks.push({ label: 'Ditado', done: isStreakDone(aula.id, 'dictation') });
-                if (isS1 && [6, 23, 26].includes(aula.id)) allStreaks.push({ label: 'Forca', done: isStreakDone(aula.id, 'hangman') });
+                if (aula.thirdBtn === 'chunks') allStreaks.push({ label: 'Chunks', done: isStreakDone(aula.id, 'chunks') });
+                if ((isS1 && [6, 23, 26].includes(aula.id)) || aula.thirdBtn === 'hangman') allStreaks.push({ label: 'Forca', done: isStreakDone(aula.id, 'hangman') });
                 if (isS1 && [12, 14].includes(aula.id)) allStreaks.push({ label: 'Caça-Palavras', done: isStreakDone(aula.id, 'wordsearch') });
                 const streakHtml = allStreaks.length > 0 ? `<div style="display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.5rem;">${allStreaks.map(s => s.done
                     ? `<span style="font-size: 0.6rem; font-weight: 700; color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 0.1rem 0.4rem; border-radius: 1rem; display: inline-flex; align-items: center; gap: 0.2rem;" data-testid="streak-done-${s.label}"><svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='#16a34a' stroke-width='3'><polyline points='20 6 9 17 4 12'/></svg> ${s.label}</span>`
@@ -2810,7 +2975,7 @@
                         ${streakHtml}
                     </div>
                     <div class="flex flex-wrap gap-1.5">
-                        ${sBtn} ${tBtn} ${dBtn} ${hBtn} ${cBtn}
+                        ${sBtn} ${tBtn} ${dBtn} ${chBtn} ${hBtn} ${cBtn}
                         <button class="action-button-sm uppercase" ${(!aula.hasHomework || !activeQuiz[aula.id]) ? 'disabled' : `onclick="openPractice(${aula.id})"`}>HOMEWORK</button>
                     </div>
                 </div>`
@@ -2928,18 +3093,18 @@
                 currentStudyMode = 'flashcards';
                 instrArea.textContent = "";
                 currentFlashcardIdx = 0; 
-                currentShuffledCards = shuffle([...flashcardsData[id]]); 
+                currentShuffledCards = shuffle([...getActiveFlashcards()[id]]); 
                 renderFlashcards();
             } else if (aula.specialMode === 'listening') {
                 currentStudyMode = 'listening';
                 instrArea.textContent = "";
-                const useWideGrid = [5, 7, 23].includes(id);
+                const useWideGrid = [5, 7, 23, 24].includes(id);
                 renderListeningBoard(aula.items, useWideGrid);
             } else if (aula.specialMode === 'chunks') {
                 currentStudyMode = 'chunks';
                 titleArea.textContent = "CHUNKS OF LANGUAGE";
                 instrArea.textContent = "";
-                renderChunksGrid(chunksData[id]);
+                renderChunksGrid(getActiveChunks()[id]);
             } else if (aula.specialMode === 'mistake') {
                 currentStudyMode = 'mistake';
                 instrArea.textContent = "";
@@ -2961,8 +3126,20 @@
             document.getElementById('study-view').classList.remove('hidden');
             document.getElementById('study-title').textContent = "Flashcards: Holidays";
             document.getElementById('study-instruction').textContent = "";
-            currentFlashcardIdx = 0; currentShuffledCards = shuffle([...flashcardsData[id]]); renderFlashcards();
+            currentFlashcardIdx = 0; currentShuffledCards = shuffle([...getActiveFlashcards()[id]]); renderFlashcards();
         }
+
+        window.openChunksThird = function(id) {
+            const aula = getActiveAulas().find(a => a.id === id);
+            currentAulaId = id;
+            currentStudyMode = 'chunks';
+            document.getElementById('main-header').classList.add('hidden');
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('study-view').classList.remove('hidden');
+            document.getElementById('study-title').textContent = "CHUNKS OF LANGUAGE";
+            document.getElementById('study-instruction').textContent = "";
+            renderChunksGrid(getActiveChunks()[id]);
+        };
 
         let isSpellingMode = false;
         let isNumberComboMode = false;
@@ -3009,6 +3186,18 @@
                 {word: "AUGUST", hint: "Mês dos pais"},
                 {word: "CHRISTMAS", hint: "Feriado em 25 de dezembro"},
                 {word: "EASTER", hint: "Feriado do coelhinho"}
+            ],
+            24: [ // Movie Genres - Nomes de filmes famosos
+                {word: "TITANIC", hint: "Filme sobre um navio que afundou"},
+                {word: "FROZEN", hint: "Animação da Disney com a Elsa"},
+                {word: "AVATAR", hint: "Filme com aliens azuis em Pandora"},
+                {word: "BATMAN", hint: "Super-herói que vive em Gotham"},
+                {word: "SHREK", hint: "Ogro verde que vive no pântano"},
+                {word: "MOANA", hint: "Princesa da Disney que navega o oceano"},
+                {word: "ROCKY", hint: "Filme de boxe com Stallone"},
+                {word: "COCO", hint: "Animação sobre o Dia dos Mortos no México"},
+                {word: "JAWS", hint: "Filme clássico sobre um tubarão"},
+                {word: "UP", hint: "Animação da Pixar com uma casa voando com balões"}
             ],
             26: [ // Foods and Fruits - 10 palavras
                 {word: "APPLE", hint: "Fruta vermelha ou verde"},
