@@ -2022,7 +2022,9 @@
         }
 
         function isStreakDone(aulaId, mode) {
-            return !!userStreaksCache[currentLevel + '_' + aulaId + '_' + mode] || !!userStreaksCache[aulaId + '_' + mode];
+            if (userStreaksCache[currentLevel + '_' + aulaId + '_' + mode]) return true;
+            if (currentLevel === 'starter1' && userStreaksCache[aulaId + '_' + mode]) return true;
+            return false;
         }
 
         const helpTexts = {
@@ -2913,7 +2915,8 @@
                 const aulaId = parseInt(aulaIdStr);
                 if (isStreakDone(aulaId, 'chunks')) continue;
                 try {
-                    const doc = await firebaseDb.collection('users').doc(currentUser.uid).collection('chunksAnswers').doc(String(aulaId)).get();
+                    var docId = currentLevel + '_' + aulaId;
+                    const doc = await firebaseDb.collection('users').doc(currentUser.uid).collection('chunksAnswers').doc(docId).get();
                     if (doc.exists) {
                         const saved = doc.data() || {};
                         const total = activeChunks[aulaId].length;
@@ -3714,21 +3717,33 @@
         let chunksTotalCount = 0;
         var chunksAnswersCache = {};
 
+        function chunksDocId(aulaId) {
+            return currentLevel + '_' + aulaId;
+        }
+
         async function loadChunksAnswers(aulaId) {
             if (!currentUser) return {};
             try {
-                const doc = await firebaseDb.collection('users').doc(currentUser.uid).collection('chunksAnswers').doc(String(aulaId)).get();
+                var docId = chunksDocId(aulaId);
+                const doc = await firebaseDb.collection('users').doc(currentUser.uid).collection('chunksAnswers').doc(docId).get();
                 if (doc.exists) return doc.data() || {};
+                var oldDoc = await firebaseDb.collection('users').doc(currentUser.uid).collection('chunksAnswers').doc(String(aulaId)).get();
+                if (oldDoc.exists && currentLevel === 'starter1') {
+                    var oldData = oldDoc.data() || {};
+                    await firebaseDb.collection('users').doc(currentUser.uid).collection('chunksAnswers').doc(docId).set(oldData);
+                    return oldData;
+                }
             } catch(e) {}
             return {};
         }
 
         async function saveChunkAnswer(aulaId, index, answer) {
             if (!currentUser) return;
-            if (!chunksAnswersCache[aulaId]) chunksAnswersCache[aulaId] = {};
-            chunksAnswersCache[aulaId][String(index)] = answer;
+            var cacheKey = chunksDocId(aulaId);
+            if (!chunksAnswersCache[cacheKey]) chunksAnswersCache[cacheKey] = {};
+            chunksAnswersCache[cacheKey][String(index)] = answer;
             try {
-                await firebaseDb.collection('users').doc(currentUser.uid).collection('chunksAnswers').doc(String(aulaId)).set(chunksAnswersCache[aulaId]);
+                await firebaseDb.collection('users').doc(currentUser.uid).collection('chunksAnswers').doc(cacheKey).set(chunksAnswersCache[cacheKey]);
             } catch(e) {}
         }
 
@@ -3736,7 +3751,7 @@
             const area = document.getElementById('study-content-area');
             chunksTotalCount = data.length;
             const saved = await loadChunksAnswers(currentAulaId);
-            chunksAnswersCache[currentAulaId] = saved;
+            chunksAnswersCache[chunksDocId(currentAulaId)] = saved;
             chunksCorrectCount = Object.keys(saved).length;
             renderStreakBar(chunksTotalCount, chunksCorrectCount);
             area.innerHTML = `<div class="chunks-grid shadow-lg">
