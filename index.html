@@ -1639,7 +1639,7 @@
                 var student = allStudentsCache.find(function(s) { return s.uid === uid; });
                 var studentLevel = (student && student.currentLevel) || 'starter1';
                 var aulaList = studentLevel === 'starter2' ? aulaStarter2 : aulaNames;
-                var modeNames = { homework: 'Homework', flashcards: 'Flashcards', listening: 'Listening', chunks: 'Chunks', scramble: 'Scramble', mistake: 'Detetive', dictation: 'Ditado', hangman: 'Forca', wordsearch: 'Caça-Palavras' };
+                var modeNames = { homework: 'Homework', flashcards: 'Flashcards', listening: 'Listening', chunks: 'Chunks', scramble: 'Unscramble', mistake: 'Detetive', dictation: 'Ditado', hangman: 'Forca', wordsearch: 'Caça-Palavras' };
                 var levelNames = { starter1: 'Starter 1', starter2: 'Starter 2', freshman1: 'Freshman 1', freshman2: 'Freshman 2', sophomore1: 'Sophomore 1', sophomore2: 'Sophomore 2', senior1: 'Senior 1', senior2: 'Senior 2', acc: 'ACC' };
                 var parsed = keys.map(function(key) {
                     var parts = key.split('_');
@@ -2046,10 +2046,10 @@
             listening: { title: "Como estudar com o Listening", text: "Toque em cada item para ouvir como se pronuncia em inglês. Pratique repetindo em voz alta!" },
             chunks: { title: "Como estudar com os Chunks", text: "Leia a frase em português e digite a tradução em inglês. Se acertar, fica verde e o áudio fica disponível! Complete todos os chunks para finalizar a missão." },
             dictation: { title: "Como estudar com o Ditado", text: "Ouça o áudio e escreva exatamente o que ouviu. Pode ser o número ou a palavra por extenso. Acerte 5 seguidas para completar!" },
-            scramble: { title: "Como estudar com o Scramble", text: "As palavras estão embaralhadas. Toque nelas na ordem correta para formar a frase. Acerte 5 seguidas para completar!" },
+            scramble: { title: "Como estudar com o Unscramble", text: "As palavras estão embaralhadas. Toque nelas na ordem correta para formar a frase. Acerte 5 seguidas para completar!" },
             mistake: { title: "Como estudar com o Mistake", text: "Uma das palavras está errada. Encontre e clique nela! Acerte 5 seguidas para completar!" },
             hangman: { title: "Como estudar com a Forca", text: "Adivinhe a palavra letra por letra. Cada erro desenha uma parte do boneco. Se completar o desenho, você perde!" },
-            wordsearch: { title: "Como estudar com o Caça-Palavras", text: "Encontre as palavras escondidas no grid. Elas podem estar na horizontal, vertical ou diagonal. Você tem 2 minutos!" },
+            wordsearch: { title: "Como estudar com o Caça-Palavras", text: "Encontre as palavras escondidas no grid. Elas podem estar na horizontal ou vertical. Você tem 2 minutos!" },
             homework: { title: "Como estudar com o Homework", text: "Responda as questões corretamente. Leia a explicação quando acertar. Acerte 10 seguidas para completar a missão!" }
         };
 
@@ -2550,7 +2550,7 @@
             ],
             // Dictation data
             4: { dictation: ["one two three", "four five six", "seven eight nine", "ten one five", "three six nine", "two four eight", "five seven ten", "one four seven", "six eight two", "three five one", "nine two six", "four seven three", "eight ten five", "two nine four", "seven one eight"], isNumberCombo: true },
-            5: { dictation: ["eleven twelve thirteen", "fourteen fifteen sixteen", "seventeen eighteen nineteen", "twenty eleven fourteen", "thirteen sixteen nineteen", "twelve fifteen eighteen", "seventeen twenty eleven", "fourteen thirteen twelve", "nineteen sixteen fifteen", "eighteen eleven twenty", "twelve seventeen fourteen", "fifteen nineteen thirteen", "sixteen eighteen twelve", "twenty thirteen seventeen", "eleven fifteen nineteen"], isNumberCombo: true },
+            5: { dictation: ["thirty", "fifty", "eighty", "one hundred", "two hundred", "three hundred fifty", "five hundred", "seven hundred twenty", "nine hundred ninety nine", "one thousand", "one thousand five hundred", "two thousand", "three thousand two hundred", "five thousand", "ten thousand", "fifteen thousand", "twenty five thousand", "fifty thousand", "one hundred thousand", "one million"] },
             6: { dictation: ["CAR", "DOG", "CAT", "BUS", "SUN", "HAT", "PEN", "RED", "BOX", "CUP", "BOOK", "TREE", "FISH", "BIRD", "HAND", "STAR", "MOON", "BALL", "CAKE", "MILK", "BILL", "DOOR", "RING", "LAMP"], isSpelling: true },
             7: { dictation: ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"] },
             8: { dictation: ["run", "walk", "eat", "drink", "sleep", "work", "play", "read", "write", "speak"] },
@@ -2954,7 +2954,7 @@
                 else if (aula.specialMode === 'listening') studyLabel = 'LISTENING';
                 else if (aula.specialMode === 'chunks') studyLabel = 'CHUNKS';
                 else if (aula.specialMode === 'mistake') studyLabel = 'DETETIVE';
-                else if (aula.specialMode === 'scramble') studyLabel = 'SCRAMBLE';
+                else if (aula.specialMode === 'scramble') studyLabel = 'UNSCRAMBLE';
 
                 const isS1 = currentLevel === 'starter1';
                 const sBtn = studyLabel ? `<button class="secondary-button-sm" onclick="openStudy(${aula.id})">${studyLabel}</button>` : '';
@@ -2967,7 +2967,7 @@
                 let allStreaks = [];
                 if (aula.hasHomework && activeQuiz[aula.id]) allStreaks.push({ label: 'Homework', done: isStreakDone(aula.id, 'homework') });
                 if (aula.specialMode === 'chunks') allStreaks.push({ label: 'Chunks', done: isStreakDone(aula.id, 'chunks') });
-                if (aula.specialMode === 'scramble') allStreaks.push({ label: 'Scramble', done: isStreakDone(aula.id, 'scramble') });
+                if (aula.specialMode === 'scramble') allStreaks.push({ label: 'Unscramble', done: isStreakDone(aula.id, 'scramble') });
                 if (aula.specialMode === 'mistake') allStreaks.push({ label: 'Detetive', done: isStreakDone(aula.id, 'mistake') });
                 if (aula.thirdBtn === 'dictation') allStreaks.push({ label: 'Ditado', done: isStreakDone(aula.id, 'dictation') });
                 if (aula.thirdBtn === 'chunks') allStreaks.push({ label: 'Chunks', done: isStreakDone(aula.id, 'chunks') });
@@ -3320,6 +3320,7 @@
 
         window.guessLetter = function(letter) {
             if (hangmanGuessed.includes(letter)) return;
+            if (hangmanWrong >= hangmanMaxWrong) return;
             hangmanGuessed.push(letter);
             
             // Ler a letra em voz alta
@@ -3377,12 +3378,8 @@
             const directions = [
                 {dr: 0, dc: 1},   // right
                 {dr: 1, dc: 0},   // down
-                {dr: 1, dc: 1},   // diagonal down-right
                 {dr: 0, dc: -1},  // left
-                {dr: -1, dc: 0},  // up
-                {dr: -1, dc: -1}, // diagonal up-left
-                {dr: 1, dc: -1},  // diagonal down-left
-                {dr: -1, dc: 1}   // diagonal up-right
+                {dr: -1, dc: 0}   // up
             ];
             
             const shuffledWords = [...words].sort(() => Math.random() - 0.5);
@@ -3703,9 +3700,9 @@
             const container = document.getElementById('streak-bar-container');
             const title = document.getElementById('study-title').textContent;
             const isChunks = title.includes("CHUNKS");
-            if (isChunks || title.includes("Ditado") || title.includes("Scramble") || title.includes("Forca") || document.getElementById('study-instruction').textContent.includes("Ordene")) {
+            if (isChunks || title.includes("Ditado") || title.includes("Unscramble") || title.includes("Forca") || document.getElementById('study-instruction').textContent.includes("Ordene")) {
                 container.classList.remove('hidden');
-                const isScramble = title.includes("Scramble") || document.getElementById('study-instruction').textContent.includes("Ordene");
+                const isScramble = title.includes("Unscramble") || document.getElementById('study-instruction').textContent.includes("Ordene");
                 const isHangman = title.includes("Forca");
                 const goal = customGoal || (isScramble ? SCRAMBLE_STREAK_GOAL : isHangman ? HANGMAN_STREAK_GOAL : STREAK_GOAL);
                 const prog = customProgress !== undefined ? customProgress : currentStreak;
@@ -3954,17 +3951,16 @@
                 <div id="scramble-fb" class="hidden p-4 rounded-xl mb-6 text-center font-bold"></div>
                 <div class="scramble-dropzone mb-6 flex flex-wrap justify-center gap-2 min-h-[60px]" id="scramble-res"><span class="text-stone-400">Clique nas palavras para formar a frase...</span></div>
                 <div class="flex flex-wrap justify-center gap-3 mb-6" id="scramble-words">
-                    ${shuffled.map((w, i) => `<button class="scramble-word" data-idx="${i}" onclick="pickWord(this, '${w.replace(/'/g, "&#39;")}', '${item.full.replace(/'/g, "&#39;")}')">${w}</button>`).join('')}
+                    ${shuffled.map((w, i) => `<button class="scramble-word" data-idx="${i}" data-word="${w.replace(/"/g, '&quot;')}" data-full="${item.full.replace(/"/g, '&quot;')}" onclick="pickWord(this, this.dataset.word, this.dataset.full)">${w}</button>`).join('')}
                 </div>
                 <button class="action-button w-full hidden" id="scramble-next" onclick="window.nextRound(renderScramble)">Próxima Frase</button>
             `;
         }
 
         window.pickWord = function(btn, w, full) {
-            const decodedWord = w.replace(/&#39;/g, "'");
-            speakText(decodedWord);
+            speakText(w);
             const idx = btn.getAttribute('data-idx');
-            scrambleResult.push({ word: decodedWord, idx: idx });
+            scrambleResult.push({ word: w, idx: idx });
             btn.style.visibility = 'hidden';
             updateScrambleResult(full);
         };
@@ -3978,19 +3974,18 @@
 
         function updateScrambleResult(full) {
             const resArea = document.getElementById('scramble-res');
-            const decodedFull = full.replace(/&#39;/g, "'");
             if (scrambleResult.length === 0) {
                 resArea.innerHTML = '<span class="text-stone-400">Clique nas palavras para formar a frase...</span>';
                 return;
             }
             resArea.innerHTML = scrambleResult.map(item => 
-                `<button class="scramble-word-selected" onclick="unpickWord('${item.idx}', '${full.replace(/'/g, "&#39;")}')">${item.word}</button>`
+                `<button class="scramble-word-selected" data-idx="${item.idx}" data-full="${full.replace(/"/g, '&quot;')}" onclick="unpickWord(this.dataset.idx, this.dataset.full)">${item.word}</button>`
             ).join('');
             
-            if (scrambleResult.length === decodedFull.split(' ').length) {
+            if (scrambleResult.length === full.split(' ').length) {
                 const fb = document.getElementById('scramble-fb');
                 const resultText = scrambleResult.map(i => i.word).join(' ');
-                if (resultText.toLowerCase() === decodedFull.toLowerCase()) { 
+                if (resultText.toLowerCase() === full.toLowerCase()) { 
                     currentStreak++; 
                     renderStreakBar(); 
                     fb.innerHTML = `<span class="text-sm">Perfect! Frase correta.</span>`;
@@ -4072,13 +4067,13 @@
              const spokenText = text.includes(':') ? timeToWords(text) : text;
              
              if (isSpellingMode) {
-                 const letterPronunciation = {a:"ay",b:"bee",c:"cee",d:"dee",e:"ee",f:"ef",g:"gee",h:"aitch",i:"eye",j:"jay",k:"kay",l:"el",m:"em",n:"en",o:"oh",p:"pee",q:"cue",r:"ar",s:"ess",t:"tee",u:"you",v:"vee",w:"double you",x:"ex",y:"why",z:"zee"};
                  const letters = text.split('');
                  for (let i = 0; i < letters.length; i++) {
-                     const spoken = letterPronunciation[letters[i].toLowerCase()] || letters[i];
-                     await speakText(spoken);
+                     const l = letters[i].toUpperCase();
+                     const audio = await fetchTTSAudio("the letter " + l);
+                     if (audio) await audio.play();
                      if (i < letters.length - 1) {
-                         await new Promise(resolve => setTimeout(resolve, 400));
+                         await new Promise(resolve => setTimeout(resolve, 300));
                      }
                  }
                  btn.classList.remove('animate-pulse');
