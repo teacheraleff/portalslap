@@ -4070,7 +4070,7 @@
                  const letters = text.split('');
                  for (let i = 0; i < letters.length; i++) {
                      const l = letters[i].toUpperCase();
-                     const audio = await fetchTTSAudio("the letter " + l);
+                     const audio = await fetchTTSAudio(l);
                      if (audio) await audio.play();
                      if (i < letters.length - 1) {
                          await new Promise(resolve => setTimeout(resolve, 300));
