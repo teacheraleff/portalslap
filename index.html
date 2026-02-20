@@ -759,10 +759,8 @@
 
         <!-- MAIN CONTENT AREA -->
         <div class="app-content">
-            <header id="main-header" class="py-8 mb-10 text-center relative" style="background: #F1D24B;">
-                <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1759294967/SLAP_TIPO_PRETO_2_kismg9.png" alt="SLAP Logo" class="w-32 h-auto mx-auto mb-6">
-                <h1 class="text-3xl font-bold text-stone-800 tracking-tight mb-3">Portal do Aluno - Starter 1</h1>
-                <p class="text-stone-700 font-medium px-4 leading-relaxed max-w-2xl mx-auto mb-4">Material didático exclusivo focado em reforçar a acurácia estrutural e a confiança na comunicação.</p>
+            <header id="main-header" class="mb-10 relative">
+                <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1771626232/SLAP_HEADER-PORTAL-ALUNO_STARTER1_qsxwvh.png" alt="SLAP - Portal do Aluno Starter 1" style="width: 100%; display: block;">
             </header>
 
         <div id="dashboard-view" class="w-full">
@@ -1325,7 +1323,7 @@
                 }
 
                 var html = '';
-                for (var i = assignedIdx; i >= 0; i--) {
+                for (var i = assignedIdx; i <= assignedIdx; i++) {
                     var lvl = studentLevels[i];
                     var doc = await firebaseDb.collection('users').doc(currentUser.uid).collection('grades').doc(lvl).get();
                     var g = doc.exists ? doc.data() : {};
