@@ -592,7 +592,7 @@
                     </div>
                     <input type="file" id="teacher-avatar-upload-input" accept="image/*" style="display: none;" onchange="handleTeacherAvatarUpload(event)" data-testid="input-teacher-avatar-file">
                 </div>
-                <p style="font-size: 0.75rem; color: #a8a29e; font-weight: 500;">Professor(a),</p>
+                <p style="font-size: 0.75rem; color: #a8a29e; font-weight: 500;">Teacher,</p>
                 <p style="font-size: 0.95rem; font-weight: 800; color: #1c1917;" id="teacher-sidebar-user-name" data-testid="text-teacher-sidebar-username"></p>
             </div>
 
@@ -648,7 +648,7 @@
 
             <!-- TEACHER: STUDENTS SECTION -->
             <div id="teacher-section-students" class="w-full" style="padding: 0 1.5rem 2rem;">
-                <div class="max-w-2xl mx-auto">
+                <div style="max-width: 960px; margin: 0 auto;">
                     <div id="teacher-stats-bar" style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;"></div>
 
                     <div style="margin-bottom: 1rem; position: relative;">
@@ -662,7 +662,8 @@
 
                     <div id="teacher-pagination" style="display: none; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"></div>
 
-                    <div id="teacher-student-detail" style="display: none; background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin-top: 1rem;">
+                    <div id="teacher-student-detail-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9998; backdrop-filter: blur(2px);" onclick="closeStudentDetail()"></div>
+                    <div id="teacher-student-detail" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 92%; max-width: 640px; max-height: 85vh; overflow-y: auto; background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 8px 40px rgba(0,0,0,0.18); z-index: 9999;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                             <div>
                                 <h3 style="font-size: 1rem; font-weight: 800; color: #1c1917; font-family: 'DM Sans', sans-serif;" id="detail-student-name" data-testid="text-detail-student-name"></h3>
@@ -774,7 +775,7 @@
 
             <!-- TEACHER: RANKING SECTION -->
             <div id="teacher-section-ranking" class="w-full" style="padding: 0 1.5rem 2rem; display: none;">
-                <div class="max-w-2xl mx-auto">
+                <div style="max-width: 960px; margin: 0 auto;">
                     <div id="teacher-ranking-level-tabs" style="display: flex; gap: 0.35rem; margin-bottom: 1rem; flex-wrap: wrap;"></div>
                     <div id="teacher-ranking-content" style="display: flex; flex-direction: column; gap: 0.5rem;">
                         <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Carregando ranking...</p>
@@ -1540,6 +1541,7 @@
             allStudentsCache = [];
             selectedStudentUid = null;
             teacherCurrentPage = 1;
+            document.getElementById('teacher-student-detail-overlay').style.display = 'none';
             document.getElementById('teacher-student-detail').style.display = 'none';
             if (currentUser) {
                 var displayName = currentUser.displayName || currentUser.email.split('@')[0];
@@ -1709,6 +1711,7 @@
 
             document.getElementById('detail-student-name').textContent = student.name || 'Sem nome';
             document.getElementById('detail-student-email').textContent = student.email || '';
+            document.getElementById('teacher-student-detail-overlay').style.display = 'block';
             document.getElementById('teacher-student-detail').style.display = 'block';
             updateStudentDatesDisplay(student);
 
@@ -1741,6 +1744,7 @@
         }
 
         function closeStudentDetail() {
+            document.getElementById('teacher-student-detail-overlay').style.display = 'none';
             document.getElementById('teacher-student-detail').style.display = 'none';
             selectedStudentUid = null;
         }
@@ -2454,26 +2458,26 @@
                     students[i].streaks = streakCount;
                 }
                 students.sort(function(a, b) { return b.streaks - a.streaks; });
-                var top5 = students.slice(0, 5);
-                if (top5.length === 0 || top5[0].streaks === 0) {
+                var top10 = students.slice(0, 10);
+                if (top10.length === 0 || top10[0].streaks === 0) {
                     contentEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Nenhum aluno com streaks neste n\u00edvel ainda.</p>';
                     return;
                 }
-                var medalIcons = [
-                    '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F1D24B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#F1D24B" stroke="none">1</text></svg>',
-                    '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#a8a29e" stroke="none">2</text></svg>',
-                    '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#fb923c" stroke="none">3</text></svg>',
-                    '<div style="width: 24px; height: 24px; border-radius: 50%; background: #f5f5f4; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #78716c;">4</div>',
-                    '<div style="width: 24px; height: 24px; border-radius: 50%; background: #f5f5f4; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #78716c;">5</div>'
-                ];
-                var bgColors = ['#fef9c3', '#f5f5f4', '#fed7aa', '#fafaf9', '#fafaf9'];
-                var borderColors = ['#F1D24B', '#d6d3d1', '#fb923c', '#e7e5e4', '#e7e5e4'];
-                contentEl.innerHTML = top5.map(function(s, idx) {
+                function tRankIcon(n) {
+                    if (n === 1) return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F1D24B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#F1D24B" stroke="none">1</text></svg>';
+                    if (n === 2) return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#a8a29e" stroke="none">2</text></svg>';
+                    if (n === 3) return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#fb923c" stroke="none">3</text></svg>';
+                    return '<div style="width: 24px; height: 24px; border-radius: 50%; background: #f5f5f4; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #78716c;">' + n + '</div>';
+                }
+                function tRankBg(n) { return n === 1 ? '#fef9c3' : n === 2 ? '#f5f5f4' : n === 3 ? '#fed7aa' : '#fafaf9'; }
+                function tRankBorder(n) { return n === 1 ? '#F1D24B' : n === 2 ? '#d6d3d1' : n === 3 ? '#fb923c' : '#e7e5e4'; }
+                contentEl.innerHTML = top10.map(function(s, idx) {
+                    var pos = idx + 1;
                     var avatarHtml = s.avatarUrl
                         ? '<img src="' + s.avatarUrl + '" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">'
                         : '<div style="width: 36px; height: 36px; border-radius: 50%; background: #ede9fe; display: flex; align-items: center; justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
-                    return '<div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.75rem; background: ' + bgColors[idx] + '; border: 1px solid ' + borderColors[idx] + ';" data-testid="card-teacher-ranking-' + idx + '">' +
-                        '<div style="min-width: 28px; display: flex; align-items: center; justify-content: center;">' + medalIcons[idx] + '</div>' +
+                    return '<div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.75rem; background: ' + tRankBg(pos) + '; border: 1px solid ' + tRankBorder(pos) + ';" data-testid="card-teacher-ranking-' + idx + '">' +
+                        '<div style="min-width: 28px; display: flex; align-items: center; justify-content: center;">' + tRankIcon(pos) + '</div>' +
                         avatarHtml +
                         '<div style="flex: 1; min-width: 0;">' +
                             '<p style="font-size: 0.85rem; font-weight: 700; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + s.name + '</p>' +
