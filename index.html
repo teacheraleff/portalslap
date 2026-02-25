@@ -2320,7 +2320,7 @@
         let currentStreak = 0;
         let quizStreak = 0;
         const STREAK_GOAL = 10;
-        const SCRAMBLE_STREAK_GOAL = 7;
+        const SCRAMBLE_STREAK_GOAL = 5;
         const HANGMAN_STREAK_GOAL = 3;
         const WORDSEARCH_STREAK_GOAL = 2;
         let currentAulaId = 0;
@@ -3912,6 +3912,7 @@
         let hangmanGuessed = [];
         let hangmanWrong = 0;
         const hangmanMaxWrong = 6;
+        let hangmanUsedWords = [];
 
         window.openHangman = function(moduleId) {
             currentAulaId = moduleId;
@@ -3923,12 +3924,19 @@
             document.getElementById('study-title').textContent = "Forca";
             document.getElementById('study-instruction').textContent = "";
             currentStreak = 0;
+            hangmanUsedWords = [];
             renderStreakBar();
             startNewHangman();
         }
 
         function startNewHangman() {
-            const item = currentHangmanList[Math.floor(Math.random() * currentHangmanList.length)];
+            let available = currentHangmanList.filter(item => !hangmanUsedWords.includes(item.word));
+            if (available.length === 0) {
+                hangmanUsedWords = [];
+                available = currentHangmanList;
+            }
+            const item = available[Math.floor(Math.random() * available.length)];
+            hangmanUsedWords.push(item.word);
             hangmanWord = item.word;
             hangmanHint = item.hint;
             hangmanGuessed = [];
@@ -4508,7 +4516,7 @@
                 btn.onclick = async () => {
                     if (btn.classList.contains('playing')) return;
                     btn.classList.add('playing');
-                    const spokenWord = item.w || item.n || item;
+                    const spokenWord = item.n || item;
                     const audio = await fetchTTSAudio(spokenWord);
                     if (audio) { 
                         await audio.play(); 
