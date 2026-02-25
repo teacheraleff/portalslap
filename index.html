@@ -656,6 +656,12 @@
                         <input type="text" id="teacher-search-input" placeholder="Buscar aluno por nome ou email..." style="width: 100%; padding: 0.6rem 0.75rem 0.6rem 2.25rem; border: 2px solid #e7e5e4; border-radius: 0.5rem; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; box-sizing: border-box;" oninput="searchStudents()" data-testid="input-teacher-search">
                     </div>
 
+                    <div id="teacher-status-filter" style="display: flex; gap: 0.35rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                        <button onclick="setStudentFilter('all')" id="filter-btn-all" class="teacher-tab active" data-testid="button-filter-all">Todos</button>
+                        <button onclick="setStudentFilter('pending')" id="filter-btn-pending" class="teacher-tab" data-testid="button-filter-pending">Pendentes</button>
+                        <button onclick="setStudentFilter('approved')" id="filter-btn-approved" class="teacher-tab" data-testid="button-filter-approved">Aprovados</button>
+                    </div>
+
                     <div id="teacher-students-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
                         <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Carregando alunos...</p>
                     </div>
@@ -1369,6 +1375,11 @@
         function handleLogout() {
             if (firebaseAuth) {
                 currentUser = null;
+                setAvatarImage(null);
+                var tImg = document.getElementById('teacher-sidebar-avatar-img');
+                var tPlc = document.getElementById('teacher-sidebar-avatar-placeholder');
+                if (tImg) { tImg.src = ''; tImg.style.display = 'none'; }
+                if (tPlc) tPlc.style.display = '';
                 showScreen('login');
                 firebaseAuth.signOut();
             }
@@ -1536,6 +1547,7 @@
 
         var teacherCurrentPage = 1;
         var teacherPageSize = 10;
+        var teacherStatusFilter = 'all';
 
         function initTeacherDashboard() {
             allStudentsCache = [];
@@ -1547,15 +1559,18 @@
                 var displayName = currentUser.displayName || currentUser.email.split('@')[0];
                 var firstName = displayName.split(' ')[0];
                 document.getElementById('teacher-sidebar-user-name').textContent = firstName;
+                var tAvatarImg = document.getElementById('teacher-sidebar-avatar-img');
+                var tAvatarPlc = document.getElementById('teacher-sidebar-avatar-placeholder');
+                tAvatarImg.src = '';
+                tAvatarImg.style.display = 'none';
+                tAvatarPlc.style.display = '';
                 firebaseDb.collection('users').doc(currentUser.uid).get().then(function(doc) {
                     if (doc.exists) {
                         var data = doc.data();
                         if (data.avatarUrl) {
-                            var imgEl = document.getElementById('teacher-sidebar-avatar-img');
-                            var placeholderEl = document.getElementById('teacher-sidebar-avatar-placeholder');
-                            imgEl.src = data.avatarUrl;
-                            imgEl.style.display = '';
-                            placeholderEl.style.display = 'none';
+                            tAvatarImg.src = data.avatarUrl;
+                            tAvatarImg.style.display = '';
+                            tAvatarPlc.style.display = 'none';
                         }
                     }
                 });
@@ -1604,10 +1619,24 @@
             statsEl.innerHTML = html;
         }
 
+        function setStudentFilter(filter) {
+            teacherStatusFilter = filter;
+            teacherCurrentPage = 1;
+            document.querySelectorAll('#teacher-status-filter .teacher-tab').forEach(function(btn) { btn.classList.remove('active'); });
+            document.getElementById('filter-btn-' + filter).classList.add('active');
+            renderStudentsPaginated();
+        }
+
         function getFilteredStudents() {
             var query = document.getElementById('teacher-search-input').value.toLowerCase().trim();
-            if (!query) return allStudentsCache;
-            return allStudentsCache.filter(function(s) {
+            var list = allStudentsCache;
+            if (teacherStatusFilter === 'pending') {
+                list = list.filter(function(s) { return !s.approved; });
+            } else if (teacherStatusFilter === 'approved') {
+                list = list.filter(function(s) { return s.approved; });
+            }
+            if (!query) return list;
+            return list.filter(function(s) {
                 return (s.name || '').toLowerCase().includes(query) || (s.email || '').toLowerCase().includes(query);
             });
         }
@@ -2228,6 +2257,7 @@
 
         async function onAuthStateChanged(user) {
             currentUser = user;
+            setAvatarImage(null);
             if (user) {
                 const result = await checkUserApproval(user);
                 if (result.role === 'teacher') {
@@ -2760,7 +2790,7 @@
             { id: 10, name: "Demonstrative Pronouns", hasHomework: true, specialMode: 'scramble', desc: "Treine this, that, these e those nas frases." },
             { id: 11, name: "Verb to be", hasHomework: true, desc: "Domine o verbo to be: am, is e are." },
             { id: 12, name: "Countries and Nationalities", hasHomework: true, specialMode: 'flashcards', desc: "Aprenda países e nacionalidades em inglês." },
-            { id: 13, name: "Neighborhood", hasHomework: true, desc: "Vocabulário de lugares e locais do bairro." },
+            { id: 13, name: "Neighborhood", hasHomework: true, specialMode: 'flashcards', thirdBtn: 'chunks', desc: "Vocabulário de lugares e locais do bairro." },
             { id: 14, name: "Family Members", hasHomework: true, desc: "Pratique os nomes dos membros da família." },
             { id: 15, name: "Midterm Test", hasHomework: false, desc: "Prova intermediária do módulo." },
             { id: 16, name: "Can e Can't", hasHomework: true, specialMode: 'scramble', desc: "Pratique frases com can e can't (habilidades)." },
@@ -2821,6 +2851,18 @@
                 { front: "🍕", back: "Pizza" }, { front: "🥦", back: "Broccoli" }, { front: "🥕", back: "Carrot" },
                 { front: "🥩", back: "Steak" }, { front: "🍚", back: "Rice" }, { front: "🍦", back: "Ice cream" },
                 { front: "🍞", back: "Bread" }, { front: "🧀", back: "Cheese" }, { front: "🥬", back: "Lettuce" }
+            ],
+            13: [
+                { front: "Seguro(a)", back: "Safe" },
+                { front: "Movimentado(a)", back: "Busy" },
+                { front: "Vazio(a)", back: "Empty" },
+                { front: "Sujo(a)", back: "Dirty" },
+                { front: "Perigoso(a)", back: "Dangerous" },
+                { front: "Lotado(a)", back: "Crowded" },
+                { front: "Limpo(a)", back: "Clean" },
+                { front: "Calmo(a)", back: "Calm" },
+                { front: "Silencioso(a)", back: "Quiet" },
+                { front: "Barulhento(a)", back: "Noisy" }
             ],
             28: [
                 { front: "08:00", back: "Eight o'clock" },
@@ -2921,6 +2963,18 @@
                 { en: "Where are you from?", pt: "De onde você é?" },
                 { en: "How old are you?", pt: "Quantos anos você tem?" },
                 { en: "I'm from Brazil.", pt: "Eu sou do Brasil." }
+            ],
+            13: [
+                { en: "What's your neighborhood like?", pt: "Como é o seu bairro?" },
+                { en: "My neighborhood is very calm.", pt: "Meu bairro é muito calmo." },
+                { en: "The streets are clean and quiet.", pt: "As ruas são limpas e silenciosas." },
+                { en: "There is a big park near my house.", pt: "Tem um parque grande perto da minha casa." },
+                { en: "There are many stores in my neighborhood.", pt: "Tem muitas lojas no meu bairro." },
+                { en: "Is there a hospital near here?", pt: "Tem um hospital perto daqui?" },
+                { en: "Are there many green spaces or parks?", pt: "Tem muitos espaços verdes ou parques?" },
+                { en: "My neighborhood is safe but noisy.", pt: "Meu bairro é seguro, mas barulhento." },
+                { en: "The bus stop is always crowded.", pt: "O ponto de ônibus está sempre lotado." },
+                { en: "There are not many restaurants around here.", pt: "Não tem muitos restaurantes por aqui." }
             ]
         };
 
@@ -3200,6 +3254,23 @@
                 {q: "Complete: 'I am ____. I am from China.'", options: [{text:"Chinish", isCorrect:false}, {text:"Chinian", isCorrect:false}, {text:"Chinese", isCorrect:true}, {text:"Chines", isCorrect:false}], rationale: "China = Chinese."},
                 {q: "Escolha a frase correta sobre nacionalidade:", options: [{text:"He is Spanish. He is from Spain.", isCorrect:true}, {text:"He is Spain. He is from Spanish.", isCorrect:false}, {text:"He is Spainish. He is from Spain.", isCorrect:false}, {text:"He is Spanich. He is from Spain.", isCorrect:false}], rationale: "Spain = Spanish. O país é Spain e a nacionalidade é Spanish."}
             ],
+            13: [ // NEIGHBORHOOD (15 perguntas)
+                {q: "Complete: 'My neighborhood is very ____. There is no noise.'", options: [{text:"noisy", isCorrect:false}, {text:"crowded", isCorrect:false}, {text:"quiet", isCorrect:true}, {text:"dangerous", isCorrect:false}], rationale: "Quiet = silencioso. Sem barulho = quiet."},
+                {q: "Qual é o oposto de 'dirty'?", options: [{text:"noisy", isCorrect:false}, {text:"clean", isCorrect:true}, {text:"empty", isCorrect:false}, {text:"busy", isCorrect:false}], rationale: "Dirty (sujo) x Clean (limpo)."},
+                {q: "Complete: 'The streets are always ____. There are many cars and people.'", options: [{text:"empty", isCorrect:false}, {text:"quiet", isCorrect:false}, {text:"calm", isCorrect:false}, {text:"busy", isCorrect:true}], rationale: "Busy = movimentado. Muitos carros e pessoas = busy."},
+                {q: "Escolha a frase correta:", options: [{text:"There is many parks in my neighborhood.", isCorrect:false}, {text:"There are many parks in my neighborhood.", isCorrect:true}, {text:"There are a park in my neighborhood.", isCorrect:false}, {text:"There is parks in my neighborhood.", isCorrect:false}], rationale: "'Parks' é plural, então usamos 'There are'."},
+                {q: "Complete: 'My neighborhood is ____. You can walk alone at night.'", options: [{text:"dangerous", isCorrect:false}, {text:"dirty", isCorrect:false}, {text:"safe", isCorrect:true}, {text:"noisy", isCorrect:false}], rationale: "Safe = seguro. Se pode andar sozinho à noite, é seguro."},
+                {q: "Qual é o oposto de 'quiet'?", options: [{text:"calm", isCorrect:false}, {text:"clean", isCorrect:false}, {text:"empty", isCorrect:false}, {text:"noisy", isCorrect:true}], rationale: "Quiet (silencioso) x Noisy (barulhento)."},
+                {q: "Complete: '____ there a supermarket near your house?'", options: [{text:"Are", isCorrect:false}, {text:"Is", isCorrect:true}, {text:"Do", isCorrect:false}, {text:"Has", isCorrect:false}], rationale: "'A supermarket' é singular, então usamos 'Is there'."},
+                {q: "Complete: 'The park is ____ on Mondays. Nobody goes there.'", options: [{text:"crowded", isCorrect:false}, {text:"busy", isCorrect:false}, {text:"noisy", isCorrect:false}, {text:"empty", isCorrect:true}], rationale: "Empty = vazio. Ninguém vai lá = empty."},
+                {q: "Escolha a frase correta:", options: [{text:"Is there many restaurants here?", isCorrect:false}, {text:"Are there many restaurants here?", isCorrect:true}, {text:"There are many restaurants here?", isCorrect:false}, {text:"Has there many restaurants here?", isCorrect:false}], rationale: "'Restaurants' é plural, então usamos 'Are there'."},
+                {q: "Complete: 'The beach is always ____ on weekends. There are too many people.'", options: [{text:"empty", isCorrect:false}, {text:"quiet", isCorrect:false}, {text:"crowded", isCorrect:true}, {text:"calm", isCorrect:false}], rationale: "Crowded = lotado. Muitas pessoas = crowded."},
+                {q: "Qual é o oposto de 'safe'?", options: [{text:"clean", isCorrect:false}, {text:"calm", isCorrect:false}, {text:"dangerous", isCorrect:true}, {text:"quiet", isCorrect:false}], rationale: "Safe (seguro) x Dangerous (perigoso)."},
+                {q: "Complete: 'There ____ a hospital in my neighborhood.'", options: [{text:"are", isCorrect:false}, {text:"is", isCorrect:true}, {text:"have", isCorrect:false}, {text:"has", isCorrect:false}], rationale: "'A hospital' é singular = There is."},
+                {q: "Leia o texto: 'My neighborhood is calm and clean. There are many trees and a big park. There is a school near my house. The streets are quiet.' Qual adjetivo NÃO descreve este bairro?", options: [{text:"calm", isCorrect:false}, {text:"clean", isCorrect:false}, {text:"noisy", isCorrect:true}, {text:"quiet", isCorrect:false}], rationale: "O texto diz que o bairro é calm, clean e quiet. Noisy (barulhento) é o oposto."},
+                {q: "Complete: '____ there any green spaces or parks in your neighborhood?'", options: [{text:"Is", isCorrect:false}, {text:"Are", isCorrect:true}, {text:"Do", isCorrect:false}, {text:"Does", isCorrect:false}], rationale: "'Green spaces or parks' é plural = Are there."},
+                {q: "Complete a descrição: 'I live in a ____ neighborhood. The streets are dirty and there is a lot of noise at night.'", options: [{text:"safe and calm", isCorrect:false}, {text:"clean and quiet", isCorrect:false}, {text:"dirty and noisy", isCorrect:true}, {text:"empty and clean", isCorrect:false}], rationale: "Ruas sujas + muito barulho = dirty and noisy."}
+            ],
             16: [ // CAN E CAN'T (15 perguntas)
                 {q: "Complete a frase: 'I ____ speak English.'", options: [{text:"am", isCorrect:false}, {text:"do", isCorrect:false}, {text:"can", isCorrect:true}, {text:"have", isCorrect:false}], rationale: "Usamos 'can' para expressar habilidade: I can speak English."},
                 {q: "Escolha a forma negativa correta: 'She ____ drive a car.'", options: [{text:"can not", isCorrect:false}, {text:"don't can", isCorrect:false}, {text:"can't", isCorrect:true}, {text:"doesn't can", isCorrect:false}], rationale: "A forma negativa de 'can' é 'can't' (cannot)."},
@@ -3250,6 +3321,159 @@
                 {q: "Qual frase está correta?", options: [{text:"The dog is their's", isCorrect:false}, {text:"The dog is theirs", isCorrect:true}, {text:"The dog is them", isCorrect:false}, {text:"The dog is they", isCorrect:false}], rationale: "Theirs nunca leva apóstrofo. Pronomes possessivos não usam apóstrofo."},
                 {q: "Complete: 'His bike is new. ____ is old.' (dela)", options: [{text:"Her", isCorrect:false}, {text:"Hers", isCorrect:true}, {text:"She", isCorrect:false}, {text:"She's", isCorrect:false}], rationale: "Hers substitui 'her bike': Hers is old."},
                 {q: "Escolha a frase correta:", options: [{text:"This laptop is our", isCorrect:false}, {text:"This laptop is us", isCorrect:false}, {text:"This laptop is we", isCorrect:false}, {text:"This laptop is ours", isCorrect:true}], rationale: "Ours = nosso (pronome possessivo que substitui 'our laptop')."}
+            ],
+            14: [ // FAMILY MEMBERS + GENITIVE CASE (15 perguntas)
+                {q: "Como se diz 'mãe' em inglês?", options: [{text:"Father", isCorrect:false}, {text:"Mother", isCorrect:true}, {text:"Sister", isCorrect:false}, {text:"Daughter", isCorrect:false}], rationale: "Mother = mãe."},
+                {q: "Qual é o parentesco? 'My father's brother is my ____.'", options: [{text:"cousin", isCorrect:false}, {text:"nephew", isCorrect:false}, {text:"uncle", isCorrect:true}, {text:"grandfather", isCorrect:false}], rationale: "O irmão do meu pai é meu uncle (tio)."},
+                {q: "Complete com o genitive case: 'This is ____ car.' (do João)", options: [{text:"João", isCorrect:false}, {text:"Joãos", isCorrect:false}, {text:"João's", isCorrect:true}, {text:"of João", isCorrect:false}], rationale: "Para posse de pessoas, usamos 's: João's car."},
+                {q: "Como se diz 'avó' em inglês?", options: [{text:"Aunt", isCorrect:false}, {text:"Grandmother", isCorrect:true}, {text:"Mother-in-law", isCorrect:false}, {text:"Niece", isCorrect:false}], rationale: "Grandmother = avó (grandma informalmente)."},
+                {q: "Complete: 'My mother's mother is my ____.'", options: [{text:"aunt", isCorrect:false}, {text:"sister", isCorrect:false}, {text:"grandmother", isCorrect:true}, {text:"mother-in-law", isCorrect:false}], rationale: "A mãe da minha mãe é minha grandmother (avó)."},
+                {q: "Qual é a forma correta do genitive case?", options: [{text:"The car of my father", isCorrect:false}, {text:"My father car", isCorrect:false}, {text:"My father's car", isCorrect:true}, {text:"My fathers car", isCorrect:false}], rationale: "Genitive case com pessoas: my father's car (o carro do meu pai)."},
+                {q: "Como se diz 'sobrinho' em inglês?", options: [{text:"Cousin", isCorrect:false}, {text:"Nephew", isCorrect:true}, {text:"Niece", isCorrect:false}, {text:"Uncle", isCorrect:false}], rationale: "Nephew = sobrinho. Niece = sobrinha."},
+                {q: "Complete: 'My sister's son is my ____.'", options: [{text:"cousin", isCorrect:false}, {text:"uncle", isCorrect:false}, {text:"nephew", isCorrect:true}, {text:"brother", isCorrect:false}], rationale: "O filho da minha irmã é meu nephew (sobrinho)."},
+                {q: "Escolha a frase correta:", options: [{text:"The childrens' toys", isCorrect:false}, {text:"The children's toys", isCorrect:true}, {text:"The children toys", isCorrect:false}, {text:"The childrens toys", isCorrect:false}], rationale: "Plurais irregulares (children) recebem 's: children's toys."},
+                {q: "Como se diz 'genro' em inglês?", options: [{text:"Father-in-law", isCorrect:false}, {text:"Brother-in-law", isCorrect:false}, {text:"Son-in-law", isCorrect:true}, {text:"Stepson", isCorrect:false}], rationale: "Son-in-law = genro. Daughter-in-law = nora."},
+                {q: "Complete: 'My ____ is my mother's sister.'", options: [{text:"cousin", isCorrect:false}, {text:"aunt", isCorrect:true}, {text:"niece", isCorrect:false}, {text:"grandmother", isCorrect:false}], rationale: "A irmã da minha mãe é minha aunt (tia)."},
+                {q: "Qual é a forma correta do possessivo para nomes terminados em 's'?", options: [{text:"James book", isCorrect:false}, {text:"James' book", isCorrect:true}, {text:"Jame's book", isCorrect:false}, {text:"James his book", isCorrect:false}], rationale: "Nomes terminados em 's' podem receber apenas o apóstrofo: James' book."},
+                {q: "Como se diz 'neto' em inglês?", options: [{text:"Nephew", isCorrect:false}, {text:"Son", isCorrect:false}, {text:"Grandson", isCorrect:true}, {text:"Cousin", isCorrect:false}], rationale: "Grandson = neto. Granddaughter = neta."},
+                {q: "Complete: 'My parents' house is big.' O que 'parents'' indica?", options: [{text:"Um pai", isCorrect:false}, {text:"Posse de mais de um pai (meus pais)", isCorrect:true}, {text:"Erro de gramática", isCorrect:false}, {text:"O nome da casa", isCorrect:false}], rationale: "Plurais regulares (parents) recebem apenas o apóstrofo: parents' house."},
+                {q: "Qual é o parentesco? 'My aunt's daughter is my ____.'", options: [{text:"sister", isCorrect:false}, {text:"niece", isCorrect:false}, {text:"cousin", isCorrect:true}, {text:"daughter", isCorrect:false}], rationale: "A filha da minha tia é minha cousin (prima)."}
+            ],
+            18: [ // SIMPLE PRESENT PT. 1 - AFIRMATIVO (15 perguntas)
+                {q: "Complete: 'She ____ to school every day.'", options: [{text:"go", isCorrect:false}, {text:"goes", isCorrect:true}, {text:"going", isCorrect:false}, {text:"gone", isCorrect:false}], rationale: "She (3ª pessoa) = goes. No Simple Present, he/she/it recebe -s ou -es."},
+                {q: "Escolha a frase correta no Simple Present:", options: [{text:"I plays guitar", isCorrect:false}, {text:"I play guitar", isCorrect:true}, {text:"I playing guitar", isCorrect:false}, {text:"I am play guitar", isCorrect:false}], rationale: "I/you/we/they + verbo sem alteração: I play."},
+                {q: "Complete: 'He ____ coffee every morning.'", options: [{text:"drink", isCorrect:false}, {text:"drinks", isCorrect:true}, {text:"drinking", isCorrect:false}, {text:"drinkes", isCorrect:false}], rationale: "He (3ª pessoa) + drinks. Verbo recebe -s."},
+                {q: "Complete: 'They ____ English at school.'", options: [{text:"studies", isCorrect:false}, {text:"studys", isCorrect:false}, {text:"study", isCorrect:true}, {text:"studyes", isCorrect:false}], rationale: "They + verbo sem alteração: They study."},
+                {q: "Qual é a forma correta? 'She ____ the dishes after dinner.'", options: [{text:"wash", isCorrect:false}, {text:"washes", isCorrect:true}, {text:"washs", isCorrect:false}, {text:"washing", isCorrect:false}], rationale: "Verbos terminados em -sh recebem -es na 3ª pessoa: washes."},
+                {q: "Complete: 'My brother ____ soccer on weekends.'", options: [{text:"play", isCorrect:false}, {text:"plays", isCorrect:true}, {text:"playes", isCorrect:false}, {text:"playing", isCorrect:false}], rationale: "My brother = he (3ª pessoa) = plays."},
+                {q: "Escolha a frase INCORRETA:", options: [{text:"She lives in São Paulo", isCorrect:false}, {text:"We work at a hospital", isCorrect:false}, {text:"He have two dogs", isCorrect:true}, {text:"I like pizza", isCorrect:false}], rationale: "He have está errado. O correto é 'He has' (have na 3ª pessoa = has)."},
+                {q: "Complete: 'She ____ TV at night.'", options: [{text:"watch", isCorrect:false}, {text:"watchs", isCorrect:false}, {text:"watches", isCorrect:true}, {text:"watching", isCorrect:false}], rationale: "Verbos terminados em -ch recebem -es: watches."},
+                {q: "Complete: 'I ____ breakfast at 7 a.m.'", options: [{text:"has", isCorrect:false}, {text:"have", isCorrect:true}, {text:"haves", isCorrect:false}, {text:"having", isCorrect:false}], rationale: "I + have (não has). Has é só para he/she/it."},
+                {q: "Complete: 'My parents ____ in a big house.'", options: [{text:"lives", isCorrect:false}, {text:"live", isCorrect:true}, {text:"living", isCorrect:false}, {text:"is live", isCorrect:false}], rationale: "My parents = they + verbo sem alteração: live."},
+                {q: "Quando usamos o Simple Present?", options: [{text:"Para ações que estão acontecendo agora", isCorrect:false}, {text:"Para hábitos e rotinas", isCorrect:true}, {text:"Para planos futuros", isCorrect:false}, {text:"Para ações no passado", isCorrect:false}], rationale: "Simple Present = hábitos, rotinas, fatos e verdades gerais."},
+                {q: "Complete: 'Ana ____ hard every day.'", options: [{text:"work", isCorrect:false}, {text:"works", isCorrect:true}, {text:"working", isCorrect:false}, {text:"workes", isCorrect:false}], rationale: "Ana = she (3ª pessoa) = works."},
+                {q: "Complete: 'The class ____ at 8 o'clock.'", options: [{text:"start", isCorrect:false}, {text:"starts", isCorrect:true}, {text:"starting", isCorrect:false}, {text:"startes", isCorrect:false}], rationale: "The class = it (3ª pessoa) = starts."},
+                {q: "Complete: 'My dog ____ a lot.'", options: [{text:"bark", isCorrect:false}, {text:"barks", isCorrect:true}, {text:"barkes", isCorrect:false}, {text:"barking", isCorrect:false}], rationale: "My dog = it (3ª pessoa) = barks."},
+                {q: "Qual regra é correta para a 3ª pessoa no Simple Present?", options: [{text:"Sempre adiciona -ing", isCorrect:false}, {text:"Adiciona -s ou -es ao verbo", isCorrect:true}, {text:"Usa o auxiliar 'do'", isCorrect:false}, {text:"Não muda nada", isCorrect:false}], rationale: "Na 3ª pessoa (he/she/it) do Simple Present afirmativo, adicionamos -s ou -es."}
+            ],
+            19: [ // SIMPLE PRESENT PT. 2 - NEGATIVO E INTERROGATIVO (15 perguntas)
+                {q: "Complete a negativa: 'She ____ like chocolate.'", options: [{text:"don't", isCorrect:false}, {text:"doesn't", isCorrect:true}, {text:"isn't", isCorrect:false}, {text:"not", isCorrect:false}], rationale: "She (3ª pessoa) = doesn't + verbo na forma base."},
+                {q: "Complete a pergunta: '____ you speak English?'", options: [{text:"Does", isCorrect:false}, {text:"Do", isCorrect:true}, {text:"Are", isCorrect:false}, {text:"Is", isCorrect:false}], rationale: "You = Do you...? (auxiliar 'do' para I/you/we/they)."},
+                {q: "Complete: 'He ____ work on Sundays.'", options: [{text:"don't", isCorrect:false}, {text:"doesn't", isCorrect:true}, {text:"isn't", isCorrect:false}, {text:"aren't", isCorrect:false}], rationale: "He (3ª pessoa) = doesn't. O verbo fica na forma base (work, não works)."},
+                {q: "Complete a pergunta: '____ she live in Brazil?'", options: [{text:"Do", isCorrect:false}, {text:"Does", isCorrect:true}, {text:"Is", isCorrect:false}, {text:"Are", isCorrect:false}], rationale: "She (3ª pessoa) = Does she...? O verbo fica na forma base."},
+                {q: "Escolha a frase CORRETA:", options: [{text:"She doesn't likes pizza", isCorrect:false}, {text:"She doesn't like pizza", isCorrect:true}, {text:"She don't like pizza", isCorrect:false}, {text:"She not like pizza", isCorrect:false}], rationale: "Doesn't + verbo na forma base (sem -s): doesn't like."},
+                {q: "Complete: 'We ____ eat meat. We are vegetarians.'", options: [{text:"doesn't", isCorrect:false}, {text:"don't", isCorrect:true}, {text:"aren't", isCorrect:false}, {text:"isn't", isCorrect:false}], rationale: "We = don't + verbo na forma base."},
+                {q: "Complete a pergunta: '____ they play soccer?'", options: [{text:"Does", isCorrect:false}, {text:"Do", isCorrect:true}, {text:"Are", isCorrect:false}, {text:"Is", isCorrect:false}], rationale: "They = Do they...?"},
+                {q: "Qual é a resposta correta? — Does he speak French? — No, he ____.", options: [{text:"don't", isCorrect:false}, {text:"doesn't", isCorrect:true}, {text:"isn't", isCorrect:false}, {text:"not", isCorrect:false}], rationale: "Does he...? → No, he doesn't."},
+                {q: "Escolha a pergunta correta:", options: [{text:"Does you like music?", isCorrect:false}, {text:"Do you like music?", isCorrect:true}, {text:"Are you like music?", isCorrect:false}, {text:"You like music?", isCorrect:false}], rationale: "You = Do you...? (não 'does' nem 'are')."},
+                {q: "Complete: 'I ____ understand this exercise.'", options: [{text:"doesn't", isCorrect:false}, {text:"don't", isCorrect:true}, {text:"isn't", isCorrect:false}, {text:"am not", isCorrect:false}], rationale: "I = don't + verbo na forma base."},
+                {q: "Escolha a frase INCORRETA:", options: [{text:"Does she work here?", isCorrect:false}, {text:"Do they live in Rio?", isCorrect:false}, {text:"Does he plays guitar?", isCorrect:true}, {text:"Do you have a pen?", isCorrect:false}], rationale: "'Does he plays' está errado. Com 'does', o verbo fica na base: Does he play."},
+                {q: "Complete: 'My sister ____ drive. She takes the bus.'", options: [{text:"don't", isCorrect:false}, {text:"doesn't", isCorrect:true}, {text:"isn't", isCorrect:false}, {text:"not", isCorrect:false}], rationale: "My sister = she = doesn't."},
+                {q: "Qual é a resposta correta? — Do you like pizza? — Yes, I ____.", options: [{text:"does", isCorrect:false}, {text:"do", isCorrect:true}, {text:"am", isCorrect:false}, {text:"like", isCorrect:false}], rationale: "Do you...? → Yes, I do."},
+                {q: "Complete a pergunta: 'Where ____ your parents live?'", options: [{text:"does", isCorrect:false}, {text:"do", isCorrect:true}, {text:"are", isCorrect:false}, {text:"is", isCorrect:false}], rationale: "Your parents = they = Where do they live?"},
+                {q: "Escolha a negativa correta:", options: [{text:"They doesn't have a car", isCorrect:false}, {text:"They not have a car", isCorrect:false}, {text:"They don't have a car", isCorrect:true}, {text:"They aren't have a car", isCorrect:false}], rationale: "They = don't + verbo na forma base: don't have."}
+            ],
+            20: [ // OBJECT PRONOUNS (15 perguntas)
+                {q: "Complete: 'I love ____.' (ela)", options: [{text:"she", isCorrect:false}, {text:"her", isCorrect:true}, {text:"hers", isCorrect:false}, {text:"she's", isCorrect:false}], rationale: "Her = ela (objeto). Após o verbo usamos object pronouns: I love her."},
+                {q: "Complete: 'Can you help ____?' (eu)", options: [{text:"I", isCorrect:false}, {text:"my", isCorrect:false}, {text:"me", isCorrect:true}, {text:"mine", isCorrect:false}], rationale: "Me = eu (objeto). Após o verbo: help me."},
+                {q: "Complete: 'Tell ____ the truth.' (ele)", options: [{text:"he", isCorrect:false}, {text:"his", isCorrect:false}, {text:"him", isCorrect:true}, {text:"he's", isCorrect:false}], rationale: "Him = ele (objeto). Tell him."},
+                {q: "Qual é o object pronoun de 'we'?", options: [{text:"our", isCorrect:false}, {text:"ours", isCorrect:false}, {text:"us", isCorrect:true}, {text:"we", isCorrect:false}], rationale: "We (sujeito) → Us (objeto). Ex: Call us."},
+                {q: "Complete: 'I saw ____ at the park.' (eles)", options: [{text:"they", isCorrect:false}, {text:"their", isCorrect:false}, {text:"them", isCorrect:true}, {text:"theirs", isCorrect:false}], rationale: "Them = eles/elas (objeto). I saw them."},
+                {q: "Complete: 'She gave ____ a present.' (eu)", options: [{text:"I", isCorrect:false}, {text:"me", isCorrect:true}, {text:"my", isCorrect:false}, {text:"mine", isCorrect:false}], rationale: "Me = eu (objeto). She gave me a present."},
+                {q: "Qual é o object pronoun de 'it'?", options: [{text:"its", isCorrect:false}, {text:"it's", isCorrect:false}, {text:"it", isCorrect:true}, {text:"that", isCorrect:false}], rationale: "It permanece igual como subject e object pronoun: I like it."},
+                {q: "Complete: 'Listen to ____!' (nós)", options: [{text:"we", isCorrect:false}, {text:"our", isCorrect:false}, {text:"us", isCorrect:true}, {text:"ours", isCorrect:false}], rationale: "Us = nós (objeto). Listen to us."},
+                {q: "Escolha a frase correta:", options: [{text:"He called she yesterday", isCorrect:false}, {text:"He called her yesterday", isCorrect:true}, {text:"He called hers yesterday", isCorrect:false}, {text:"He called she's yesterday", isCorrect:false}], rationale: "Após o verbo, usamos object pronoun: her (não she)."},
+                {q: "Complete: 'Do you know ____?' (ele)", options: [{text:"he", isCorrect:false}, {text:"his", isCorrect:false}, {text:"him", isCorrect:true}, {text:"he's", isCorrect:false}], rationale: "Him = ele (objeto). Do you know him?"},
+                {q: "Complete: 'My teacher likes ____.' (nós)", options: [{text:"we", isCorrect:false}, {text:"us", isCorrect:true}, {text:"our", isCorrect:false}, {text:"ours", isCorrect:false}], rationale: "Us = nós (objeto). My teacher likes us."},
+                {q: "Escolha a frase INCORRETA:", options: [{text:"Call me later", isCorrect:false}, {text:"I love them", isCorrect:false}, {text:"She told he the answer", isCorrect:true}, {text:"Give us the ball", isCorrect:false}], rationale: "'She told he' está errado. O correto é 'She told him' (object pronoun)."},
+                {q: "Complete: 'Send ____ an email, please.' (ela)", options: [{text:"she", isCorrect:false}, {text:"her", isCorrect:true}, {text:"hers", isCorrect:false}, {text:"she's", isCorrect:false}], rationale: "Her = ela (objeto). Send her an email."},
+                {q: "Complete: 'I don't understand ____.' (você)", options: [{text:"your", isCorrect:false}, {text:"yours", isCorrect:false}, {text:"you", isCorrect:true}, {text:"you're", isCorrect:false}], rationale: "You serve tanto como subject quanto como object pronoun."},
+                {q: "Complete a tabela: I → me, you → you, he → him, she → her, it → it, we → us, they → ____.", options: [{text:"their", isCorrect:false}, {text:"theirs", isCorrect:false}, {text:"them", isCorrect:true}, {text:"they", isCorrect:false}], rationale: "They (sujeito) → Them (objeto)."}
+            ],
+            21: [ // LIKES AND DISLIKES (15 perguntas)
+                {q: "Complete: 'I ____ chocolate. It's delicious!'", options: [{text:"like", isCorrect:true}, {text:"likes", isCorrect:false}, {text:"liking", isCorrect:false}, {text:"liked", isCorrect:false}], rationale: "I + like (sem -s). A forma base é usada com I/you/we/they."},
+                {q: "Complete: 'She ____ horror movies.'", options: [{text:"don't like", isCorrect:false}, {text:"doesn't like", isCorrect:true}, {text:"doesn't likes", isCorrect:false}, {text:"not like", isCorrect:false}], rationale: "She (3ª pessoa) = doesn't like. O verbo fica na forma base após doesn't."},
+                {q: "Qual verbo expressa 'odiar'?", options: [{text:"love", isCorrect:false}, {text:"like", isCorrect:false}, {text:"hate", isCorrect:true}, {text:"enjoy", isCorrect:false}], rationale: "Hate = odiar. É o oposto de love."},
+                {q: "Complete: 'He ____ playing soccer.'", options: [{text:"enjoy", isCorrect:false}, {text:"enjoys", isCorrect:true}, {text:"enjoying", isCorrect:false}, {text:"enjoyes", isCorrect:false}], rationale: "He (3ª pessoa) = enjoys. Enjoy + -s."},
+                {q: "Escolha a frase correta:", options: [{text:"I like swim", isCorrect:false}, {text:"I like swimming", isCorrect:true}, {text:"I like to swimming", isCorrect:false}, {text:"I liking swim", isCorrect:false}], rationale: "Like + verbo-ing: I like swimming. Também aceita: I like to swim."},
+                {q: "Complete: '____ you like coffee?'", options: [{text:"Does", isCorrect:false}, {text:"Do", isCorrect:true}, {text:"Are", isCorrect:false}, {text:"Is", isCorrect:false}], rationale: "You = Do you like...?"},
+                {q: "Complete: 'They ____ spicy food. It's too hot for them.'", options: [{text:"love", isCorrect:false}, {text:"like", isCorrect:false}, {text:"don't like", isCorrect:true}, {text:"doesn't like", isCorrect:false}], rationale: "They = don't like. É forte demais para eles = não gostam."},
+                {q: "Qual é a ordem correta de preferência? (do mais positivo ao mais negativo)", options: [{text:"like, love, hate", isCorrect:false}, {text:"love, like, don't mind, don't like, hate", isCorrect:true}, {text:"hate, don't like, like", isCorrect:false}, {text:"love, hate, like", isCorrect:false}], rationale: "Love > Like > Don't mind > Don't like > Hate."},
+                {q: "Complete: 'My mother ____ cooking. She makes great food!'", options: [{text:"love", isCorrect:false}, {text:"loves", isCorrect:true}, {text:"loving", isCorrect:false}, {text:"loveing", isCorrect:false}], rationale: "My mother = she = loves."},
+                {q: "Escolha a resposta correta: — Do you like pizza? — Yes, ____.", options: [{text:"I likes", isCorrect:false}, {text:"I do", isCorrect:true}, {text:"I am", isCorrect:false}, {text:"I does", isCorrect:false}], rationale: "Do you...? → Yes, I do."},
+                {q: "Complete: 'He doesn't ____ waking up early.'", options: [{text:"likes", isCorrect:false}, {text:"like", isCorrect:true}, {text:"liking", isCorrect:false}, {text:"liked", isCorrect:false}], rationale: "Após doesn't, o verbo fica na forma base: doesn't like."},
+                {q: "Complete: 'I ____ reading books. It's okay, not great.'", options: [{text:"love", isCorrect:false}, {text:"hate", isCorrect:false}, {text:"don't mind", isCorrect:true}, {text:"can't stand", isCorrect:false}], rationale: "Don't mind = não me importo / é ok. Algo neutro."},
+                {q: "Escolha a frase INCORRETA:", options: [{text:"She likes dancing", isCorrect:false}, {text:"They enjoy traveling", isCorrect:false}, {text:"He like music", isCorrect:true}, {text:"I love pizza", isCorrect:false}], rationale: "'He like' está errado. O correto é 'He likes' (3ª pessoa + -s)."},
+                {q: "Complete: 'I can't stand ____. It's terrible!'", options: [{text:"wait", isCorrect:false}, {text:"to wait", isCorrect:false}, {text:"waiting", isCorrect:true}, {text:"waited", isCorrect:false}], rationale: "Can't stand + verbo-ing: can't stand waiting."},
+                {q: "Complete: '____ she like traveling?'", options: [{text:"Do", isCorrect:false}, {text:"Does", isCorrect:true}, {text:"Is", isCorrect:false}, {text:"Are", isCorrect:false}], rationale: "She = Does she like...?"}
+            ],
+            22: [ // FREE TIME ACTIVITIES (15 perguntas)
+                {q: "Como se diz 'assistir TV' em inglês?", options: [{text:"see TV", isCorrect:false}, {text:"look TV", isCorrect:false}, {text:"watch TV", isCorrect:true}, {text:"view TV", isCorrect:false}], rationale: "Watch TV é a expressão correta para assistir televisão."},
+                {q: "Complete: 'I ____ to music every day.'", options: [{text:"hear", isCorrect:false}, {text:"listen", isCorrect:true}, {text:"listen to", isCorrect:false}, {text:"hearing", isCorrect:false}], rationale: "Listen to music. 'I listen to music' (listen + to + complemento)."},
+                {q: "Qual atividade significa 'andar de bicicleta'?", options: [{text:"drive a bike", isCorrect:false}, {text:"ride a bike", isCorrect:true}, {text:"run a bike", isCorrect:false}, {text:"walk a bike", isCorrect:false}], rationale: "Ride a bike = andar de bicicleta."},
+                {q: "Complete: 'She likes ____ books in her free time.'", options: [{text:"read", isCorrect:false}, {text:"reads", isCorrect:false}, {text:"reading", isCorrect:true}, {text:"to reads", isCorrect:false}], rationale: "Like + verbo-ing: likes reading."},
+                {q: "Como se diz 'jogar videogame' em inglês?", options: [{text:"do video games", isCorrect:false}, {text:"make video games", isCorrect:false}, {text:"play video games", isCorrect:true}, {text:"run video games", isCorrect:false}], rationale: "Play video games = jogar videogame."},
+                {q: "Complete: 'What do you do in your ____ time?'", options: [{text:"empty", isCorrect:false}, {text:"free", isCorrect:true}, {text:"open", isCorrect:false}, {text:"blank", isCorrect:false}], rationale: "Free time = tempo livre."},
+                {q: "Qual é a diferença entre 'play' e 'do' com esportes?", options: [{text:"São iguais", isCorrect:false}, {text:"Play para esportes com bola, Do para exercícios individuais", isCorrect:true}, {text:"Do para todos os esportes", isCorrect:false}, {text:"Play só para futebol", isCorrect:false}], rationale: "Play soccer/basketball (com bola). Do yoga/karate (exercício individual)."},
+                {q: "Complete: 'He ____ the guitar very well.'", options: [{text:"does", isCorrect:false}, {text:"makes", isCorrect:false}, {text:"plays", isCorrect:true}, {text:"goes", isCorrect:false}], rationale: "Play + instrumento musical: plays the guitar."},
+                {q: "Como se diz 'sair com amigos' em inglês?", options: [{text:"go out with friends", isCorrect:true}, {text:"exit with friends", isCorrect:false}, {text:"leave with friends", isCorrect:false}, {text:"out with friends", isCorrect:false}], rationale: "Go out with friends = sair com amigos."},
+                {q: "Complete: 'They ____ for a walk every evening.'", options: [{text:"make", isCorrect:false}, {text:"do", isCorrect:false}, {text:"go", isCorrect:true}, {text:"take", isCorrect:false}], rationale: "Go for a walk = ir caminhar."},
+                {q: "Qual expressão significa 'tirar fotos'?", options: [{text:"make photos", isCorrect:false}, {text:"do photos", isCorrect:false}, {text:"take photos", isCorrect:true}, {text:"get photos", isCorrect:false}], rationale: "Take photos/pictures = tirar fotos."},
+                {q: "Complete: 'I enjoy ____ to the cinema on weekends.'", options: [{text:"go", isCorrect:false}, {text:"to go", isCorrect:false}, {text:"going", isCorrect:true}, {text:"goes", isCorrect:false}], rationale: "Enjoy + verbo-ing: enjoy going."},
+                {q: "Como se diz 'cozinhar' em inglês?", options: [{text:"kitchen", isCorrect:false}, {text:"cook", isCorrect:true}, {text:"cooker", isCorrect:false}, {text:"cooking", isCorrect:false}], rationale: "Cook = cozinhar (verbo). Kitchen = cozinha (substantivo)."},
+                {q: "Complete: 'We usually ____ shopping on Saturdays.'", options: [{text:"do", isCorrect:false}, {text:"make", isCorrect:false}, {text:"go", isCorrect:true}, {text:"play", isCorrect:false}], rationale: "Go shopping = ir às compras."},
+                {q: "Complete: 'She ____ exercise three times a week.'", options: [{text:"makes", isCorrect:false}, {text:"does", isCorrect:true}, {text:"plays", isCorrect:false}, {text:"goes", isCorrect:false}], rationale: "Do exercise = fazer exercício."}
+            ],
+            23: [ // MONTHS AND HOLIDAYS (15 perguntas)
+                {q: "Qual é o primeiro mês do ano em inglês?", options: [{text:"February", isCorrect:false}, {text:"January", isCorrect:true}, {text:"March", isCorrect:false}, {text:"December", isCorrect:false}], rationale: "January = Janeiro, o primeiro mês do ano."},
+                {q: "Em qual mês é o Natal (Christmas)?", options: [{text:"November", isCorrect:false}, {text:"October", isCorrect:false}, {text:"December", isCorrect:true}, {text:"January", isCorrect:false}], rationale: "Christmas é em December (dezembro)."},
+                {q: "Complete: 'My birthday is ____ July.'", options: [{text:"at", isCorrect:false}, {text:"on", isCorrect:false}, {text:"in", isCorrect:true}, {text:"to", isCorrect:false}], rationale: "Usamos 'in' com meses: in July, in March, in December."},
+                {q: "Qual mês vem depois de March?", options: [{text:"February", isCorrect:false}, {text:"May", isCorrect:false}, {text:"April", isCorrect:true}, {text:"June", isCorrect:false}], rationale: "A sequência é March → April (abril)."},
+                {q: "Como se diz 'Páscoa' em inglês?", options: [{text:"Christmas", isCorrect:false}, {text:"Thanksgiving", isCorrect:false}, {text:"Easter", isCorrect:true}, {text:"Carnival", isCorrect:false}], rationale: "Easter = Páscoa."},
+                {q: "Qual é o mês mais curto do ano?", options: [{text:"January", isCorrect:false}, {text:"February", isCorrect:true}, {text:"April", isCorrect:false}, {text:"June", isCorrect:false}], rationale: "February (fevereiro) tem 28 ou 29 dias."},
+                {q: "Complete: 'Halloween is ____ October.'", options: [{text:"at", isCorrect:false}, {text:"on", isCorrect:false}, {text:"in", isCorrect:true}, {text:"for", isCorrect:false}], rationale: "Usamos 'in' com meses: in October."},
+                {q: "Qual mês vem antes de September?", options: [{text:"October", isCorrect:false}, {text:"August", isCorrect:true}, {text:"November", isCorrect:false}, {text:"July", isCorrect:false}], rationale: "A sequência é August → September."},
+                {q: "Como se diz 'Dia das Mães' em inglês?", options: [{text:"Father's Day", isCorrect:false}, {text:"Mother's Day", isCorrect:true}, {text:"Children's Day", isCorrect:false}, {text:"Women's Day", isCorrect:false}], rationale: "Mother's Day = Dia das Mães."},
+                {q: "Complete: 'New Year's Day is ____ January 1st.'", options: [{text:"in", isCorrect:false}, {text:"on", isCorrect:true}, {text:"at", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "Usamos 'on' com datas específicas: on January 1st."},
+                {q: "Quantos meses têm 30 dias?", options: [{text:"3", isCorrect:false}, {text:"4", isCorrect:true}, {text:"5", isCorrect:false}, {text:"6", isCorrect:false}], rationale: "April, June, September e November têm 30 dias."},
+                {q: "Qual feriado é celebrado em novembro nos Estados Unidos?", options: [{text:"Christmas", isCorrect:false}, {text:"Easter", isCorrect:false}, {text:"Thanksgiving", isCorrect:true}, {text:"Halloween", isCorrect:false}], rationale: "Thanksgiving (Ação de Graças) é em novembro nos EUA."},
+                {q: "Complete: 'Valentine's Day is ____ February 14th.'", options: [{text:"in", isCorrect:false}, {text:"on", isCorrect:true}, {text:"at", isCorrect:false}, {text:"for", isCorrect:false}], rationale: "Usamos 'on' com datas: on February 14th."},
+                {q: "Qual é o último mês do ano?", options: [{text:"November", isCorrect:false}, {text:"October", isCorrect:false}, {text:"December", isCorrect:true}, {text:"January", isCorrect:false}], rationale: "December (dezembro) é o último mês do ano."},
+                {q: "Qual é a ordem correta?", options: [{text:"June, July, August", isCorrect:true}, {text:"July, June, August", isCorrect:false}, {text:"June, August, July", isCorrect:false}, {text:"August, July, June", isCorrect:false}], rationale: "A sequência correta é June (6) → July (7) → August (8)."}
+            ],
+            26: [ // FOODS AND FRUITS (15 perguntas)
+                {q: "Como se diz 'morango' em inglês?", options: [{text:"Blueberry", isCorrect:false}, {text:"Strawberry", isCorrect:true}, {text:"Cherry", isCorrect:false}, {text:"Raspberry", isCorrect:false}], rationale: "Strawberry = morango."},
+                {q: "Qual é a fruta? 🍌", options: [{text:"Apple", isCorrect:false}, {text:"Orange", isCorrect:false}, {text:"Banana", isCorrect:true}, {text:"Mango", isCorrect:false}], rationale: "Banana = banana."},
+                {q: "Complete: 'I'd like ____ apple, please.'", options: [{text:"a", isCorrect:false}, {text:"an", isCorrect:true}, {text:"the", isCorrect:false}, {text:"some", isCorrect:false}], rationale: "Apple começa com vogal, então usamos 'an': an apple."},
+                {q: "Qual alimento NÃO é uma fruta?", options: [{text:"Watermelon", isCorrect:false}, {text:"Pineapple", isCorrect:false}, {text:"Broccoli", isCorrect:true}, {text:"Mango", isCorrect:false}], rationale: "Broccoli (brócolis) é um vegetal, não uma fruta."},
+                {q: "Como se diz 'uva' em inglês?", options: [{text:"Grape", isCorrect:true}, {text:"Cherry", isCorrect:false}, {text:"Plum", isCorrect:false}, {text:"Fig", isCorrect:false}], rationale: "Grape = uva. Grapes (plural) = uvas."},
+                {q: "Complete: 'She eats ____ rice and beans for lunch.'", options: [{text:"a", isCorrect:false}, {text:"an", isCorrect:false}, {text:"some", isCorrect:true}, {text:"many", isCorrect:false}], rationale: "Rice e beans são incontável/plural = some rice and beans."},
+                {q: "Qual é a tradução de 'watermelon'?", options: [{text:"Melão", isCorrect:false}, {text:"Melancia", isCorrect:true}, {text:"Mamão", isCorrect:false}, {text:"Manga", isCorrect:false}], rationale: "Watermelon = melancia. Melon = melão."},
+                {q: "Como se diz 'queijo' em inglês?", options: [{text:"Bread", isCorrect:false}, {text:"Butter", isCorrect:false}, {text:"Cheese", isCorrect:true}, {text:"Cream", isCorrect:false}], rationale: "Cheese = queijo."},
+                {q: "Qual alimento é 'rice'?", options: [{text:"Feijão", isCorrect:false}, {text:"Arroz", isCorrect:true}, {text:"Macarrão", isCorrect:false}, {text:"Farinha", isCorrect:false}], rationale: "Rice = arroz."},
+                {q: "Complete: 'Would you like ____ coffee?'", options: [{text:"a", isCorrect:false}, {text:"an", isCorrect:false}, {text:"some", isCorrect:true}, {text:"many", isCorrect:false}], rationale: "Coffee é incontável. Usamos 'some' em ofertas: Would you like some coffee?"},
+                {q: "Como se diz 'abacaxi' em inglês?", options: [{text:"Coconut", isCorrect:false}, {text:"Pineapple", isCorrect:true}, {text:"Papaya", isCorrect:false}, {text:"Passion fruit", isCorrect:false}], rationale: "Pineapple = abacaxi."},
+                {q: "Qual é o plural correto de 'tomato'?", options: [{text:"tomatos", isCorrect:false}, {text:"tomatoes", isCorrect:false}, {text:"tomatoes", isCorrect:true}, {text:"tomato's", isCorrect:false}], rationale: "Tomato → tomatoes. Palavras terminadas em -o podem receber -es no plural."},
+                {q: "Complete: 'I don't like ____. It's too sour.'", options: [{text:"lemon", isCorrect:true}, {text:"banana", isCorrect:false}, {text:"watermelon", isCorrect:false}, {text:"mango", isCorrect:false}], rationale: "Lemon (limão) é azedo (sour)."},
+                {q: "Como se diz 'pão' em inglês?", options: [{text:"Bread", isCorrect:true}, {text:"Cake", isCorrect:false}, {text:"Toast", isCorrect:false}, {text:"Pie", isCorrect:false}], rationale: "Bread = pão. Toast = torrada. Cake = bolo."},
+                {q: "Complete: 'There ____ some milk in the fridge.'", options: [{text:"are", isCorrect:false}, {text:"is", isCorrect:true}, {text:"have", isCorrect:false}, {text:"has", isCorrect:false}], rationale: "Milk é incontável (singular) = There is some milk."}
+            ],
+            28: [ // HOURS (15 perguntas)
+                {q: "Como se diz 8:00 em inglês?", options: [{text:"Eight hours", isCorrect:false}, {text:"Eight o'clock", isCorrect:true}, {text:"Eight clock", isCorrect:false}, {text:"Hour eight", isCorrect:false}], rationale: "8:00 = Eight o'clock. Usamos 'o'clock' para horas cheias."},
+                {q: "Complete: 'It's half ____ nine.' (9:30)", options: [{text:"to", isCorrect:false}, {text:"past", isCorrect:true}, {text:"after", isCorrect:false}, {text:"before", isCorrect:false}], rationale: "Half past nine = 9:30. 'Half past' = meia hora depois."},
+                {q: "Como se diz 3:15 em inglês?", options: [{text:"Three and fifteen", isCorrect:false}, {text:"Quarter past three", isCorrect:true}, {text:"Quarter to three", isCorrect:false}, {text:"Three quarter", isCorrect:false}], rationale: "3:15 = Quarter past three (um quarto depois das três)."},
+                {q: "Qual horário é 'quarter to five'?", options: [{text:"5:15", isCorrect:false}, {text:"4:45", isCorrect:true}, {text:"5:45", isCorrect:false}, {text:"4:15", isCorrect:false}], rationale: "Quarter to five = 4:45. Faltam 15 minutos para as cinco."},
+                {q: "Complete: 'What ____ is it?'", options: [{text:"hour", isCorrect:false}, {text:"time", isCorrect:true}, {text:"clock", isCorrect:false}, {text:"watch", isCorrect:false}], rationale: "'What time is it?' é a pergunta correta para saber as horas."},
+                {q: "Como se diz 12:00 (meio-dia)?", options: [{text:"Twelve o'clock", isCorrect:false}, {text:"Midday", isCorrect:false}, {text:"Noon", isCorrect:false}, {text:"Todas estão corretas", isCorrect:true}], rationale: "12:00 (dia) = Twelve o'clock, Noon ou Midday. Todas são corretas."},
+                {q: "Qual horário é 'ten past two'?", options: [{text:"10:02", isCorrect:false}, {text:"2:10", isCorrect:true}, {text:"10:20", isCorrect:false}, {text:"2:50", isCorrect:false}], rationale: "Ten past two = 2:10. Dez minutos depois das duas."},
+                {q: "Como se diz 00:00 (meia-noite)?", options: [{text:"Zero o'clock", isCorrect:false}, {text:"Night", isCorrect:false}, {text:"Midnight", isCorrect:true}, {text:"Twelve night", isCorrect:false}], rationale: "00:00 = Midnight (meia-noite)."},
+                {q: "Qual é a diferença entre 'past' e 'to'?", options: [{text:"São iguais", isCorrect:false}, {text:"Past = depois da hora, To = antes da próxima hora", isCorrect:true}, {text:"Past é para manhã, To é para tarde", isCorrect:false}, {text:"To é mais formal", isCorrect:false}], rationale: "Past = minutos depois da hora (2:10 = ten past two). To = minutos faltando (4:50 = ten to five)."},
+                {q: "Qual horário é 'twenty to seven'?", options: [{text:"7:20", isCorrect:false}, {text:"6:20", isCorrect:false}, {text:"6:40", isCorrect:true}, {text:"7:40", isCorrect:false}], rationale: "Twenty to seven = 6:40. Faltam 20 minutos para as sete."},
+                {q: "Complete: 'The class starts ____ 8 o'clock.'", options: [{text:"in", isCorrect:false}, {text:"on", isCorrect:false}, {text:"at", isCorrect:true}, {text:"to", isCorrect:false}], rationale: "Usamos 'at' com horas: at 8 o'clock."},
+                {q: "Como se lê 5:30 em inglês?", options: [{text:"Five and thirty", isCorrect:false}, {text:"Five thirty", isCorrect:true}, {text:"Thirty five", isCorrect:false}, {text:"Half five", isCorrect:false}], rationale: "5:30 = Five thirty ou Half past five."},
+                {q: "Qual é outra forma de dizer 'quarter past'?", options: [{text:"Fifteen past", isCorrect:true}, {text:"Twenty past", isCorrect:false}, {text:"Half past", isCorrect:false}, {text:"Ten past", isCorrect:false}], rationale: "Quarter = 15 minutos. Quarter past = fifteen past."},
+                {q: "Complete: 'I wake up ____ 6:30 a.m.'", options: [{text:"in", isCorrect:false}, {text:"on", isCorrect:false}, {text:"at", isCorrect:true}, {text:"for", isCorrect:false}], rationale: "Usamos 'at' com horários: at 6:30."},
+                {q: "O que significa 'a.m.' e 'p.m.'?", options: [{text:"Antes e depois do almoço", isCorrect:false}, {text:"Manhã (antes do meio-dia) e tarde/noite (depois do meio-dia)", isCorrect:true}, {text:"São abreviações de horas", isCorrect:false}, {text:"Primeira e segunda metade da hora", isCorrect:false}], rationale: "a.m. = ante meridiem (antes do meio-dia). p.m. = post meridiem (depois do meio-dia)."}
             ]
         };
 
