@@ -604,19 +604,9 @@
                     Alunos
                 </button>
 
-                <button onclick="showTeacherSection('grades'); closeTeacherSidebar();" class="sidebar-item teacher-sidebar-nav" id="teacher-nav-grades" data-testid="button-teacher-nav-grades">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
-                    Notas
-                </button>
-
-                <button onclick="showTeacherSection('links'); closeTeacherSidebar();" class="sidebar-item teacher-sidebar-nav" id="teacher-nav-links" data-testid="button-teacher-nav-links">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                    Links
-                </button>
-
-                <button onclick="showTeacherSection('streaks'); closeTeacherSidebar();" class="sidebar-item teacher-sidebar-nav" id="teacher-nav-streaks" data-testid="button-teacher-nav-streaks">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                    Streaks
+                <button onclick="showTeacherSection('ranking'); closeTeacherSidebar();" class="sidebar-item teacher-sidebar-nav" id="teacher-nav-ranking" data-testid="button-teacher-nav-ranking">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                    Top Students
                 </button>
             </div>
 
@@ -659,14 +649,18 @@
             <!-- TEACHER: STUDENTS SECTION -->
             <div id="teacher-section-students" class="w-full" style="padding: 0 1.5rem 2rem;">
                 <div class="max-w-2xl mx-auto">
-                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                        <input type="text" id="teacher-search-input" placeholder="Buscar aluno por nome ou email..." style="flex: 1; padding: 0.6rem 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.5rem; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none;" oninput="searchStudents()" data-testid="input-teacher-search">
-                        <button onclick="loadAllStudents()" style="background: #8671d1; color: white; border: none; border-radius: 0.5rem; padding: 0.6rem 0.75rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap;" data-testid="button-load-students">Carregar Todos</button>
+                    <div id="teacher-stats-bar" style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;"></div>
+
+                    <div style="margin-bottom: 1rem; position: relative;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" id="teacher-search-input" placeholder="Buscar aluno por nome ou email..." style="width: 100%; padding: 0.6rem 0.75rem 0.6rem 2.25rem; border: 2px solid #e7e5e4; border-radius: 0.5rem; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; box-sizing: border-box;" oninput="searchStudents()" data-testid="input-teacher-search">
                     </div>
 
                     <div id="teacher-students-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Clique em "Carregar Todos" para ver os alunos cadastrados</p>
+                        <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Carregando alunos...</p>
                     </div>
+
+                    <div id="teacher-pagination" style="display: none; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"></div>
 
                     <div id="teacher-student-detail" style="display: none; background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin-top: 1rem;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
@@ -778,6 +772,16 @@
                 </div>
             </div>
 
+            <!-- TEACHER: RANKING SECTION -->
+            <div id="teacher-section-ranking" class="w-full" style="padding: 0 1.5rem 2rem; display: none;">
+                <div class="max-w-2xl mx-auto">
+                    <div id="teacher-ranking-level-tabs" style="display: flex; gap: 0.35rem; margin-bottom: 1rem; flex-wrap: wrap;"></div>
+                    <div id="teacher-ranking-content" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Carregando ranking...</p>
+                    </div>
+                </div>
+            </div>
+
         </div><!-- close teacher app-content -->
     </div>
 
@@ -815,7 +819,7 @@
                     Minhas Notas
                 </button>
 
-                <button onclick="document.getElementById('rules-modal').classList.add('active'); closeSidebar();" class="sidebar-item" data-testid="button-sidebar-rules">
+                <button onclick="openRulesModal(); closeSidebar();" class="sidebar-item" data-testid="button-sidebar-rules">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                     Boas Pr&#225;ticas
                 </button>
@@ -928,18 +932,42 @@
     </div>
 
     <!-- RULES POPUP -->
-    <div id="rules-modal" class="modal-overlay" onclick="if(event.target === this) this.classList.remove('active')">
-        <div class="modal-content">
-            <h3 class="text-xl font-black text-stone-800 mb-5 text-center">Boas Pr&#225;ticas</h3>
-            <div class="space-y-5 text-left text-stone-600 text-sm leading-relaxed">
-                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">1</div><p><strong>Acesso Individual:</strong> N&#227;o compartilhe sua senha. Monitoramos acessos por IP.</p></div>
-                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">2</div><p><strong>Frequ&#234;ncia:</strong> A evolu&#231;&#227;o vem da pr&#225;tica constante. Tente completar um m&#243;dulo de Homework ap&#243;s cada aula.</p></div>
-                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">3</div><p><strong>Listening:</strong> Use fones de ouvido para captar os detalhes nas atividades com &#225;udio.</p></div>
-                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">4</div><p><strong>Revis&#227;o:</strong> Refazer atividades j&#225; conclu&#237;das &#233; uma das melhores formas de fixar o conte&#250;do.</p></div>
-                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">5</div><p><strong>Pronun&#231;a:</strong> Repita em voz alta as palavras e frases dos exerc&#237;cios. Falar &#233; treinar!</p></div>
-                <div class="flex gap-3"><div class="w-6 h-6 rounded-full bg-[#8671d1] text-white flex items-center justify-center shrink-0 font-bold">6</div><p><strong>Consist&#234;ncia:</strong> Estudar um pouco todo dia vale mais do que estudar muito de vez em quando. Mantenha seu streak!</p></div>
+    <div id="rules-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 20000; align-items: center; justify-content: center; padding: 1rem;">
+        <div style="background: white; border-radius: 1rem; max-width: 420px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 1.5rem; box-shadow: 0 8px 32px rgba(0,0,0,0.2); position: relative;" data-testid="modal-rules">
+            <button onclick="closeRulesModal()" data-testid="button-close-rules" style="position: absolute; top: 0.75rem; right: 0.75rem; background: none; border: none; cursor: pointer; color: #78716c; font-size: 1.25rem; line-height: 1; z-index: 1;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1759294967/SLAP_TIPO_PRETO_2_kismg9.png" alt="SLAP Logo" style="width: 70px; margin: 0 auto 0.75rem;">
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: #1c1917; font-family: 'DM Sans', sans-serif;">Boas Pr&#225;ticas</h3>
             </div>
-            <button class="action-button w-full mt-8" onclick="document.getElementById('rules-modal').classList.remove('active')">Entendi, vamos lá!</button>
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                <div style="display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.6rem 0.75rem; background: #fafaf9; border-radius: 0.5rem;">
+                    <div style="width: 22px; height: 22px; border-radius: 50%; background: #8671d1; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.7rem; font-weight: 700;">1</div>
+                    <p style="font-size: 0.8rem; color: #44403c; line-height: 1.4;"><strong>Acesso Individual:</strong> N&#227;o compartilhe sua senha. Monitoramos acessos por IP.</p>
+                </div>
+                <div style="display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.6rem 0.75rem; background: #fafaf9; border-radius: 0.5rem;">
+                    <div style="width: 22px; height: 22px; border-radius: 50%; background: #8671d1; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.7rem; font-weight: 700;">2</div>
+                    <p style="font-size: 0.8rem; color: #44403c; line-height: 1.4;"><strong>Frequ&#234;ncia:</strong> A evolu&#231;&#227;o vem da pr&#225;tica constante. Tente completar um m&#243;dulo de Homework ap&#243;s cada aula.</p>
+                </div>
+                <div style="display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.6rem 0.75rem; background: #fafaf9; border-radius: 0.5rem;">
+                    <div style="width: 22px; height: 22px; border-radius: 50%; background: #8671d1; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.7rem; font-weight: 700;">3</div>
+                    <p style="font-size: 0.8rem; color: #44403c; line-height: 1.4;"><strong>Listening:</strong> Use fones de ouvido para captar os detalhes nas atividades com &#225;udio.</p>
+                </div>
+                <div style="display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.6rem 0.75rem; background: #fafaf9; border-radius: 0.5rem;">
+                    <div style="width: 22px; height: 22px; border-radius: 50%; background: #8671d1; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.7rem; font-weight: 700;">4</div>
+                    <p style="font-size: 0.8rem; color: #44403c; line-height: 1.4;"><strong>Revis&#227;o:</strong> Refazer atividades j&#225; conclu&#237;das &#233; uma das melhores formas de fixar o conte&#250;do.</p>
+                </div>
+                <div style="display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.6rem 0.75rem; background: #fafaf9; border-radius: 0.5rem;">
+                    <div style="width: 22px; height: 22px; border-radius: 50%; background: #8671d1; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.7rem; font-weight: 700;">5</div>
+                    <p style="font-size: 0.8rem; color: #44403c; line-height: 1.4;"><strong>Pron&#250;ncia:</strong> Repita em voz alta as palavras e frases dos exerc&#237;cios. Falar &#233; treinar!</p>
+                </div>
+                <div style="display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.6rem 0.75rem; background: #fafaf9; border-radius: 0.5rem;">
+                    <div style="width: 22px; height: 22px; border-radius: 50%; background: #8671d1; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.7rem; font-weight: 700;">6</div>
+                    <p style="font-size: 0.8rem; color: #44403c; line-height: 1.4;"><strong>Consist&#234;ncia:</strong> Estudar um pouco todo dia vale mais do que estudar muito de vez em quando. Mantenha seu streak!</p>
+                </div>
+            </div>
+            <button onclick="closeRulesModal()" style="width: 100%; margin-top: 1rem; padding: 0.65rem; background: #8671d1; color: white; border: none; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;" data-testid="button-rules-confirm">Entendi, vamos l&#225;!</button>
         </div>
     </div>
 
@@ -1491,6 +1519,13 @@
                 container.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.8rem; padding: 1rem 0;">Erro ao carregar notas</p>';
             }
         }
+        function openRulesModal() {
+            document.getElementById('rules-modal').style.display = 'flex';
+        }
+        function closeRulesModal() {
+            document.getElementById('rules-modal').style.display = 'none';
+        }
+
         function closeGradesModal() {
             document.getElementById('grades-modal').style.display = 'none';
         }
@@ -1498,9 +1533,13 @@
         var allStudentsCache = [];
         var selectedStudentUid = null;
 
+        var teacherCurrentPage = 1;
+        var teacherPageSize = 10;
+
         function initTeacherDashboard() {
             allStudentsCache = [];
             selectedStudentUid = null;
+            teacherCurrentPage = 1;
             document.getElementById('teacher-student-detail').style.display = 'none';
             if (currentUser) {
                 var displayName = currentUser.displayName || currentUser.email.split('@')[0];
@@ -1519,6 +1558,7 @@
                     }
                 });
             }
+            loadAllStudents();
         }
 
         async function loadAllStudents() {
@@ -1533,26 +1573,77 @@
                         allStudentsCache.push({ uid: doc.id, ...data });
                     }
                 });
-                renderStudentsList(allStudentsCache);
+                updateTeacherStats();
+                teacherCurrentPage = 1;
+                renderStudentsPaginated();
             } catch(e) {
                 console.error('Erro ao carregar alunos:', e);
                 listEl.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.8rem; padding: 1rem 0;">Erro ao carregar alunos. Tente novamente.</p>';
             }
         }
 
-        async function searchStudents() {
+        function updateTeacherStats() {
+            var total = allStudentsCache.length;
+            var levelNames = { starter1: 'Starter 1', starter2: 'Starter 2' };
+            var counts = {};
+            allStudentsCache.forEach(function(s) {
+                var lvl = s.currentLevel || 'starter1';
+                counts[lvl] = (counts[lvl] || 0) + 1;
+            });
+            var statsEl = document.getElementById('teacher-stats-bar');
+            var html = '<div style="flex: 1; min-width: 100px; background: #f5f3ff; border: 1px solid #ede9fe; border-radius: 0.5rem; padding: 0.6rem 0.75rem; text-align: center;">' +
+                '<p style="font-size: 1.25rem; font-weight: 800; color: #8671d1;">' + total + '</p>' +
+                '<p style="font-size: 0.65rem; font-weight: 600; color: #78716c;">Total de Alunos</p></div>';
+            Object.keys(levelNames).forEach(function(lvl) {
+                html += '<div style="flex: 1; min-width: 100px; background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 0.5rem; padding: 0.6rem 0.75rem; text-align: center;">' +
+                    '<p style="font-size: 1.25rem; font-weight: 800; color: #44403c;">' + (counts[lvl] || 0) + '</p>' +
+                    '<p style="font-size: 0.65rem; font-weight: 600; color: #78716c;">' + levelNames[lvl] + '</p></div>';
+            });
+            statsEl.innerHTML = html;
+        }
+
+        function getFilteredStudents() {
             var query = document.getElementById('teacher-search-input').value.toLowerCase().trim();
-            if (allStudentsCache.length === 0) {
-                await loadAllStudents();
-            }
-            if (!query) {
-                renderStudentsList(allStudentsCache);
-                return;
-            }
-            var filtered = allStudentsCache.filter(function(s) {
+            if (!query) return allStudentsCache;
+            return allStudentsCache.filter(function(s) {
                 return (s.name || '').toLowerCase().includes(query) || (s.email || '').toLowerCase().includes(query);
             });
-            renderStudentsList(filtered);
+        }
+
+        function renderStudentsPaginated() {
+            var filtered = getFilteredStudents();
+            var totalPages = Math.max(1, Math.ceil(filtered.length / teacherPageSize));
+            if (teacherCurrentPage > totalPages) teacherCurrentPage = totalPages;
+            var start = (teacherCurrentPage - 1) * teacherPageSize;
+            var pageStudents = filtered.slice(start, start + teacherPageSize);
+            renderStudentsList(pageStudents);
+            renderPagination(filtered.length, totalPages);
+        }
+
+        function renderPagination(total, totalPages) {
+            var pagEl = document.getElementById('teacher-pagination');
+            if (totalPages <= 1) {
+                pagEl.style.display = 'none';
+                return;
+            }
+            pagEl.style.display = 'flex';
+            var html = '<button onclick="teacherGoToPage(' + Math.max(1, teacherCurrentPage - 1) + ')" style="background: none; border: 1px solid #e7e5e4; border-radius: 0.375rem; padding: 0.35rem 0.6rem; cursor: pointer; font-family: \'DM Sans\', sans-serif; font-size: 0.75rem; color: #44403c;"' + (teacherCurrentPage <= 1 ? ' disabled style="opacity:0.4; cursor: default; background: none; border: 1px solid #e7e5e4; border-radius: 0.375rem; padding: 0.35rem 0.6rem; font-family: \'DM Sans\', sans-serif; font-size: 0.75rem; color: #44403c;"' : '') + '>&lt;</button>';
+            for (var i = 1; i <= totalPages; i++) {
+                var isActive = i === teacherCurrentPage;
+                html += '<button onclick="teacherGoToPage(' + i + ')" style="border: 1px solid ' + (isActive ? '#8671d1' : '#e7e5e4') + '; border-radius: 0.375rem; padding: 0.35rem 0.6rem; cursor: pointer; font-family: \'DM Sans\', sans-serif; font-size: 0.75rem; font-weight: ' + (isActive ? '700' : '500') + '; color: ' + (isActive ? 'white' : '#44403c') + '; background: ' + (isActive ? '#8671d1' : 'white') + ';">' + i + '</button>';
+            }
+            html += '<button onclick="teacherGoToPage(' + Math.min(totalPages, teacherCurrentPage + 1) + ')" style="background: none; border: 1px solid #e7e5e4; border-radius: 0.375rem; padding: 0.35rem 0.6rem; cursor: pointer; font-family: \'DM Sans\', sans-serif; font-size: 0.75rem; color: #44403c;"' + (teacherCurrentPage >= totalPages ? ' disabled style="opacity:0.4; cursor: default; background: none; border: 1px solid #e7e5e4; border-radius: 0.375rem; padding: 0.35rem 0.6rem; font-family: \'DM Sans\', sans-serif; font-size: 0.75rem; color: #44403c;"' : '') + '>&gt;</button>';
+            pagEl.innerHTML = html;
+        }
+
+        function teacherGoToPage(page) {
+            teacherCurrentPage = page;
+            renderStudentsPaginated();
+        }
+
+        function searchStudents() {
+            teacherCurrentPage = 1;
+            renderStudentsPaginated();
         }
 
         function formatFirebaseDate(timestamp) {
@@ -1584,18 +1675,29 @@
                 listEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 1rem 0;">Nenhum aluno encontrado</p>';
                 return;
             }
+            var levelNames = { starter1: 'Starter 1', starter2: 'Starter 2' };
             listEl.innerHTML = students.map(function(s) {
                 var statusClass = s.approved ? 'student-approved' : 'student-pending';
                 var statusText = s.approved ? 'Aprovado' : 'Pendente';
                 var statusIcon = s.approved
                     ? '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>'
                     : '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+                var lvlLabel = levelNames[s.currentLevel] || 'Starter 1';
+                var createdDate = formatFirebaseDate(s.createdAt);
+                var approvedDate = s.approved ? formatFirebaseDate(s.approvedAt) : '—';
                 return '<div class="student-card" onclick="openStudentDetail(\'' + s.uid + '\')" data-testid="card-student-' + s.uid + '">' +
-                    '<div>' +
-                        '<span style="font-size: 0.85rem; font-weight: 600; color: #1c1917;">' + (s.name || 'Sem nome') + '</span>' +
+                    '<div style="flex: 1; min-width: 0;">' +
+                        '<div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">' +
+                            '<span style="font-size: 0.85rem; font-weight: 600; color: #1c1917;">' + (s.name || 'Sem nome') + '</span>' +
+                            '<span style="font-size: 0.6rem; font-weight: 600; color: #8671d1; background: #f5f3ff; padding: 0.1rem 0.4rem; border-radius: 0.25rem;">' + lvlLabel + '</span>' +
+                        '</div>' +
                         '<p style="font-size: 0.65rem; color: #78716c; margin-top: 0.1rem;">' + (s.email || '') + '</p>' +
+                        '<div style="display: flex; gap: 0.75rem; margin-top: 0.25rem;">' +
+                            '<span style="font-size: 0.6rem; color: #a8a29e;">Cadastro: ' + createdDate + '</span>' +
+                            '<span style="font-size: 0.6rem; color: #a8a29e;">Aprovação: ' + approvedDate + '</span>' +
+                        '</div>' +
                     '</div>' +
-                    '<span class="' + statusClass + '" style="font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; gap: 0.2rem;">' + statusIcon + ' ' + statusText + '</span>' +
+                    '<span class="' + statusClass + '" style="font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; gap: 0.2rem; flex-shrink: 0;">' + statusIcon + ' ' + statusText + '</span>' +
                 '</div>';
             }).join('');
         }
@@ -1901,11 +2003,7 @@
                     btnEl.style.background = '#16a34a';
                 }
                 updateStudentDatesDisplay(student);
-                renderStudentsList(allStudentsCache.filter(function(s) {
-                    var query = document.getElementById('teacher-search-input').value.toLowerCase().trim();
-                    if (!query) return true;
-                    return (s.name || '').toLowerCase().includes(query) || (s.email || '').toLowerCase().includes(query);
-                }));
+                renderStudentsPaginated();
             } catch(e) {
                 console.error('Erro ao alterar aprovação:', e);
             }
@@ -1973,7 +2071,7 @@
         }
 
         function showTeacherSection(section) {
-            var sections = ['students', 'grades', 'links', 'streaks'];
+            var sections = ['students', 'grades', 'links', 'streaks', 'ranking'];
             sections.forEach(function(s) {
                 var el = document.getElementById('teacher-section-' + s);
                 if (el) el.style.display = 'none';
@@ -1985,6 +2083,9 @@
             });
             var activeBtn = document.getElementById('teacher-nav-' + section);
             if (activeBtn) activeBtn.classList.add('active');
+            if (section === 'ranking') {
+                loadTeacherRanking();
+            }
         }
 
         async function handleTeacherAvatarUpload(event) {
@@ -2294,12 +2395,12 @@
                     var avatarHtml = s.avatarUrl
                         ? '<img src="' + s.avatarUrl + '" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">'
                         : '<div style="width: 36px; height: 36px; border-radius: 50%; background: #ede9fe; display: flex; align-items: center; justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
-                    var firstName = s.name.split(' ')[0];
+                    var fullName = s.name;
                     return '<div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.75rem; background: ' + bgColors[idx] + '; ' + highlight + '" data-testid="card-top-student-' + idx + '">' +
                         '<div style="min-width: 28px; display: flex; align-items: center; justify-content: center;">' + medalIcons[idx] + '</div>' +
                         avatarHtml +
                         '<div style="flex: 1; min-width: 0;">' +
-                            '<p style="font-size: 0.85rem; font-weight: 700; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + firstName + (isMe ? ' <span style="font-size: 0.65rem; color: #8671d1; font-weight: 600;">(voc\u00ea)</span>' : '') + '</p>' +
+                            '<p style="font-size: 0.85rem; font-weight: 700; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + fullName + (isMe ? ' <span style="font-size: 0.65rem; color: #8671d1; font-weight: 600;">(voc\u00ea)</span>' : '') + '</p>' +
                         '</div>' +
                         '<div style="display: flex; align-items: center; gap: 0.3rem; background: white; padding: 0.3rem 0.6rem; border-radius: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">' +
                             '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F1D24B" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' +
@@ -2315,6 +2416,78 @@
 
         function closeTopStudentsModal() {
             document.getElementById('top-students-modal').style.display = 'none';
+        }
+
+        var teacherRankingLevel = 'starter1';
+
+        async function loadTeacherRanking() {
+            var levelNames = { starter1: 'Starter 1', starter2: 'Starter 2' };
+            var tabsEl = document.getElementById('teacher-ranking-level-tabs');
+            tabsEl.innerHTML = Object.keys(levelNames).map(function(lvl) {
+                var isActive = lvl === teacherRankingLevel;
+                return '<button onclick="teacherRankingLevel=\'' + lvl + '\'; loadTeacherRanking();" class="teacher-tab' + (isActive ? ' active' : '') + '" data-testid="button-ranking-tab-' + lvl + '">' + levelNames[lvl] + '</button>';
+            }).join('');
+            var contentEl = document.getElementById('teacher-ranking-content');
+            contentEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Carregando ranking...</p>';
+            try {
+                var usersSnap = await firebaseDb.collection('users').where('approved', '==', true).get();
+                var students = [];
+                var promises = [];
+                usersSnap.forEach(function(doc) {
+                    var data = doc.data();
+                    if (data.role === 'teacher') return;
+                    students.push({ uid: doc.id, name: data.name || data.email || 'Aluno', avatarUrl: data.avatarUrl || null });
+                    promises.push(firebaseDb.collection('users').doc(doc.id).collection('streaks').doc('completed').get());
+                });
+                var streakDocs = await Promise.all(promises);
+                for (var i = 0; i < students.length; i++) {
+                    var streakCount = 0;
+                    if (streakDocs[i].exists) {
+                        var streakData = streakDocs[i].data();
+                        var keys = Object.keys(streakData);
+                        for (var k = 0; k < keys.length; k++) {
+                            if (keys[k].startsWith(teacherRankingLevel + '_') && streakData[keys[k]]) {
+                                streakCount++;
+                            }
+                        }
+                    }
+                    students[i].streaks = streakCount;
+                }
+                students.sort(function(a, b) { return b.streaks - a.streaks; });
+                var top5 = students.slice(0, 5);
+                if (top5.length === 0 || top5[0].streaks === 0) {
+                    contentEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Nenhum aluno com streaks neste n\u00edvel ainda.</p>';
+                    return;
+                }
+                var medalIcons = [
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F1D24B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#F1D24B" stroke="none">1</text></svg>',
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#a8a29e" stroke="none">2</text></svg>',
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#fb923c" stroke="none">3</text></svg>',
+                    '<div style="width: 24px; height: 24px; border-radius: 50%; background: #f5f5f4; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #78716c;">4</div>',
+                    '<div style="width: 24px; height: 24px; border-radius: 50%; background: #f5f5f4; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #78716c;">5</div>'
+                ];
+                var bgColors = ['#fef9c3', '#f5f5f4', '#fed7aa', '#fafaf9', '#fafaf9'];
+                var borderColors = ['#F1D24B', '#d6d3d1', '#fb923c', '#e7e5e4', '#e7e5e4'];
+                contentEl.innerHTML = top5.map(function(s, idx) {
+                    var avatarHtml = s.avatarUrl
+                        ? '<img src="' + s.avatarUrl + '" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">'
+                        : '<div style="width: 36px; height: 36px; border-radius: 50%; background: #ede9fe; display: flex; align-items: center; justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
+                    return '<div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.75rem; background: ' + bgColors[idx] + '; border: 1px solid ' + borderColors[idx] + ';" data-testid="card-teacher-ranking-' + idx + '">' +
+                        '<div style="min-width: 28px; display: flex; align-items: center; justify-content: center;">' + medalIcons[idx] + '</div>' +
+                        avatarHtml +
+                        '<div style="flex: 1; min-width: 0;">' +
+                            '<p style="font-size: 0.85rem; font-weight: 700; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + s.name + '</p>' +
+                        '</div>' +
+                        '<div style="display: flex; align-items: center; gap: 0.3rem; background: white; padding: 0.3rem 0.6rem; border-radius: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">' +
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F1D24B" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' +
+                            '<span style="font-size: 0.8rem; font-weight: 800; color: #44403c;">' + s.streaks + '</span>' +
+                        '</div>' +
+                    '</div>';
+                }).join('');
+            } catch(e) {
+                console.error('Erro ao carregar ranking:', e);
+                contentEl.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.8rem; padding: 2rem 0;">Erro ao carregar ranking.</p>';
+            }
         }
 
         const helpTexts = {
