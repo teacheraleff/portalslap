@@ -200,6 +200,7 @@
         .app-content { margin-left: 260px; transition: margin-left 0.3s ease; }
         .sidebar-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #57534e; cursor: pointer; transition: 0.15s; border: none; background: none; width: 100%; text-align: left; text-decoration: none; font-family: 'DM Sans', sans-serif; }
         .sidebar-item:hover { background: #f5f3ff; color: #8671d1; }
+        .teacher-sidebar-nav.active { background: #f5f3ff; color: #8671d1; font-weight: 700; }
         .sidebar-toggle { display: none; position: fixed; top: 0.75rem; left: 0.75rem; z-index: 901; background: white; border: 1px solid #e7e5e4; border-radius: 0.5rem; padding: 0.4rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         @media (max-width: 768px) {
             .app-sidebar { transform: translateX(-100%); }
@@ -555,125 +556,229 @@
         </div>
     </div>
 
-    <!-- TEACHER DASHBOARD -->
-    <div id="teacher-screen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #f4f7f9 0%, #ede9fe 50%, #fef9c3 100%); align-items: flex-start; justify-content: center; z-index: 10000; overflow-y: auto;">
-        <div style="padding: 1.5rem; width: 100%; max-width: 600px; margin: 0 auto;">
-            <div class="text-center mb-6">
-                <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1759294967/SLAP_TIPO_PRETO_2_kismg9.png" alt="SLAP Logo" class="w-28 h-auto mx-auto mb-3">
-                <h2 class="text-2xl font-black text-stone-800" data-testid="text-teacher-title">Painel do Professor</h2>
-                <p class="text-stone-500 text-xs mt-1">Gerencie alunos, notas e progresso</p>
+    <!-- TOP STUDENTS MODAL -->
+    <div id="top-students-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 20000; align-items: center; justify-content: center; padding: 1rem;">
+        <div style="background: white; border-radius: 1rem; max-width: 420px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 1.5rem; box-shadow: 0 8px 32px rgba(0,0,0,0.2); position: relative;" data-testid="modal-top-students">
+            <button onclick="closeTopStudentsModal()" data-testid="button-close-top-students" style="position: absolute; top: 0.75rem; right: 0.75rem; background: none; border: none; cursor: pointer; color: #78716c; font-size: 1.25rem; line-height: 1; z-index: 1;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div style="text-align: center; margin-bottom: 1.25rem;">
+                <div style="width: 48px; height: 48px; background: #fef9c3; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F1D24B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                </div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: #1c1917; font-family: 'DM Sans', sans-serif;">Top Students</h3>
+                <p style="font-size: 0.75rem; color: #78716c; margin-top: 0.25rem;" id="top-students-level-label" data-testid="text-top-students-level"></p>
             </div>
-
-            <div style="background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin-bottom: 1rem;">
-                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                    <input type="text" id="teacher-search-input" placeholder="Buscar aluno por nome ou email..." style="flex: 1; padding: 0.6rem 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.5rem; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none;" oninput="searchStudents()" data-testid="input-teacher-search">
-                    <button onclick="loadAllStudents()" style="background: #8671d1; color: white; border: none; border-radius: 0.5rem; padding: 0.6rem 0.75rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap;" data-testid="button-load-students">Carregar Todos</button>
-                </div>
-
-                <div id="teacher-students-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Clique em "Carregar Todos" para ver os alunos cadastrados</p>
-                </div>
+            <div id="top-students-content" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Carregando...</p>
             </div>
-
-            <div id="teacher-student-detail" style="display: none; background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin-bottom: 1rem;">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                    <div>
-                        <h3 style="font-size: 1rem; font-weight: 800; color: #1c1917; font-family: 'DM Sans', sans-serif;" id="detail-student-name" data-testid="text-detail-student-name"></h3>
-                        <p style="font-size: 0.7rem; color: #78716c;" id="detail-student-email" data-testid="text-detail-student-email"></p>
-                    </div>
-                    <button onclick="closeStudentDetail()" style="background: none; border: none; cursor: pointer; color: #78716c;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
-                </div>
-
-                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                    <button onclick="showDetailTab('grades')" id="tab-grades" class="teacher-tab active" data-testid="button-tab-grades">Notas</button>
-                    <button onclick="showDetailTab('streaks')" id="tab-streaks" class="teacher-tab" data-testid="button-tab-streaks">Streaks</button>
-                    <button onclick="showDetailTab('links')" id="tab-links" class="teacher-tab" data-testid="button-tab-links">Links</button>
-                    <button onclick="showDetailTab('level')" id="tab-level" class="teacher-tab" data-testid="button-tab-level">N&#237;vel</button>
-                    <button onclick="showDetailTab('approval')" id="tab-approval" class="teacher-tab" data-testid="button-tab-approval">Status</button>
-                </div>
-
-                <div id="detail-tab-grades">
-                    <div id="grade-level-tabs" style="display: flex; gap: 0.35rem; margin-bottom: 0.75rem; flex-wrap: wrap;"></div>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;" id="teacher-grades-form">
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
-                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Midterm Test <span style="color: #a8a29e; font-size: 0.65rem;">(max 20)</span></span>
-                            <input type="number" min="0" max="20" id="grade-midterm" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-midterm">
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
-                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Listening Test <span style="color: #a8a29e; font-size: 0.65rem;">(max 20)</span></span>
-                            <input type="number" min="0" max="20" id="grade-listening" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-listening">
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
-                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Grammar Test <span style="color: #a8a29e; font-size: 0.65rem;">(max 20)</span></span>
-                            <input type="number" min="0" max="20" id="grade-grammar" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-grammar">
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
-                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Oral Test <span style="color: #a8a29e; font-size: 0.65rem;">(max 20)</span></span>
-                            <input type="number" min="0" max="20" id="grade-oral" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-oral">
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
-                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Assiduidade <span style="color: #a8a29e; font-size: 0.65rem;">(max 10)</span></span>
-                            <input type="number" min="0" max="10" id="grade-attendance" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-attendance">
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
-                            <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Participação <span style="color: #a8a29e; font-size: 0.65rem;">(max 10)</span></span>
-                            <input type="number" min="0" max="10" id="grade-participation" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-participation">
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.75rem;">
-                        <span style="font-size: 0.8rem; font-weight: 700; color: #44403c;" id="grade-total-display" data-testid="text-grade-total">Total: 0 / 100</span>
-                        <button onclick="saveStudentGrades()" style="background: #8671d1; color: white; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;" data-testid="button-save-grades">Salvar Notas</button>
-                    </div>
-                    <p id="grade-save-feedback" style="display: none; font-size: 0.7rem; margin-top: 0.5rem; text-align: center;"></p>
-                </div>
-
-                <div id="detail-tab-streaks" style="display: none;">
-                    <div id="student-streaks-list" style="display: flex; flex-direction: column; gap: 0.3rem;">
-                        <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 1rem 0;">Carregando streaks...</p>
-                    </div>
-                </div>
-
-                <div id="detail-tab-links" style="display: none;">
-                    <div id="links-level-tabs" style="display: flex; gap: 0.35rem; margin-bottom: 0.75rem; flex-wrap: wrap;"></div>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <div>
-                            <label style="font-size: 0.7rem; font-weight: 700; color: #78716c; margin-bottom: 0.2rem; display: block;">Link do CP (Baixar CP)</label>
-                            <input type="text" id="student-cp-link" placeholder="Cole o link do CP deste aluno..." style="width: 100%; padding: 0.5rem 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.5rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif; outline: none; box-sizing: border-box;" data-testid="input-student-cp-link">
-                        </div>
-                        <div>
-                            <label style="font-size: 0.7rem; font-weight: 700; color: #78716c; margin-bottom: 0.2rem; display: block;">Link das Aulas Gravadas</label>
-                            <input type="text" id="student-recorded-link" placeholder="Cole o link das aulas gravadas deste aluno..." style="width: 100%; padding: 0.5rem 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.5rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif; outline: none; box-sizing: border-box;" data-testid="input-student-recorded-link">
-                        </div>
-                        <button onclick="saveStudentLinks()" style="background: #8671d1; color: white; border: none; border-radius: 0.5rem; padding: 0.5rem 0.75rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 0.25rem;" data-testid="button-save-student-links">Salvar Links</button>
-                        <p id="student-links-save-feedback" style="display: none; font-size: 0.7rem; text-align: center; margin-top: 0.25rem;"></p>
-                    </div>
-                </div>
-
-                <div id="detail-tab-level" style="display: none;">
-                    <div style="padding: 0.75rem 0;">
-                        <p style="font-size: 0.8rem; color: #44403c; margin-bottom: 0.75rem; font-weight: 500;">N&#237;vel atual do aluno:</p>
-                        <select id="student-level-select" style="width: 100%; padding: 0.5rem 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.5rem; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; background: white; cursor: pointer;" data-testid="select-student-level">
-                            <option value="starter1">Starter 1 - Iniciante</option>
-                            <option value="starter2">Starter 2 - B&#225;sico</option>
-                        </select>
-                        <p style="font-size: 0.65rem; color: #a8a29e; margin-top: 0.4rem;">O aluno poder&#225; acessar este n&#237;vel e todos os anteriores.</p>
-                        <button onclick="saveStudentLevel()" style="background: #8671d1; color: white; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 0.75rem; width: 100%;" data-testid="button-save-level">Salvar N&#237;vel</button>
-                        <p id="level-save-feedback" style="display: none; font-size: 0.7rem; text-align: center; margin-top: 0.5rem;"></p>
-                    </div>
-                </div>
-
-                <div id="detail-tab-approval" style="display: none;">
-                    <div style="text-align: center; padding: 1rem 0;">
-                        <p style="font-size: 0.8rem; color: #44403c; margin-bottom: 0.75rem;">Status atual: <strong id="detail-approval-status" data-testid="text-approval-status"></strong></p>
-                        <button id="btn-toggle-approval" onclick="toggleStudentApproval()" style="border: none; border-radius: 0.5rem; padding: 0.5rem 1.5rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;" data-testid="button-toggle-approval"></button>
-                    </div>
-                </div>
-            </div>
-
-            <button class="secondary-button w-full" style="font-size: 0.75rem;" onclick="handleLogout()" data-testid="button-teacher-logout">SAIR DA CONTA</button>
         </div>
+    </div>
+
+    <!-- TEACHER DASHBOARD -->
+    <div id="teacher-screen" style="display: none; width: 100%; position: relative;">
+
+        <!-- TEACHER SIDEBAR -->
+        <nav class="app-sidebar" id="teacher-sidebar" data-testid="nav-teacher-sidebar">
+            <div style="padding: 2rem 1rem 0.75rem; text-align: center;">
+                <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1759294967/SLAP_TIPO_PRETO_2_kismg9.png" alt="SLAP Logo" style="width: 80px; margin: 0 auto 0.75rem;">
+                <div style="position: relative; width: 64px; height: 64px; margin: 0 auto 0.5rem; cursor: pointer;" onclick="document.getElementById('teacher-avatar-upload-input').click()" data-testid="button-teacher-avatar-upload">
+                    <div id="teacher-sidebar-avatar" style="width: 64px; height: 64px; border-radius: 50%; background: #ede9fe; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 3px solid #8671d1;">
+                        <svg id="teacher-sidebar-avatar-placeholder" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <img id="teacher-sidebar-avatar-img" src="" alt="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                    </div>
+                    <div style="position: absolute; bottom: -2px; right: -2px; width: 22px; height: 22px; background: #8671d1; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </div>
+                    <input type="file" id="teacher-avatar-upload-input" accept="image/*" style="display: none;" onchange="handleTeacherAvatarUpload(event)" data-testid="input-teacher-avatar-file">
+                </div>
+                <p style="font-size: 0.75rem; color: #a8a29e; font-weight: 500;">Professor(a),</p>
+                <p style="font-size: 0.95rem; font-weight: 800; color: #1c1917;" id="teacher-sidebar-user-name" data-testid="text-teacher-sidebar-username"></p>
+            </div>
+
+            <div style="padding: 0.5rem 0.75rem; flex: 1; display: flex; flex-direction: column; gap: 0.15rem;">
+                <p style="font-size: 0.6rem; font-weight: 700; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.5rem 1rem 0.25rem;">Menu</p>
+
+                <button onclick="showTeacherSection('students'); closeTeacherSidebar();" class="sidebar-item teacher-sidebar-nav active" id="teacher-nav-students" data-testid="button-teacher-nav-students">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Alunos
+                </button>
+
+                <button onclick="showTeacherSection('grades'); closeTeacherSidebar();" class="sidebar-item teacher-sidebar-nav" id="teacher-nav-grades" data-testid="button-teacher-nav-grades">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                    Notas
+                </button>
+
+                <button onclick="showTeacherSection('links'); closeTeacherSidebar();" class="sidebar-item teacher-sidebar-nav" id="teacher-nav-links" data-testid="button-teacher-nav-links">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    Links
+                </button>
+
+                <button onclick="showTeacherSection('streaks'); closeTeacherSidebar();" class="sidebar-item teacher-sidebar-nav" id="teacher-nav-streaks" data-testid="button-teacher-nav-streaks">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    Streaks
+                </button>
+            </div>
+
+            <div style="padding: 0.75rem 1rem; border-top: 1px solid #e7e5e4; display: flex; justify-content: center;">
+                <button onclick="handleLogout()" class="sidebar-item" style="color: #ef4444; justify-content: center;" data-testid="button-teacher-sidebar-logout">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Sair da Conta
+                </button>
+            </div>
+
+            <div style="padding: 0.75rem 1rem; border-top: 1px solid #e7e5e4; text-align: center;">
+                <span style="font-size: 0.6rem; font-weight: 700; color: #a8a29e; text-transform: uppercase; letter-spacing: 1px;">Siga o SLAP</span>
+                <div style="display: flex; justify-content: center; gap: 0.4rem; margin-top: 0.4rem;">
+                    <a href="https://www.instagram.com/slapingles" target="_blank" style="width: 30px; height: 30px; border-radius: 50%; background: #f5f3ff; display: flex; align-items: center; justify-content: center;" data-testid="link-teacher-social-instagram">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#8671d1"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                    <a href="https://www.tiktok.com/@slapingles" target="_blank" style="width: 30px; height: 30px; border-radius: 50%; background: #f5f3ff; display: flex; align-items: center; justify-content: center;" data-testid="link-teacher-social-tiktok">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#8671d1"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+                    </a>
+                    <a href="https://www.youtube.com/@slapingles" target="_blank" style="width: 30px; height: 30px; border-radius: 50%; background: #f5f3ff; display: flex; align-items: center; justify-content: center;" data-testid="link-teacher-social-youtube">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#8671d1"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <div class="app-sidebar-overlay" id="teacher-sidebar-overlay" onclick="closeTeacherSidebar()"></div>
+
+        <!-- TEACHER MOBILE SIDEBAR TOGGLE -->
+        <button class="sidebar-toggle" id="teacher-sidebar-toggle-btn" onclick="toggleTeacherSidebar()" data-testid="button-toggle-teacher-sidebar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#44403c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+
+        <!-- TEACHER MAIN CONTENT AREA -->
+        <div class="app-content">
+            <header class="mb-10 relative" style="background: #8671d1; padding: 2rem 1.5rem; text-align: center;">
+                <h1 style="font-size: 1.75rem; font-weight: 900; color: white; margin: 0;" data-testid="text-teacher-title">Portal do Professor</h1>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-top: 0.25rem;">Gerencie alunos, notas e progresso</p>
+            </header>
+
+            <!-- TEACHER: STUDENTS SECTION -->
+            <div id="teacher-section-students" class="w-full" style="padding: 0 1.5rem 2rem;">
+                <div class="max-w-2xl mx-auto">
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <input type="text" id="teacher-search-input" placeholder="Buscar aluno por nome ou email..." style="flex: 1; padding: 0.6rem 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.5rem; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none;" oninput="searchStudents()" data-testid="input-teacher-search">
+                        <button onclick="loadAllStudents()" style="background: #8671d1; color: white; border: none; border-radius: 0.5rem; padding: 0.6rem 0.75rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap;" data-testid="button-load-students">Carregar Todos</button>
+                    </div>
+
+                    <div id="teacher-students-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Clique em "Carregar Todos" para ver os alunos cadastrados</p>
+                    </div>
+
+                    <div id="teacher-student-detail" style="display: none; background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin-top: 1rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                            <div>
+                                <h3 style="font-size: 1rem; font-weight: 800; color: #1c1917; font-family: 'DM Sans', sans-serif;" id="detail-student-name" data-testid="text-detail-student-name"></h3>
+                                <p style="font-size: 0.7rem; color: #78716c;" id="detail-student-email" data-testid="text-detail-student-email"></p>
+                            </div>
+                            <button onclick="closeStudentDetail()" style="background: none; border: none; cursor: pointer; color: #78716c;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+
+                        <div id="student-dates-info" style="display: flex; gap: 1rem; margin-bottom: 1rem; padding: 0.6rem 0.75rem; background: #fafaf9; border-radius: 0.5rem; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 0.35rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                <span style="font-size: 0.7rem; color: #78716c;">Cadastro: <strong id="detail-student-created" style="color: #44403c;" data-testid="text-student-created">—</strong></span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.35rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span style="font-size: 0.7rem; color: #78716c;">Aprovação: <strong id="detail-student-approved" style="color: #44403c;" data-testid="text-student-approved">—</strong></span>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                            <button onclick="showDetailTab('grades')" id="tab-grades" class="teacher-tab active" data-testid="button-tab-grades">Notas</button>
+                            <button onclick="showDetailTab('streaks')" id="tab-streaks" class="teacher-tab" data-testid="button-tab-streaks">Streaks</button>
+                            <button onclick="showDetailTab('links')" id="tab-links" class="teacher-tab" data-testid="button-tab-links">Links</button>
+                            <button onclick="showDetailTab('level')" id="tab-level" class="teacher-tab" data-testid="button-tab-level">N&#237;vel</button>
+                            <button onclick="showDetailTab('approval')" id="tab-approval" class="teacher-tab" data-testid="button-tab-approval">Status</button>
+                        </div>
+
+                        <div id="detail-tab-grades">
+                            <div id="grade-level-tabs" style="display: flex; gap: 0.35rem; margin-bottom: 0.75rem; flex-wrap: wrap;"></div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;" id="teacher-grades-form">
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
+                                    <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Midterm Test <span style="color: #a8a29e; font-size: 0.65rem;">(max 20)</span></span>
+                                    <input type="number" min="0" max="20" id="grade-midterm" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-midterm">
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
+                                    <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Listening Test <span style="color: #a8a29e; font-size: 0.65rem;">(max 20)</span></span>
+                                    <input type="number" min="0" max="20" id="grade-listening" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-listening">
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
+                                    <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Grammar Test <span style="color: #a8a29e; font-size: 0.65rem;">(max 20)</span></span>
+                                    <input type="number" min="0" max="20" id="grade-grammar" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-grammar">
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
+                                    <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Oral Test <span style="color: #a8a29e; font-size: 0.65rem;">(max 20)</span></span>
+                                    <input type="number" min="0" max="20" id="grade-oral" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-oral">
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
+                                    <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Assiduidade <span style="color: #a8a29e; font-size: 0.65rem;">(max 10)</span></span>
+                                    <input type="number" min="0" max="10" id="grade-attendance" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-attendance">
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
+                                    <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Participação <span style="color: #a8a29e; font-size: 0.65rem;">(max 10)</span></span>
+                                    <input type="number" min="0" max="10" id="grade-participation" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-participation">
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.75rem;">
+                                <span style="font-size: 0.8rem; font-weight: 700; color: #44403c;" id="grade-total-display" data-testid="text-grade-total">Total: 0 / 100</span>
+                                <button onclick="saveStudentGrades()" style="background: #8671d1; color: white; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;" data-testid="button-save-grades">Salvar Notas</button>
+                            </div>
+                            <p id="grade-save-feedback" style="display: none; font-size: 0.7rem; margin-top: 0.5rem; text-align: center;"></p>
+                        </div>
+
+                        <div id="detail-tab-streaks" style="display: none;">
+                            <div id="student-streaks-list" style="display: flex; flex-direction: column; gap: 0.3rem;">
+                                <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 1rem 0;">Carregando streaks...</p>
+                            </div>
+                        </div>
+
+                        <div id="detail-tab-links" style="display: none;">
+                            <div id="links-level-tabs" style="display: flex; gap: 0.35rem; margin-bottom: 0.75rem; flex-wrap: wrap;"></div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <div>
+                                    <label style="font-size: 0.7rem; font-weight: 700; color: #78716c; margin-bottom: 0.2rem; display: block;">Link do CP (Baixar CP)</label>
+                                    <input type="text" id="student-cp-link" placeholder="Cole o link do CP deste aluno..." style="width: 100%; padding: 0.5rem 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.5rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif; outline: none; box-sizing: border-box;" data-testid="input-student-cp-link">
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.7rem; font-weight: 700; color: #78716c; margin-bottom: 0.2rem; display: block;">Link das Aulas Gravadas</label>
+                                    <input type="text" id="student-recorded-link" placeholder="Cole o link das aulas gravadas deste aluno..." style="width: 100%; padding: 0.5rem 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.5rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif; outline: none; box-sizing: border-box;" data-testid="input-student-recorded-link">
+                                </div>
+                                <button onclick="saveStudentLinks()" style="background: #8671d1; color: white; border: none; border-radius: 0.5rem; padding: 0.5rem 0.75rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 0.25rem;" data-testid="button-save-student-links">Salvar Links</button>
+                                <p id="student-links-save-feedback" style="display: none; font-size: 0.7rem; text-align: center; margin-top: 0.25rem;"></p>
+                            </div>
+                        </div>
+
+                        <div id="detail-tab-level" style="display: none;">
+                            <div style="padding: 0.75rem 0;">
+                                <p style="font-size: 0.8rem; color: #44403c; margin-bottom: 0.75rem; font-weight: 500;">N&#237;vel atual do aluno:</p>
+                                <select id="student-level-select" style="width: 100%; padding: 0.5rem 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.5rem; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; background: white; cursor: pointer;" data-testid="select-student-level">
+                                    <option value="starter1">Starter 1 - Iniciante</option>
+                                    <option value="starter2">Starter 2 - B&#225;sico</option>
+                                </select>
+                                <p style="font-size: 0.65rem; color: #a8a29e; margin-top: 0.4rem;">O aluno poder&#225; acessar este n&#237;vel e todos os anteriores.</p>
+                                <button onclick="saveStudentLevel()" style="background: #8671d1; color: white; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 0.75rem; width: 100%;" data-testid="button-save-level">Salvar N&#237;vel</button>
+                                <p id="level-save-feedback" style="display: none; font-size: 0.7rem; text-align: center; margin-top: 0.5rem;"></p>
+                            </div>
+                        </div>
+
+                        <div id="detail-tab-approval" style="display: none;">
+                            <div style="text-align: center; padding: 1rem 0;">
+                                <p style="font-size: 0.8rem; color: #44403c; margin-bottom: 0.75rem;">Status atual: <strong id="detail-approval-status" data-testid="text-approval-status"></strong></p>
+                                <button id="btn-toggle-approval" onclick="toggleStudentApproval()" style="border: none; border-radius: 0.5rem; padding: 0.5rem 1.5rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;" data-testid="button-toggle-approval"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- close teacher app-content -->
     </div>
 
     <!-- MAIN APP CONTENT -->
@@ -719,6 +824,11 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
                     Aulas Gravadas
                 </a>
+
+                <button onclick="openTopStudentsModal(); closeSidebar();" class="sidebar-item" data-testid="button-sidebar-top-students">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                    Top Students
+                </button>
 
                 <div style="height: 1px; background: #e7e5e4; margin: 0.35rem 0.75rem;"></div>
 
@@ -1392,6 +1502,23 @@
             allStudentsCache = [];
             selectedStudentUid = null;
             document.getElementById('teacher-student-detail').style.display = 'none';
+            if (currentUser) {
+                var displayName = currentUser.displayName || currentUser.email.split('@')[0];
+                var firstName = displayName.split(' ')[0];
+                document.getElementById('teacher-sidebar-user-name').textContent = firstName;
+                firebaseDb.collection('users').doc(currentUser.uid).get().then(function(doc) {
+                    if (doc.exists) {
+                        var data = doc.data();
+                        if (data.avatarUrl) {
+                            var imgEl = document.getElementById('teacher-sidebar-avatar-img');
+                            var placeholderEl = document.getElementById('teacher-sidebar-avatar-placeholder');
+                            imgEl.src = data.avatarUrl;
+                            imgEl.style.display = '';
+                            placeholderEl.style.display = 'none';
+                        }
+                    }
+                });
+            }
         }
 
         async function loadAllStudents() {
@@ -1428,6 +1555,29 @@
             renderStudentsList(filtered);
         }
 
+        function formatFirebaseDate(timestamp) {
+            if (!timestamp) return '—';
+            var date;
+            if (timestamp.toDate) {
+                date = timestamp.toDate();
+            } else if (timestamp instanceof Date) {
+                date = timestamp;
+            } else if (typeof timestamp === 'number') {
+                date = new Date(timestamp);
+            } else {
+                return '—';
+            }
+            var day = String(date.getDate()).padStart(2, '0');
+            var month = String(date.getMonth() + 1).padStart(2, '0');
+            var year = date.getFullYear();
+            return day + '/' + month + '/' + year;
+        }
+
+        function updateStudentDatesDisplay(student) {
+            document.getElementById('detail-student-created').textContent = formatFirebaseDate(student.createdAt);
+            document.getElementById('detail-student-approved').textContent = student.approved ? formatFirebaseDate(student.approvedAt) : '—';
+        }
+
         function renderStudentsList(students) {
             var listEl = document.getElementById('teacher-students-list');
             if (students.length === 0) {
@@ -1458,6 +1608,7 @@
             document.getElementById('detail-student-name').textContent = student.name || 'Sem nome';
             document.getElementById('detail-student-email').textContent = student.email || '';
             document.getElementById('teacher-student-detail').style.display = 'block';
+            updateStudentDatesDisplay(student);
 
             var statusEl = document.getElementById('detail-approval-status');
             var btnEl = document.getElementById('btn-toggle-approval');
@@ -1727,8 +1878,15 @@
             if (!student) return;
             var newStatus = !student.approved;
             try {
-                await firebaseDb.collection('users').doc(selectedStudentUid).update({ approved: newStatus });
+                var updateData = { approved: newStatus };
+                if (newStatus) {
+                    updateData.approvedAt = firebase.firestore.FieldValue.serverTimestamp();
+                } else {
+                    updateData.approvedAt = null;
+                }
+                await firebaseDb.collection('users').doc(selectedStudentUid).update(updateData);
                 student.approved = newStatus;
+                student.approvedAt = newStatus ? new Date() : null;
                 var statusEl = document.getElementById('detail-approval-status');
                 var btnEl = document.getElementById('btn-toggle-approval');
                 if (newStatus) {
@@ -1742,6 +1900,7 @@
                     btnEl.textContent = 'Aprovar Aluno';
                     btnEl.style.background = '#16a34a';
                 }
+                updateStudentDatesDisplay(student);
                 renderStudentsList(allStudentsCache.filter(function(s) {
                     var query = document.getElementById('teacher-search-input').value.toLowerCase().trim();
                     if (!query) return true;
@@ -1804,6 +1963,50 @@
             document.getElementById('sidebar-overlay').classList.remove('open');
         }
 
+        function toggleTeacherSidebar() {
+            document.getElementById('teacher-sidebar').classList.toggle('open');
+            document.getElementById('teacher-sidebar-overlay').classList.toggle('open');
+        }
+        function closeTeacherSidebar() {
+            document.getElementById('teacher-sidebar').classList.remove('open');
+            document.getElementById('teacher-sidebar-overlay').classList.remove('open');
+        }
+
+        function showTeacherSection(section) {
+            var sections = ['students', 'grades', 'links', 'streaks'];
+            sections.forEach(function(s) {
+                var el = document.getElementById('teacher-section-' + s);
+                if (el) el.style.display = 'none';
+            });
+            var target = document.getElementById('teacher-section-' + section);
+            if (target) target.style.display = '';
+            document.querySelectorAll('.teacher-sidebar-nav').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            var activeBtn = document.getElementById('teacher-nav-' + section);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        async function handleTeacherAvatarUpload(event) {
+            var file = event.target.files[0];
+            if (!file || !currentUser) return;
+            try {
+                var reader = new FileReader();
+                reader.onload = async function(e) {
+                    var dataUrl = e.target.result;
+                    await firebaseDb.collection('users').doc(currentUser.uid).update({ avatarUrl: dataUrl });
+                    var imgEl = document.getElementById('teacher-sidebar-avatar-img');
+                    var placeholderEl = document.getElementById('teacher-sidebar-avatar-placeholder');
+                    imgEl.src = dataUrl;
+                    imgEl.style.display = '';
+                    placeholderEl.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            } catch(err) {
+                console.error('Erro ao enviar avatar:', err);
+            }
+        }
+
         function showScreen(screen) {
             var screens = ['login-screen', 'pending-screen', 'journey-map-screen', 'main-wrapper', 'teacher-screen'];
             screens.forEach(function(id) {
@@ -1824,7 +2027,7 @@
                 document.getElementById('main-wrapper').classList.remove('hidden');
             }
             if (screen === 'teacher') {
-                document.getElementById('teacher-screen').style.display = 'flex';
+                document.getElementById('teacher-screen').style.display = '';
             }
         }
 
@@ -2037,6 +2240,81 @@
 
         function isStreakDone(aulaId, mode) {
             return !!userStreaksCache[currentLevel + '_' + aulaId + '_' + mode];
+        }
+
+        async function openTopStudentsModal() {
+            var modal = document.getElementById('top-students-modal');
+            modal.style.display = 'flex';
+            var levelNames = { starter1: 'Starter 1', starter2: 'Starter 2' };
+            document.getElementById('top-students-level-label').textContent = levelNames[currentLevel] || currentLevel;
+            var contentEl = document.getElementById('top-students-content');
+            contentEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Carregando ranking...</p>';
+            try {
+                var usersSnap = await firebaseDb.collection('users').where('approved', '==', true).get();
+                var students = [];
+                var promises = [];
+                usersSnap.forEach(function(doc) {
+                    var data = doc.data();
+                    if (data.role === 'teacher') return;
+                    students.push({ uid: doc.id, name: data.name || data.email || 'Aluno', avatarUrl: data.avatarUrl || null });
+                    promises.push(firebaseDb.collection('users').doc(doc.id).collection('streaks').doc('completed').get());
+                });
+                var streakDocs = await Promise.all(promises);
+                for (var i = 0; i < students.length; i++) {
+                    var streakCount = 0;
+                    if (streakDocs[i].exists) {
+                        var streakData = streakDocs[i].data();
+                        var keys = Object.keys(streakData);
+                        for (var k = 0; k < keys.length; k++) {
+                            if (keys[k].startsWith(currentLevel + '_') && streakData[keys[k]]) {
+                                streakCount++;
+                            }
+                        }
+                    }
+                    students[i].streaks = streakCount;
+                }
+                students.sort(function(a, b) { return b.streaks - a.streaks; });
+                var top5 = students.slice(0, 5);
+                if (top5.length === 0 || top5[0].streaks === 0) {
+                    contentEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Nenhum aluno com streaks neste n\u00edvel ainda.</p>';
+                    return;
+                }
+                var medalIcons = [
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F1D24B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#F1D24B" stroke="none">1</text></svg>',
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#a8a29e" stroke="none">2</text></svg>',
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#fb923c" stroke="none">3</text></svg>',
+                    '<div style="width: 24px; height: 24px; border-radius: 50%; background: #f5f5f4; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #78716c;">4</div>',
+                    '<div style="width: 24px; height: 24px; border-radius: 50%; background: #f5f5f4; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #78716c;">5</div>'
+                ];
+                var bgColors = ['#fef9c3', '#f5f5f4', '#fed7aa', '#fafaf9', '#fafaf9'];
+                var borderColors = ['#F1D24B', '#d6d3d1', '#fb923c', '#e7e5e4', '#e7e5e4'];
+                contentEl.innerHTML = top5.map(function(s, idx) {
+                    var isMe = currentUser && s.uid === currentUser.uid;
+                    var highlight = isMe ? 'border: 2px solid #8671d1;' : 'border: 1px solid ' + borderColors[idx] + ';';
+                    var avatarHtml = s.avatarUrl
+                        ? '<img src="' + s.avatarUrl + '" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">'
+                        : '<div style="width: 36px; height: 36px; border-radius: 50%; background: #ede9fe; display: flex; align-items: center; justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
+                    var firstName = s.name.split(' ')[0];
+                    return '<div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.75rem; background: ' + bgColors[idx] + '; ' + highlight + '" data-testid="card-top-student-' + idx + '">' +
+                        '<div style="min-width: 28px; display: flex; align-items: center; justify-content: center;">' + medalIcons[idx] + '</div>' +
+                        avatarHtml +
+                        '<div style="flex: 1; min-width: 0;">' +
+                            '<p style="font-size: 0.85rem; font-weight: 700; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + firstName + (isMe ? ' <span style="font-size: 0.65rem; color: #8671d1; font-weight: 600;">(voc\u00ea)</span>' : '') + '</p>' +
+                        '</div>' +
+                        '<div style="display: flex; align-items: center; gap: 0.3rem; background: white; padding: 0.3rem 0.6rem; border-radius: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">' +
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F1D24B" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' +
+                            '<span style="font-size: 0.8rem; font-weight: 800; color: #44403c;">' + s.streaks + '</span>' +
+                        '</div>' +
+                    '</div>';
+                }).join('');
+            } catch(e) {
+                console.error('Erro ao carregar ranking:', e);
+                contentEl.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.8rem; padding: 2rem 0;">Erro ao carregar ranking. Tente novamente.</p>';
+            }
+        }
+
+        function closeTopStudentsModal() {
+            document.getElementById('top-students-modal').style.display = 'none';
         }
 
         const helpTexts = {
