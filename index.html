@@ -1923,7 +1923,7 @@
                 var student = allStudentsCache.find(function(s) { return s.uid === uid; });
                 var studentLevel = (student && student.currentLevel) || 'starter1';
                 var aulaList = studentLevel === 'starter2' ? aulaStarter2 : aulaNames;
-                var modeNames = { homework: 'Homework', flashcards: 'Flashcards', listening: 'Listening', chunks: 'Chunks', scramble: 'Unscramble', mistake: 'Detetive', dictation: 'Ditado', hangman: 'Forca', wordsearch: 'Caça-Palavras' };
+                var modeNames = { homework: 'Homework', flashcards: 'Flashcards', listening: 'Listening', chunks: 'Chunks', scramble: 'Unscramble', mistake: 'Detetive', dictation: 'Ditado', hangman: 'Forca', wordsearch: 'Caça-Palavras', fillin: 'Fill In' };
                 var levelNames = { starter1: 'Starter 1', starter2: 'Starter 2', freshman1: 'Freshman 1', freshman2: 'Freshman 2', sophomore1: 'Sophomore 1', sophomore2: 'Sophomore 2', senior1: 'Senior 1', senior2: 'Senior 2', acc: 'ACC' };
                 var parsed = keys.map(function(key) {
                     var parts = key.split('_');
@@ -2533,7 +2533,8 @@
             mistake: { title: "Como estudar com o Mistake", text: "Uma das palavras está errada. Encontre e clique nela! Acerte 5 seguidas para completar!" },
             hangman: { title: "Como estudar com a Forca", text: "Adivinhe a palavra letra por letra. Cada erro desenha uma parte do boneco. Se completar o desenho, você perde!" },
             wordsearch: { title: "Como estudar com o Caça-Palavras", text: "Encontre as palavras escondidas no grid. Elas podem estar na horizontal ou vertical. Você tem 2 minutos!" },
-            homework: { title: "Como estudar com o Homework", text: "Responda as questões corretamente. Leia a explicação quando acertar. Acerte 10 seguidas para completar a missão!" }
+            homework: { title: "Como estudar com o Homework", text: "Responda as questões corretamente. Leia a explicação quando acertar. Acerte 10 seguidas para completar a missão!" },
+            fillin: { title: "Como estudar com o Fill In", text: "Complete a frase digitando a palavra que falta no espaço em branco. Use a dica entre parênteses para ajudar. Acerte 5 seguidas para completar!" }
         };
 
         function showHelpModal() {
@@ -2550,24 +2551,24 @@
         const aulaStarter2 = [
             { id: 1, name: "Open House", hasHomework: false, desc: "Aula introdut\u00f3ria do Starter 2." },
             { id: 2, name: "Frequency", hasHomework: true, specialMode: 'flashcards', thirdBtn: 'chunks', desc: "Aprenda advérbios de frequência em inglês." },
-            { id: 3, name: "Routine", hasHomework: true, desc: "Pratique vocabulário e frases sobre rotina diária." },
+            { id: 3, name: "Routine", hasHomework: true, thirdBtn: 'chunks', desc: "Pratique vocabulário e frases sobre rotina diária." },
             { id: 4, name: "Why & Because", hasHomework: true, desc: "Treine perguntas com Why e respostas com Because." },
-            { id: 5, name: "Places In Town", hasHomework: true, desc: "Vocabulário de lugares na cidade." },
-            { id: 6, name: "Prepositions Of Place", hasHomework: true, desc: "Pratique in, on, at, next to, between, behind..." },
-            { id: 7, name: "In, On, At + Transportations", hasHomework: true, desc: "Preposições com meios de transporte." },
-            { id: 8, name: "Possessives", hasHomework: true, desc: "Treine o uso do possessivo com 's e of." },
+            { id: 5, name: "Places In Town", hasHomework: true, specialMode: 'scramble', thirdBtn: 'flashcards', desc: "Vocabulário de lugares na cidade." },
+            { id: 6, name: "Prepositions Of Place", hasHomework: true, specialMode: 'scramble', desc: "Pratique in, on, at, next to, between, behind..." },
+            { id: 7, name: "In, On, At + Transportations", hasHomework: true, specialMode: 'scramble', thirdBtn: 'hangman', desc: "Preposições com meios de transporte." },
+            { id: 8, name: "Possessives", hasHomework: true, thirdBtn: 'chunks', fourthBtn: 'fillin', desc: "Possessive adjectives, pronouns e genitive case ('s e of)." },
             { id: 9, name: "Parts of the House", hasHomework: true, desc: "Vocabulário dos cômodos da casa." },
             { id: 10, name: "Furniture & Chores", hasHomework: true, specialMode: 'flashcards', desc: "Móveis e tarefas domésticas em inglês." },
             { id: 11, name: "Present Continuous", hasHomework: true, desc: "Pratique o presente contínuo: am/is/are + -ing." },
-            { id: 12, name: "Present Continuous For Future", hasHomework: true, desc: "Use o presente contínuo para falar de planos futuros." },
-            { id: 13, name: "Many & Much", hasHomework: true, desc: "Aprenda quando usar many e much." },
+            { id: 12, name: "Present Continuous For Future", hasHomework: true, thirdBtn: 'chunks', fourthBtn: 'fillin', desc: "Use o presente contínuo para falar de planos futuros." },
+            { id: 13, name: "Many & Much", hasHomework: true, fourthBtn: 'fillin', desc: "Aprenda quando usar many e much." },
             { id: 14, name: "Restaurant Pt. 1", hasHomework: true, desc: "Vocabulário e frases para restaurante." },
             { id: 15, name: "Restaurant Pt. 2", hasHomework: true, desc: "Continue praticando situações em restaurante." },
             { id: 16, name: "Midterm Test", hasHomework: false, desc: "Prova intermediária do módulo." },
             { id: 17, name: "Future Simple", hasHomework: true, desc: "Pratique o futuro simples com will." },
             { id: 18, name: "MT Correction", hasHomework: false, desc: "Correção da prova intermediária." },
-            { id: 19, name: "What Will You Do?", hasHomework: true, desc: "Treine perguntas e respostas com will." },
-            { id: 20, name: "Occupations", hasHomework: true, desc: "Vocabulário de profissões em inglês." },
+            { id: 19, name: "What Will You Do?", hasHomework: true, thirdBtn: 'chunks', desc: "Treine perguntas e respostas com will sobre o futuro." },
+            { id: 20, name: "Occupations", hasHomework: true, specialMode: 'flashcards', thirdBtn: 'chunks', desc: "Vocabulário de profissões e perguntas sobre ocupação." },
             { id: 21, name: "False Friends", hasHomework: true, desc: "Cuidado com os falsos cognatos!" },
             { id: 22, name: "Agreeing & Disagreeing", hasHomework: true, desc: "Aprenda a concordar e discordar em inglês." },
             { id: 23, name: "Describing People", hasHomework: true, desc: "Descreva pessoas usando adjetivos em inglês." },
@@ -2587,6 +2588,40 @@
         ];
 
         const quizDataStarter2 = {
+            3: [ // Routine (15 perguntas)
+                {q: "Como se diz 'acordar' em inglês?", options: [{text:"sleep", isCorrect:false}, {text:"wake up", isCorrect:true}, {text:"get up", isCorrect:false}, {text:"stand up", isCorrect:false}], rationale: "Wake up = acordar. Get up = levantar da cama."},
+                {q: "Complete: 'I ____ breakfast at 7 a.m.'", options: [{text:"do", isCorrect:false}, {text:"make", isCorrect:false}, {text:"have", isCorrect:true}, {text:"take", isCorrect:false}], rationale: "Have breakfast = tomar café da manhã."},
+                {q: "Qual é a ordem correta da rotina matinal?", options: [{text:"have breakfast, wake up, take a shower", isCorrect:false}, {text:"wake up, take a shower, have breakfast", isCorrect:true}, {text:"take a shower, wake up, have breakfast", isCorrect:false}, {text:"wake up, have breakfast, go to bed", isCorrect:false}], rationale: "Acordar → tomar banho → tomar café."},
+                {q: "Complete: 'She ____ to work by bus.'", options: [{text:"goes", isCorrect:true}, {text:"go", isCorrect:false}, {text:"going", isCorrect:false}, {text:"gone", isCorrect:false}], rationale: "She (3ª pessoa) = goes."},
+                {q: "Como se diz 'escovar os dentes' em inglês?", options: [{text:"wash my teeth", isCorrect:false}, {text:"clean my teeth", isCorrect:false}, {text:"brush my teeth", isCorrect:true}, {text:"scrub my teeth", isCorrect:false}], rationale: "Brush my teeth = escovar os dentes."},
+                {q: "Complete: 'I ____ dressed after my shower.'", options: [{text:"put", isCorrect:false}, {text:"wear", isCorrect:false}, {text:"get", isCorrect:true}, {text:"make", isCorrect:false}], rationale: "Get dressed = se vestir."},
+                {q: "Complete: 'He ____ lunch at noon.'", options: [{text:"has", isCorrect:true}, {text:"does", isCorrect:false}, {text:"makes", isCorrect:false}, {text:"takes", isCorrect:false}], rationale: "Have lunch = almoçar. He has (3ª pessoa)."},
+                {q: "Como se diz 'ir dormir' em inglês?", options: [{text:"go to sleep", isCorrect:false}, {text:"go to bed", isCorrect:true}, {text:"go to rest", isCorrect:false}, {text:"go to night", isCorrect:false}], rationale: "Go to bed = ir dormir / ir para a cama."},
+                {q: "Complete: 'They ____ home at 6 p.m.'", options: [{text:"get", isCorrect:true}, {text:"arrive to", isCorrect:false}, {text:"come to", isCorrect:false}, {text:"go at", isCorrect:false}], rationale: "Get home = chegar em casa (sem preposição)."},
+                {q: "Complete: 'I ____ a shower every morning.'", options: [{text:"make", isCorrect:false}, {text:"do", isCorrect:false}, {text:"take", isCorrect:true}, {text:"have", isCorrect:false}], rationale: "Take a shower = tomar banho."},
+                {q: "Qual expressão significa 'fazer o dever de casa'?", options: [{text:"make homework", isCorrect:false}, {text:"do homework", isCorrect:true}, {text:"take homework", isCorrect:false}, {text:"get homework", isCorrect:false}], rationale: "Do homework = fazer o dever de casa (do, não make)."},
+                {q: "Complete: 'She ____ up at 6 o'clock.'", options: [{text:"gets", isCorrect:false}, {text:"wakes", isCorrect:true}, {text:"stands", isCorrect:false}, {text:"rises", isCorrect:false}], rationale: "Wake up = acordar. She wakes up."},
+                {q: "Como se diz 'jantar' em inglês?", options: [{text:"have lunch", isCorrect:false}, {text:"have dinner", isCorrect:true}, {text:"have supper", isCorrect:false}, {text:"have meal", isCorrect:false}], rationale: "Have dinner = jantar."},
+                {q: "Complete: 'After school, I ____ TV.'", options: [{text:"see", isCorrect:false}, {text:"look", isCorrect:false}, {text:"watch", isCorrect:true}, {text:"view", isCorrect:false}], rationale: "Watch TV = assistir TV."},
+                {q: "Qual é a tradução de 'I get ready for school'?", options: [{text:"Eu vou para a escola", isCorrect:false}, {text:"Eu me preparo para a escola", isCorrect:true}, {text:"Eu chego na escola", isCorrect:false}, {text:"Eu saio da escola", isCorrect:false}], rationale: "Get ready = se preparar / se arrumar."}
+            ],
+            5: [ // Places In Town (15 perguntas)
+                {q: "Como se diz 'padaria' em inglês?", options: [{text:"Butcher", isCorrect:false}, {text:"Bakery", isCorrect:true}, {text:"Grocery", isCorrect:false}, {text:"Market", isCorrect:false}], rationale: "Bakery = padaria."},
+                {q: "Qual lugar você vai para comprar remédios?", options: [{text:"Hospital", isCorrect:false}, {text:"Clinic", isCorrect:false}, {text:"Pharmacy", isCorrect:true}, {text:"Laboratory", isCorrect:false}], rationale: "Pharmacy / Drugstore = farmácia."},
+                {q: "Complete: 'There ____ a bank on this street.'", options: [{text:"are", isCorrect:false}, {text:"is", isCorrect:true}, {text:"have", isCorrect:false}, {text:"has", isCorrect:false}], rationale: "There is + singular: There is a bank."},
+                {q: "Complete: 'There ____ many restaurants in the city center.'", options: [{text:"is", isCorrect:false}, {text:"are", isCorrect:true}, {text:"has", isCorrect:false}, {text:"have", isCorrect:false}], rationale: "There are + plural: There are many restaurants."},
+                {q: "Como se diz 'correio' em inglês?", options: [{text:"Post office", isCorrect:true}, {text:"Mail house", isCorrect:false}, {text:"Letter office", isCorrect:false}, {text:"Send place", isCorrect:false}], rationale: "Post office = correio / agência dos correios."},
+                {q: "Complete: '____ there a supermarket near here?'", options: [{text:"Are", isCorrect:false}, {text:"Is", isCorrect:true}, {text:"Has", isCorrect:false}, {text:"Do", isCorrect:false}], rationale: "Is there + singular para perguntas."},
+                {q: "Qual é a tradução de 'bus station'?", options: [{text:"Estação de trem", isCorrect:false}, {text:"Ponto de ônibus", isCorrect:false}, {text:"Rodoviária", isCorrect:true}, {text:"Aeroporto", isCorrect:false}], rationale: "Bus station = rodoviária. Bus stop = ponto de ônibus."},
+                {q: "Complete: 'There ____ not a hospital in my neighborhood.'", options: [{text:"are", isCorrect:false}, {text:"is", isCorrect:true}, {text:"have", isCorrect:false}, {text:"do", isCorrect:false}], rationale: "There is not (isn't) + singular."},
+                {q: "Como se diz 'livraria' em inglês?", options: [{text:"Library", isCorrect:false}, {text:"Bookstore", isCorrect:true}, {text:"Book place", isCorrect:false}, {text:"Reading store", isCorrect:false}], rationale: "Bookstore = livraria. Library = biblioteca (falso cognato!)."},
+                {q: "Complete: '____ there any parks around here?'", options: [{text:"Is", isCorrect:false}, {text:"Are", isCorrect:true}, {text:"Has", isCorrect:false}, {text:"Does", isCorrect:false}], rationale: "Are there + plural para perguntas."},
+                {q: "Qual é a diferença entre 'library' e 'bookstore'?", options: [{text:"São a mesma coisa", isCorrect:false}, {text:"Library = biblioteca, Bookstore = livraria", isCorrect:true}, {text:"Library = livraria, Bookstore = biblioteca", isCorrect:false}, {text:"Ambos significam biblioteca", isCorrect:false}], rationale: "Library = biblioteca (emprestar). Bookstore = livraria (comprar)."},
+                {q: "Complete: 'There are two ____ in my town.'", options: [{text:"church", isCorrect:false}, {text:"churchs", isCorrect:false}, {text:"churches", isCorrect:true}, {text:"churchies", isCorrect:false}], rationale: "Church → churches (palavras terminadas em -ch recebem -es)."},
+                {q: "Como se diz 'delegacia' em inglês?", options: [{text:"Police station", isCorrect:true}, {text:"Police office", isCorrect:false}, {text:"Police house", isCorrect:false}, {text:"Police place", isCorrect:false}], rationale: "Police station = delegacia."},
+                {q: "Escolha a frase correta:", options: [{text:"There is many stores", isCorrect:false}, {text:"There are a store", isCorrect:false}, {text:"There are many stores", isCorrect:true}, {text:"There is stores", isCorrect:false}], rationale: "There are + plural: There are many stores."},
+                {q: "Qual lugar é 'gas station'?", options: [{text:"Estação de trem", isCorrect:false}, {text:"Posto de gasolina", isCorrect:true}, {text:"Estação de metrô", isCorrect:false}, {text:"Ponto de ônibus", isCorrect:false}], rationale: "Gas station = posto de gasolina."}
+            ],
             11: [ // Present Continuous (15 perguntas)
                 {q: "Complete: 'She ____ reading a book right now.'", options: [{text:"is", isCorrect:true}, {text:"are", isCorrect:false}, {text:"am", isCorrect:false}, {text:"be", isCorrect:false}], rationale: "She + is (terceira pessoa do singular)."},
                 {q: "Escolha a frase correta no Present Continuous:", options: [{text:"I am study English", isCorrect:false}, {text:"I am studying English", isCorrect:true}, {text:"I studying English", isCorrect:false}, {text:"I study English now", isCorrect:false}], rationale: "Present Continuous = am/is/are + verbo-ing."},
@@ -2739,6 +2774,57 @@
                 {q: "Complete: 'Why ____ he late every day?'", options: [{text:"is", isCorrect:true}, {text:"do", isCorrect:false}, {text:"does", isCorrect:false}, {text:"are", isCorrect:false}], rationale: "Why + is + he (com verbo to be na pergunta)."},
                 {q: "Complete: 'I don't like horror movies ____ they are scary.'", options: [{text:"why", isCorrect:false}, {text:"because", isCorrect:true}, {text:"but", isCorrect:false}, {text:"when", isCorrect:false}], rationale: "'Because they are scary' = porque são assustadores."},
                 {q: "Escolha a resposta correta para: 'Why do you wake up early?'", options: [{text:"Because I go to school at 7", isCorrect:true}, {text:"Why I go to school at 7", isCorrect:false}, {text:"I wake up early and school", isCorrect:false}, {text:"Because early school why", isCorrect:false}], rationale: "Resposta com 'Because' + frase completa explicando o motivo."}
+            ],
+            19: [
+                {q: "Complete: 'What ____ you do next weekend?'", options: [{text:"will", isCorrect:true}, {text:"do", isCorrect:false}, {text:"are", isCorrect:false}, {text:"did", isCorrect:false}], rationale: "'What will you do?' = perguntar sobre planos futuros com will."},
+                {q: "Qual é a resposta correta? 'Will you travel next month?' - '___'", options: [{text:"Yes, I will.", isCorrect:true}, {text:"Yes, I do.", isCorrect:false}, {text:"Yes, I am.", isCorrect:false}, {text:"Yes, I can.", isCorrect:false}], rationale: "Pergunta com will → resposta com will. 'Yes, I will.'"},
+                {q: "Complete: 'She ____ study for the test tomorrow.'", options: [{text:"will", isCorrect:true}, {text:"is", isCorrect:false}, {text:"does", isCorrect:false}, {text:"has", isCorrect:false}], rationale: "Future simple: sujeito + will + verbo base. 'She will study.'"},
+                {q: "Qual é a forma negativa de 'I will go'?", options: [{text:"I won't go", isCorrect:true}, {text:"I don't will go", isCorrect:false}, {text:"I willn't go", isCorrect:false}, {text:"I not will go", isCorrect:false}], rationale: "Negativa: will + not = won't. 'I won't go.'"},
+                {q: "Complete: 'They ____ come to the party tonight.'", options: [{text:"won't", isCorrect:true}, {text:"don't", isCorrect:false}, {text:"isn't", isCorrect:false}, {text:"aren't", isCorrect:false}], rationale: "Negativa com will: won't + verbo base. 'They won't come.'"},
+                {q: "Escolha a pergunta correta com will:", options: [{text:"Will they play soccer tomorrow?", isCorrect:true}, {text:"Do they will play soccer tomorrow?", isCorrect:false}, {text:"They will play soccer tomorrow?", isCorrect:false}, {text:"Are they will play soccer?", isCorrect:false}], rationale: "Pergunta: Will + sujeito + verbo base? 'Will they play?'"},
+                {q: "Complete: 'I think it ____ rain tomorrow.'", options: [{text:"will", isCorrect:true}, {text:"is", isCorrect:false}, {text:"does", isCorrect:false}, {text:"rains", isCorrect:false}], rationale: "'I think it will rain' = previsão/opinião sobre o futuro."},
+                {q: "Complete: '____ she help us with the project?'", options: [{text:"Will", isCorrect:true}, {text:"Does", isCorrect:false}, {text:"Is", isCorrect:false}, {text:"Do", isCorrect:false}], rationale: "Pergunta com will: 'Will she help us?'"},
+                {q: "Qual frase está no future simple?", options: [{text:"We will have a meeting on Friday.", isCorrect:true}, {text:"We are having a meeting on Friday.", isCorrect:false}, {text:"We have a meeting on Friday.", isCorrect:false}, {text:"We had a meeting on Friday.", isCorrect:false}], rationale: "'We will have' = futuro simples com will."},
+                {q: "Complete: 'What will you ____ after class?'", options: [{text:"do", isCorrect:true}, {text:"doing", isCorrect:false}, {text:"does", isCorrect:false}, {text:"did", isCorrect:false}], rationale: "Depois de will sempre vem o verbo na forma base: 'will do'."},
+                {q: "Responda: 'Will it snow next week?' - 'No, ____.'", options: [{text:"it won't", isCorrect:true}, {text:"it doesn't", isCorrect:false}, {text:"it isn't", isCorrect:false}, {text:"it don't", isCorrect:false}], rationale: "Resposta negativa curta com will: 'No, it won't.'"},
+                {q: "Complete: 'I ____ buy a new phone next month.'", options: [{text:"will", isCorrect:true}, {text:"am", isCorrect:false}, {text:"going", isCorrect:false}, {text:"do", isCorrect:false}], rationale: "Future simple: 'I will buy' = Eu vou comprar."},
+                {q: "Qual frase expressa uma promessa?", options: [{text:"I will always love you.", isCorrect:true}, {text:"I am always loving you.", isCorrect:false}, {text:"I love you always.", isCorrect:false}, {text:"I do always love you.", isCorrect:false}], rationale: "Will é usado para promessas: 'I will always love you.'"},
+                {q: "Complete: 'Where ____ you live in 10 years?'", options: [{text:"will", isCorrect:true}, {text:"do", isCorrect:false}, {text:"are", isCorrect:false}, {text:"did", isCorrect:false}], rationale: "Pergunta sobre o futuro: 'Where will you live?'"},
+                {q: "Escolha a resposta correta: 'Will you call me later?' - '____'", options: [{text:"Sure, I will.", isCorrect:true}, {text:"Sure, I do.", isCorrect:false}, {text:"Sure, I am.", isCorrect:false}, {text:"Sure, I can.", isCorrect:false}], rationale: "Pergunta com will → resposta com will. 'Sure, I will.'"}
+            ],
+            20: [
+                {q: "Como se diz 'médico' em inglês?", options: [{text:"Doctor", isCorrect:true}, {text:"Teacher", isCorrect:false}, {text:"Lawyer", isCorrect:false}, {text:"Nurse", isCorrect:false}], rationale: "Doctor = médico(a)."},
+                {q: "Qual é a tradução de 'firefighter'?", options: [{text:"Bombeiro", isCorrect:true}, {text:"Policial", isCorrect:false}, {text:"Motorista", isCorrect:false}, {text:"Carteiro", isCorrect:false}], rationale: "Firefighter = bombeiro(a)."},
+                {q: "Complete: 'What ____ you do?' (perguntando a profissão)", options: [{text:"do", isCorrect:true}, {text:"are", isCorrect:false}, {text:"is", isCorrect:false}, {text:"will", isCorrect:false}], rationale: "'What do you do?' = Qual é a sua profissão?"},
+                {q: "Qual é a resposta correta para 'What do you do?'", options: [{text:"I'm a teacher.", isCorrect:true}, {text:"I do teacher.", isCorrect:false}, {text:"I teacher.", isCorrect:false}, {text:"I'm do teacher.", isCorrect:false}], rationale: "Resposta: 'I'm a + profissão'. 'I'm a teacher.'"},
+                {q: "Complete: 'What's your ____?' (perguntando a profissão)", options: [{text:"occupation", isCorrect:true}, {text:"occupy", isCorrect:false}, {text:"occuping", isCorrect:false}, {text:"occupied", isCorrect:false}], rationale: "'What's your occupation?' = Qual é sua ocupação/profissão?"},
+                {q: "Complete: 'What ____ she do?'", options: [{text:"does", isCorrect:true}, {text:"do", isCorrect:false}, {text:"is", isCorrect:false}, {text:"are", isCorrect:false}], rationale: "She/He/It → does. 'What does she do?' = O que ela faz (profissão)?"},
+                {q: "Qual é a tradução de 'lawyer'?", options: [{text:"Advogado(a)", isCorrect:true}, {text:"Engenheiro(a)", isCorrect:false}, {text:"Contador(a)", isCorrect:false}, {text:"Dentista", isCorrect:false}], rationale: "Lawyer = advogado(a)."},
+                {q: "Complete: 'She ____ a nurse.'", options: [{text:"is", isCorrect:true}, {text:"are", isCorrect:false}, {text:"do", isCorrect:false}, {text:"does", isCorrect:false}], rationale: "She + is. 'She is a nurse.' = Ela é enfermeira."},
+                {q: "Como se pergunta a profissão de alguém usando 'occupation'?", options: [{text:"What's your occupation?", isCorrect:true}, {text:"What your occupation?", isCorrect:false}, {text:"What occupation you?", isCorrect:false}, {text:"How your occupation?", isCorrect:false}], rationale: "'What's your occupation?' com verbo to be contraído."},
+                {q: "Qual é a tradução de 'accountant'?", options: [{text:"Contador(a)", isCorrect:true}, {text:"Engenheiro(a)", isCorrect:false}, {text:"Arquiteto(a)", isCorrect:false}, {text:"Veterinário(a)", isCorrect:false}], rationale: "Accountant = contador(a)."},
+                {q: "Complete: 'He ____ a pilot. He flies planes.'", options: [{text:"is", isCorrect:true}, {text:"are", isCorrect:false}, {text:"do", isCorrect:false}, {text:"does", isCorrect:false}], rationale: "He + is. 'He is a pilot.' = Ele é piloto."},
+                {q: "Responda: 'What does he do?' - 'He's ____ engineer.'", options: [{text:"an", isCorrect:true}, {text:"a", isCorrect:false}, {text:"the", isCorrect:false}, {text:"-", isCorrect:false}], rationale: "Engineer começa com vogal → 'an'. 'He's an engineer.'"},
+                {q: "Qual é a tradução de 'waiter'?", options: [{text:"Garçom", isCorrect:true}, {text:"Motorista", isCorrect:false}, {text:"Vendedor", isCorrect:false}, {text:"Cozinheiro", isCorrect:false}], rationale: "Waiter = garçom. Waitress = garçonete."},
+                {q: "Complete: 'My mother is ____ doctor. She works at a hospital.'", options: [{text:"a", isCorrect:true}, {text:"an", isCorrect:false}, {text:"the", isCorrect:false}, {text:"-", isCorrect:false}], rationale: "Doctor começa com consoante → 'a'. 'She is a doctor.'"},
+                {q: "Qual é a profissão de quem trabalha em uma escola?", options: [{text:"Teacher", isCorrect:true}, {text:"Chef", isCorrect:false}, {text:"Mechanic", isCorrect:false}, {text:"Farmer", isCorrect:false}], rationale: "Teacher = professor(a). Trabalha em escola (school)."}
+            ],
+            26: [
+                {q: "Complete: 'I wake up ____ 7 o'clock.'", options: [{text:"at", isCorrect:true}, {text:"in", isCorrect:false}, {text:"on", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "Usamos AT para horas específicas. 'At 7 o'clock.'"},
+                {q: "Complete: 'My birthday is ____ March.'", options: [{text:"in", isCorrect:true}, {text:"at", isCorrect:false}, {text:"on", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "Usamos IN para meses. 'In March.'"},
+                {q: "Complete: 'The meeting is ____ Monday.'", options: [{text:"on", isCorrect:true}, {text:"in", isCorrect:false}, {text:"at", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "Usamos ON para dias da semana. 'On Monday.'"},
+                {q: "Complete: 'She was born ____ 1998.'", options: [{text:"in", isCorrect:true}, {text:"at", isCorrect:false}, {text:"on", isCorrect:false}, {text:"by", isCorrect:false}], rationale: "Usamos IN para anos. 'In 1998.'"},
+                {q: "Complete: 'We have class ____ the morning.'", options: [{text:"in", isCorrect:true}, {text:"at", isCorrect:false}, {text:"on", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "Usamos IN para partes do dia: in the morning, in the afternoon, in the evening."},
+                {q: "Complete: 'The party is ____ Saturday night.'", options: [{text:"on", isCorrect:true}, {text:"in", isCorrect:false}, {text:"at", isCorrect:false}, {text:"by", isCorrect:false}], rationale: "Usamos ON para dia + parte do dia. 'On Saturday night.'"},
+                {q: "Complete: 'I always study ____ night.'", options: [{text:"at", isCorrect:true}, {text:"in", isCorrect:false}, {text:"on", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "Exceção: usamos AT night (não 'in the night'). 'At night.'"},
+                {q: "Complete: 'School starts ____ February.'", options: [{text:"in", isCorrect:true}, {text:"at", isCorrect:false}, {text:"on", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "Usamos IN para meses. 'In February.'"},
+                {q: "Complete: 'The exam is ____ December 15th.'", options: [{text:"on", isCorrect:true}, {text:"in", isCorrect:false}, {text:"at", isCorrect:false}, {text:"by", isCorrect:false}], rationale: "Usamos ON para datas específicas (dia). 'On December 15th.'"},
+                {q: "Complete: 'He goes to the gym ____ the afternoon.'", options: [{text:"in", isCorrect:true}, {text:"at", isCorrect:false}, {text:"on", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "Usamos IN para partes do dia. 'In the afternoon.'"},
+                {q: "Complete: 'I have lunch ____ noon.'", options: [{text:"at", isCorrect:true}, {text:"in", isCorrect:false}, {text:"on", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "Usamos AT para momentos específicos: at noon, at midnight, at night."},
+                {q: "Complete: 'We don't have class ____ weekends.'", options: [{text:"on", isCorrect:true}, {text:"in", isCorrect:false}, {text:"at", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "Usamos ON para dias: on weekends, on Sundays, on holidays."},
+                {q: "Complete: 'Christmas is ____ December 25th.'", options: [{text:"on", isCorrect:true}, {text:"in", isCorrect:false}, {text:"at", isCorrect:false}, {text:"by", isCorrect:false}], rationale: "Usamos ON para datas completas. 'On December 25th.'"},
+                {q: "Complete: 'The store closes ____ 10 p.m.'", options: [{text:"at", isCorrect:true}, {text:"in", isCorrect:false}, {text:"on", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "Usamos AT para horários. 'At 10 p.m.'"},
+                {q: "Complete: 'It's very cold ____ winter.'", options: [{text:"in", isCorrect:true}, {text:"at", isCorrect:false}, {text:"on", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "Usamos IN para estações do ano. 'In winter.'"}
             ]
         };
 
@@ -2889,6 +2975,28 @@
         };
 
         const flashcardsDataStarter2 = {
+            5: [
+                { front: "Padaria", back: "Bakery" },
+                { front: "Farmácia", back: "Pharmacy" },
+                { front: "Banco", back: "Bank" },
+                { front: "Hospital", back: "Hospital" },
+                { front: "Supermercado", back: "Supermarket" },
+                { front: "Correio", back: "Post Office" },
+                { front: "Igreja", back: "Church" },
+                { front: "Escola", back: "School" },
+                { front: "Restaurante", back: "Restaurant" },
+                { front: "Livraria", back: "Bookstore" },
+                { front: "Biblioteca", back: "Library" },
+                { front: "Delegacia", back: "Police Station" },
+                { front: "Posto de Gasolina", back: "Gas Station" },
+                { front: "Rodoviária", back: "Bus Station" },
+                { front: "Ponto de Ônibus", back: "Bus Stop" },
+                { front: "Loja de Roupas", back: "Clothing Store" },
+                { front: "Pet Shop", back: "Pet Shop" },
+                { front: "Estacionamento", back: "Parking Lot" },
+                { front: "Praça", back: "Square" },
+                { front: "Cinema", back: "Movie Theater" }
+            ],
             10: [
                 { front: "Sofá", back: "Sofa / Couch" },
                 { front: "Cadeira", back: "Chair" },
@@ -2944,6 +3052,33 @@
                 { front: "Nos finais de semana", back: "On weekends" },
                 { front: "Durante a semana", back: "During the week" },
                 { front: "De segunda a sexta", back: "From Monday to Friday" }
+            ],
+            20: [
+                { front: "Médico(a)", back: "Doctor" },
+                { front: "Enfermeiro(a)", back: "Nurse" },
+                { front: "Professor(a)", back: "Teacher" },
+                { front: "Engenheiro(a)", back: "Engineer" },
+                { front: "Advogado(a)", back: "Lawyer" },
+                { front: "Dentista", back: "Dentist" },
+                { front: "Cozinheiro(a)", back: "Cook / Chef" },
+                { front: "Motorista", back: "Driver" },
+                { front: "Policial", back: "Police Officer" },
+                { front: "Bombeiro(a)", back: "Firefighter" },
+                { front: "Veterinário(a)", back: "Veterinarian / Vet" },
+                { front: "Arquiteto(a)", back: "Architect" },
+                { front: "Jornalista", back: "Journalist" },
+                { front: "Programador(a)", back: "Programmer" },
+                { front: "Contador(a)", back: "Accountant" },
+                { front: "Vendedor(a)", back: "Salesperson" },
+                { front: "Garçom / Garçonete", back: "Waiter / Waitress" },
+                { front: "Músico(a)", back: "Musician" },
+                { front: "Ator / Atriz", back: "Actor / Actress" },
+                { front: "Piloto", back: "Pilot" },
+                { front: "Fazendeiro(a)", back: "Farmer" },
+                { front: "Mecânico(a)", back: "Mechanic" },
+                { front: "Eletricista", back: "Electrician" },
+                { front: "Psicólogo(a)", back: "Psychologist" },
+                { front: "Farmacêutico(a)", back: "Pharmacist" }
             ]
         };
 
@@ -2986,6 +3121,66 @@
                 { en: "He sometimes plays video games.", pt: "Ele às vezes joga videogame." },
                 { en: "They rarely go to the gym.", pt: "Eles raramente vão à academia." },
                 { en: "How often do you read books?", pt: "Com que frequência você lê livros?" }
+            ],
+            3: [
+                { en: "I wake up at 7 o'clock.", pt: "Eu acordo às 7 horas." },
+                { en: "She takes a shower every morning.", pt: "Ela toma banho toda manhã." },
+                { en: "He brushes his teeth after breakfast.", pt: "Ele escova os dentes depois do café." },
+                { en: "I get dressed and go to school.", pt: "Eu me visto e vou para a escola." },
+                { en: "We have lunch at noon.", pt: "Nós almoçamos ao meio-dia." },
+                { en: "They do homework after school.", pt: "Eles fazem dever de casa depois da escola." },
+                { en: "She goes to bed at 10 p.m.", pt: "Ela vai dormir às 22h." },
+                { en: "I have breakfast at 7:30.", pt: "Eu tomo café às 7:30." },
+                { en: "He gets home at 6 o'clock.", pt: "Ele chega em casa às 6 horas." },
+                { en: "We watch TV after dinner.", pt: "Nós assistimos TV depois do jantar." }
+            ],
+            8: [
+                { en: "This is my book.", pt: "Este é o meu livro." },
+                { en: "That car is yours.", pt: "Aquele carro é seu." },
+                { en: "Her name is Ana.", pt: "O nome dela é Ana." },
+                { en: "His phone is new.", pt: "O celular dele é novo." },
+                { en: "Our house is big.", pt: "Nossa casa é grande." },
+                { en: "Their dog is friendly.", pt: "O cachorro deles é amigável." },
+                { en: "This is João's car.", pt: "Este é o carro do João." },
+                { en: "The bag is mine.", pt: "A bolsa é minha." },
+                { en: "These shoes are hers.", pt: "Estes sapatos são dela." },
+                { en: "The children's toys are on the floor.", pt: "Os brinquedos das crianças estão no chão." }
+            ],
+            12: [
+                { en: "I am traveling next week.", pt: "Eu estou viajando na próxima semana." },
+                { en: "She is meeting her friend tomorrow.", pt: "Ela vai encontrar a amiga amanhã." },
+                { en: "We are having dinner with our parents tonight.", pt: "Nós vamos jantar com nossos pais hoje à noite." },
+                { en: "He is starting a new job on Monday.", pt: "Ele vai começar um emprego novo na segunda." },
+                { en: "They are flying to London next month.", pt: "Eles vão voar para Londres no mês que vem." },
+                { en: "Are you coming to the party on Saturday?", pt: "Você vai vir para a festa no sábado?" },
+                { en: "I am not working tomorrow.", pt: "Eu não vou trabalhar amanhã." },
+                { en: "She is going to the dentist next Tuesday.", pt: "Ela vai ao dentista na próxima terça." },
+                { en: "What are you doing this weekend?", pt: "O que você vai fazer neste fim de semana?" },
+                { en: "We are moving to a new apartment in June.", pt: "Nós vamos mudar para um apartamento novo em junho." }
+            ],
+            19: [
+                { en: "What will you do tomorrow?", pt: "O que você vai fazer amanhã?" },
+                { en: "I will travel to the beach next week.", pt: "Eu vou viajar para a praia semana que vem." },
+                { en: "She will study for the test tonight.", pt: "Ela vai estudar para a prova hoje à noite." },
+                { en: "We won't go to the party.", pt: "Nós não vamos à festa." },
+                { en: "Will they come to school tomorrow?", pt: "Eles vão vir à escola amanhã?" },
+                { en: "He will buy a new car next year.", pt: "Ele vai comprar um carro novo ano que vem." },
+                { en: "I think it will rain today.", pt: "Eu acho que vai chover hoje." },
+                { en: "Will you help me with my homework?", pt: "Você vai me ajudar com meu dever?" },
+                { en: "They won't play soccer this weekend.", pt: "Eles não vão jogar futebol neste fim de semana." },
+                { en: "I will call you later.", pt: "Eu vou te ligar depois." }
+            ],
+            20: [
+                { en: "What do you do?", pt: "Qual é a sua profissão?" },
+                { en: "I'm a teacher.", pt: "Eu sou professor(a)." },
+                { en: "What's your occupation?", pt: "Qual é a sua ocupação?" },
+                { en: "She is a nurse at the hospital.", pt: "Ela é enfermeira no hospital." },
+                { en: "What does he do?", pt: "O que ele faz? (profissão)" },
+                { en: "He's an engineer.", pt: "Ele é engenheiro." },
+                { en: "My father is a firefighter.", pt: "Meu pai é bombeiro." },
+                { en: "She works as a lawyer.", pt: "Ela trabalha como advogada." },
+                { en: "He wants to be a pilot.", pt: "Ele quer ser piloto." },
+                { en: "What does your mother do?", pt: "O que sua mãe faz? (profissão)" }
             ]
         };
 
@@ -3063,6 +3258,90 @@
             8: { dictation: ["run", "walk", "eat", "drink", "sleep", "work", "play", "read", "write", "speak"] },
             9: { dictation: ["happy", "sad", "big", "small", "hot", "cold", "fast", "slow", "good", "bad"] },
             28: { dictation: ["08:00", "12:30", "03:15", "06:45", "09:00", "10:30", "02:00", "07:15", "11:45", "04:30"] }
+        };
+
+        const fillInDataStarter2 = {
+            8: [ // Possessives - Fill In
+                { sentence: "This is ___ book.", answer: "my", hint: "(meu)", pt: "Este é o meu livro." },
+                { sentence: "___ name is Maria.", answer: "her", hint: "(dela)", pt: "O nome dela é Maria." },
+                { sentence: "The car is ___.", answer: "his", hint: "(dele)", pt: "O carro é dele." },
+                { sentence: "___ house is very big.", answer: "our", hint: "(nossa)", pt: "Nossa casa é muito grande." },
+                { sentence: "These books are ___.", answer: "mine", hint: "(meus)", pt: "Estes livros são meus." },
+                { sentence: "Is this pen ___?", answer: "yours", hint: "(seu/sua)", pt: "Esta caneta é sua?" },
+                { sentence: "___ dog is friendly.", answer: "their", hint: "(deles)", pt: "O cachorro deles é amigável." },
+                { sentence: "That bag is ___.", answer: "hers", hint: "(dela)", pt: "Aquela bolsa é dela." },
+                { sentence: "This is ___'s car.", answer: "João", hint: "(do João)", pt: "Este é o carro do João." },
+                { sentence: "The laptop is ___.", answer: "ours", hint: "(nosso)", pt: "O laptop é nosso." },
+                { sentence: "___ phone is ringing.", answer: "your", hint: "(seu)", pt: "Seu telefone está tocando." },
+                { sentence: "The ___'s toys are on the floor.", answer: "children", hint: "(das crianças)", pt: "Os brinquedos das crianças estão no chão." }
+            ],
+            12: [ // Present Continuous for Future - Fill In
+                { sentence: "I ___ traveling next week.", answer: "am", hint: "(estou)", pt: "Eu estou viajando na próxima semana." },
+                { sentence: "She ___ meeting her friend tomorrow.", answer: "is", hint: "(está)", pt: "Ela vai encontrar a amiga amanhã." },
+                { sentence: "We ___ having dinner tonight.", answer: "are", hint: "(estamos)", pt: "Nós vamos jantar hoje à noite." },
+                { sentence: "He is ___ a new job on Monday.", answer: "starting", hint: "(começando)", pt: "Ele vai começar um emprego na segunda." },
+                { sentence: "They are ___ to London next month.", answer: "flying", hint: "(voando)", pt: "Eles vão voar para Londres no mês que vem." },
+                { sentence: "___ you coming to the party?", answer: "are", hint: "(você está)", pt: "Você vai vir para a festa?" },
+                { sentence: "I am not ___ tomorrow.", answer: "working", hint: "(trabalhando)", pt: "Eu não vou trabalhar amanhã." },
+                { sentence: "She is ___ to the dentist next Tuesday.", answer: "going", hint: "(indo)", pt: "Ela vai ao dentista na próxima terça." },
+                { sentence: "What are you ___ this weekend?", answer: "doing", hint: "(fazendo)", pt: "O que você vai fazer neste fim de semana?" },
+                { sentence: "We are ___ to a new apartment.", answer: "moving", hint: "(mudando)", pt: "Nós vamos mudar para um apartamento novo." },
+                { sentence: "He ___ playing soccer on Saturday.", answer: "is", hint: "(está)", pt: "Ele vai jogar futebol no sábado." },
+                { sentence: "They are ___ us tomorrow.", answer: "visiting", hint: "(visitando)", pt: "Eles vão nos visitar amanhã." }
+            ],
+            13: [ // Many & Much - Fill In
+                { sentence: "How ___ water do you drink?", answer: "much", hint: "(incontável)", pt: "Quanta água você bebe?" },
+                { sentence: "How ___ books do you have?", answer: "many", hint: "(contável)", pt: "Quantos livros você tem?" },
+                { sentence: "There isn't ___ sugar in my coffee.", answer: "much", hint: "(incontável)", pt: "Não tem muito açúcar no meu café." },
+                { sentence: "There aren't ___ students today.", answer: "many", hint: "(contável)", pt: "Não tem muitos alunos hoje." },
+                { sentence: "I don't have ___ time.", answer: "much", hint: "(incontável)", pt: "Eu não tenho muito tempo." },
+                { sentence: "She has ___ friends at school.", answer: "many", hint: "(contável)", pt: "Ela tem muitos amigos na escola." },
+                { sentence: "How ___ money do you need?", answer: "much", hint: "(incontável)", pt: "Quanto dinheiro você precisa?" },
+                { sentence: "There are ___ cars on the street.", answer: "many", hint: "(contável)", pt: "Tem muitos carros na rua." },
+                { sentence: "We don't have ___ homework today.", answer: "much", hint: "(incontável)", pt: "Não temos muito dever de casa hoje." },
+                { sentence: "How ___ eggs do we need?", answer: "many", hint: "(contável)", pt: "Quantos ovos precisamos?" },
+                { sentence: "I don't eat ___ rice.", answer: "much", hint: "(incontável)", pt: "Eu não como muito arroz." },
+                { sentence: "Are there ___ people at the party?", answer: "many", hint: "(contável)", pt: "Tem muitas pessoas na festa?" }
+            ]
+        };
+
+        const gamesDataStarter2 = {
+            5: [ // Places In Town - there is/there are
+                { full: "there is a bank on this street", words: ["there", "is", "a", "bank", "on", "this", "street"] },
+                { full: "there are many stores in the city", words: ["there", "are", "many", "stores", "in", "the", "city"] },
+                { full: "is there a hospital near here", words: ["is", "there", "a", "hospital", "near", "here"] },
+                { full: "there is a pharmacy next to the bank", words: ["there", "is", "a", "pharmacy", "next to", "the", "bank"] },
+                { full: "are there any restaurants around here", words: ["are", "there", "any", "restaurants", "around", "here"] },
+                { full: "there is a supermarket on my street", words: ["there", "is", "a", "supermarket", "on", "my", "street"] },
+                { full: "there are two churches in my town", words: ["there", "are", "two", "churches", "in", "my", "town"] },
+                { full: "there is not a library near my house", words: ["there", "is", "not", "a", "library", "near", "my", "house"] },
+                { full: "there are many parks in the city", words: ["there", "are", "many", "parks", "in", "the", "city"] },
+                { full: "is there a post office near here", words: ["is", "there", "a", "post office", "near", "here"] }
+            ],
+            6: [ // Prepositions Of Place
+                { full: "the cat is on the table", words: ["the", "cat", "is", "on", "the", "table"] },
+                { full: "the ball is under the chair", words: ["the", "ball", "is", "under", "the", "chair"] },
+                { full: "the bank is between the school and the park", words: ["the", "bank", "is", "between", "the", "school", "and", "the", "park"] },
+                { full: "the book is in the bag", words: ["the", "book", "is", "in", "the", "bag"] },
+                { full: "she is in front of the school", words: ["she", "is", "in front of", "the", "school"] },
+                { full: "the dog is behind the house", words: ["the", "dog", "is", "behind", "the", "house"] },
+                { full: "the lamp is above the desk", words: ["the", "lamp", "is", "above", "the", "desk"] },
+                { full: "the park is next to the hospital", words: ["the", "park", "is", "next to", "the", "hospital"] },
+                { full: "the mirror is on the wall", words: ["the", "mirror", "is", "on", "the", "wall"] },
+                { full: "the school is opposite the church", words: ["the", "school", "is", "opposite", "the", "church"] }
+            ],
+            7: [ // In, On, At + Transportations
+                { full: "I go to work by bus", words: ["I", "go", "to", "work", "by", "bus"] },
+                { full: "she is in the car", words: ["she", "is", "in", "the", "car"] },
+                { full: "they are on the train", words: ["they", "are", "on", "the", "train"] },
+                { full: "he goes to school on foot", words: ["he", "goes", "to", "school", "on", "foot"] },
+                { full: "we traveled by plane", words: ["we", "traveled", "by", "plane"] },
+                { full: "I am on the bus", words: ["I", "am", "on", "the", "bus"] },
+                { full: "she is in the taxi", words: ["she", "is", "in", "the", "taxi"] },
+                { full: "he arrived at the bus stop", words: ["he", "arrived", "at", "the", "bus stop"] },
+                { full: "they go to school by bicycle", words: ["they", "go", "to", "school", "by", "bicycle"] },
+                { full: "he is waiting at the airport", words: ["he", "is", "waiting", "at", "the", "airport"] }
+            ]
         };
 
         // --- REAL HOMEWORK QUESTIONS (15 PER MODULE, 10 RANDOMLY SELECTED) ---
@@ -3635,11 +3914,12 @@
 
                 const isS1 = currentLevel === 'starter1';
                 const sBtn = studyLabel ? `<button class="secondary-button-sm" onclick="openStudy(${aula.id})">${studyLabel}</button>` : '';
-                const tBtn = (isS1 && aula.id === 23) ? `<button class="secondary-button-sm" onclick="openFlashcards(23)">FLASHCARDS</button>` : '';
+                const tBtn = ((isS1 && aula.id === 23) || aula.thirdBtn === 'flashcards') ? `<button class="secondary-button-sm" onclick="openFlashcards(${aula.id})">FLASHCARDS</button>` : '';
                 const dBtn = (aula.thirdBtn === 'dictation') ? `<button class="secondary-button-sm" onclick="openDictation(${aula.id})">DITADO</button>` : '';
                 const chBtn = (aula.thirdBtn === 'chunks') ? `<button class="secondary-button-sm" onclick="openChunksThird(${aula.id})">CHUNKS</button>` : '';
                 const hBtn = ((isS1 && [6, 23, 26].includes(aula.id)) || aula.thirdBtn === 'hangman') ? `<button class="secondary-button-sm" onclick="openHangman(${aula.id})">FORCA</button>` : '';
                 const cBtn = (isS1 && [12, 14].includes(aula.id)) ? `<button class="secondary-button-sm" onclick="openWordSearch(${aula.id})">CAÇA-PALAVRAS</button>` : '';
+                const fiBtn = aula.fourthBtn === 'fillin' ? `<button class="secondary-button-sm" onclick="openFillIn(${aula.id})">FILL IN</button>` : '';
 
                 let allStreaks = [];
                 if (aula.hasHomework && activeQuiz[aula.id]) allStreaks.push({ label: 'Homework', done: isStreakDone(aula.id, 'homework') });
@@ -3650,6 +3930,7 @@
                 if (aula.thirdBtn === 'chunks') allStreaks.push({ label: 'Chunks', done: isStreakDone(aula.id, 'chunks') });
                 if ((isS1 && [6, 23, 26].includes(aula.id)) || aula.thirdBtn === 'hangman') allStreaks.push({ label: 'Forca', done: isStreakDone(aula.id, 'hangman') });
                 if (isS1 && [12, 14].includes(aula.id)) allStreaks.push({ label: 'Caça-Palavras', done: isStreakDone(aula.id, 'wordsearch') });
+                if (aula.fourthBtn === 'fillin') allStreaks.push({ label: 'Fill In', done: isStreakDone(aula.id, 'fillin') });
                 const streakHtml = allStreaks.length > 0 ? `<div style="display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.5rem;">${allStreaks.map(s => s.done
                     ? `<span style="font-size: 0.6rem; font-weight: 700; color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 0.1rem 0.4rem; border-radius: 1rem; display: inline-flex; align-items: center; gap: 0.2rem;" data-testid="streak-done-${s.label}"><svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='#16a34a' stroke-width='3'><polyline points='20 6 9 17 4 12'/></svg> ${s.label}</span>`
                     : `<span style="font-size: 0.6rem; font-weight: 700; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 0.1rem 0.4rem; border-radius: 1rem; display: inline-flex; align-items: center; gap: 0.2rem;" data-testid="streak-pending-${s.label}"><svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='#dc2626' stroke-width='2'><circle cx='12' cy='12' r='10'/><line x1='15' y1='9' x2='9' y2='15'/><line x1='9' y1='9' x2='15' y2='15'/></svg> ${s.label}</span>`
@@ -3669,7 +3950,7 @@
                         ${streakHtml}
                     </div>
                     <div class="flex flex-wrap gap-1.5">
-                        ${sBtn} ${tBtn} ${dBtn} ${chBtn} ${hBtn} ${cBtn}
+                        ${sBtn} ${tBtn} ${dBtn} ${chBtn} ${hBtn} ${cBtn} ${fiBtn}
                         <button class="action-button-sm uppercase" ${(!aula.hasHomework || !activeQuiz[aula.id]) ? 'disabled' : `onclick="openPractice(${aula.id})"`}>HOMEWORK</button>
                     </div>
                 </div>`
@@ -3807,7 +4088,8 @@
             } else if (aula.specialMode === 'scramble') {
                 currentStudyMode = 'scramble';
                 instrArea.textContent = "";
-                currentShuffledData = shuffle([...gamesData[id]]);
+                var scrambleSrc = (currentLevel === 'starter2' && gamesDataStarter2[id]) ? gamesDataStarter2[id] : gamesData[id];
+                currentShuffledData = shuffle([...scrambleSrc]);
                 renderScramble();
             }
         };
@@ -3892,6 +4174,18 @@
                 {word: "COCO", hint: "Animação sobre o Dia dos Mortos no México"},
                 {word: "JAWS", hint: "Filme clássico sobre um tubarão"},
                 {word: "UP", hint: "Animação da Pixar com uma casa voando com balões"}
+            ],
+            7: [ // Transportations - 10 palavras
+                {word: "BUS", hint: "Transporte público urbano"},
+                {word: "TRAIN", hint: "Transporte sobre trilhos"},
+                {word: "PLANE", hint: "Transporte que voa"},
+                {word: "BICYCLE", hint: "Veículo com duas rodas e pedais"},
+                {word: "TAXI", hint: "Carro amarelo que você chama"},
+                {word: "SUBWAY", hint: "Trem que anda debaixo da terra"},
+                {word: "MOTORCYCLE", hint: "Moto em inglês"},
+                {word: "BOAT", hint: "Transporte que navega na água"},
+                {word: "HELICOPTER", hint: "Voa com hélices no topo"},
+                {word: "TRUCK", hint: "Veículo grande para carregar carga"}
             ],
             26: [ // Foods and Fruits - 10 palavras
                 {word: "APPLE", hint: "Fruta vermelha ou verde"},
@@ -4113,6 +4407,109 @@
             }
             
             return grid;
+        }
+
+        let fillInStreak = 0;
+        let fillInUsedIndices = [];
+        let currentFillInData = [];
+
+        window.openFillIn = function(moduleId) {
+            currentAulaId = moduleId;
+            currentStudyMode = 'fillin';
+            currentFillInData = fillInDataStarter2[moduleId] || [];
+            fillInStreak = 0;
+            fillInUsedIndices = [];
+            document.getElementById('main-header').classList.add('hidden');
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('study-view').classList.remove('hidden');
+            document.getElementById('study-title').textContent = "Fill In";
+            document.getElementById('study-instruction').textContent = "";
+            loadNextFillIn();
+        }
+
+        function loadNextFillIn() {
+            let availableIndices = [];
+            for (let i = 0; i < currentFillInData.length; i++) {
+                if (!fillInUsedIndices.includes(i)) availableIndices.push(i);
+            }
+            if (availableIndices.length === 0) {
+                fillInUsedIndices = [];
+                availableIndices = currentFillInData.map((_, i) => i);
+            }
+            const idx = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+            fillInUsedIndices.push(idx);
+            const item = currentFillInData[idx];
+
+            const parts = item.sentence.split('___');
+            const sentenceHtml = parts.length === 2
+                ? `<span>${parts[0]}</span><input type="text" id="fillin-input" autocomplete="off" autocapitalize="off" style="border-bottom: 2px solid #8671d1; outline: none; font-size: 1.1rem; font-weight: 700; width: 120px; text-align: center; background: transparent; font-family: 'DM Sans', sans-serif; padding: 0.2rem;" data-testid="fillin-input"><span>${parts[1]}</span>`
+                : `<span>${item.sentence}</span>`;
+
+            const streakDots = Array.from({length: 5}, (_, i) =>
+                `<div style="width: 12px; height: 12px; border-radius: 50%; ${i < fillInStreak ? 'background: #8671d1;' : 'background: #e5e7eb;'} transition: background 0.3s;"></div>`
+            ).join('');
+
+            document.getElementById('study-content').innerHTML = `
+                <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem;" data-testid="fillin-streak-bar">
+                    ${streakDots}
+                </div>
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <p style="font-size: 0.85rem; color: #78716c; margin-bottom: 0.5rem;">${item.pt}</p>
+                    <div style="font-size: 1.2rem; color: #1c1917; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.15rem; line-height: 2.2;" data-testid="fillin-sentence">
+                        ${sentenceHtml}
+                    </div>
+                    <p style="font-size: 0.75rem; color: #a8a29e; margin-top: 0.5rem;">${item.hint}</p>
+                </div>
+                <div style="text-align: center;">
+                    <button class="action-button" onclick="checkFillIn(${idx})" data-testid="fillin-check-btn">VERIFICAR</button>
+                </div>
+                <div id="fillin-feedback" style="text-align: center; margin-top: 1rem;"></div>
+            `;
+
+            setTimeout(() => {
+                const input = document.getElementById('fillin-input');
+                if (input) {
+                    input.focus();
+                    input.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') checkFillIn(idx);
+                    });
+                }
+            }, 100);
+        }
+
+        window.checkFillIn = function(idx) {
+            const input = document.getElementById('fillin-input');
+            if (!input) return;
+            const userAnswer = input.value.trim().toLowerCase();
+            const item = currentFillInData[idx];
+            const correct = item.answer.toLowerCase();
+            const feedback = document.getElementById('fillin-feedback');
+
+            if (userAnswer === correct) {
+                input.style.borderBottomColor = '#16a34a';
+                input.style.color = '#16a34a';
+                input.disabled = true;
+                fillInStreak++;
+                feedback.innerHTML = `<p style="color: #16a34a; font-weight: 700;">Correto!</p>`;
+
+                if (fillInStreak >= 5) {
+                    saveStreakDone(currentAulaId, 'fillin');
+                    feedback.innerHTML = `
+                        <div style="text-align: center;">
+                            <p style="color: #16a34a; font-weight: 700; font-size: 1.2rem; margin-bottom: 1rem;">Missão completa!</p>
+                            <button class="action-button" onclick="showDashboard()" data-testid="fillin-back-btn">VOLTAR</button>
+                        </div>`;
+                    try { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); } catch(e) {}
+                } else {
+                    setTimeout(() => loadNextFillIn(), 1200);
+                }
+            } else {
+                input.style.borderBottomColor = '#dc2626';
+                input.style.color = '#dc2626';
+                fillInStreak = 0;
+                feedback.innerHTML = `<p style="color: #dc2626; font-weight: 700;">Resposta: <span style="color: #1c1917;">${item.answer}</span></p>`;
+                setTimeout(() => loadNextFillIn(), 2000);
+            }
         }
 
         let usedWordSearchIndices = [];
