@@ -4839,6 +4839,12 @@
                     if (allMatch) return true;
                 }
             }
+            var manyVariants = ['many', 'lots of', 'a lot of'];
+            for (var mi = 0; mi < manyVariants.length; mi++) {
+                for (var mj = 0; mj < manyVariants.length; mj++) {
+                    if (mi !== mj && correct.includes(manyVariants[mi]) && val === correct.replace(manyVariants[mi], manyVariants[mj])) return true;
+                }
+            }
             // For letters (A, B, C...) accept lowercase
             if (correct.length === 1 && val === correct) return true;
             // For time formats - normalize and compare
@@ -4854,6 +4860,10 @@
                     return t;
                 };
                 if (normalizeTime(val) === normalizeTime(correct)) return true;
+                var wordsVersion = timeToWords(correct).toLowerCase();
+                if (val === wordsVersion) return true;
+                if (val.replace(/['']/g, "'") === wordsVersion.replace(/['']/g, "'")) return true;
+                if (val.replace(/[''`]/g, "") === wordsVersion.replace(/[''`]/g, "")) return true;
             }
             return false;
         }
