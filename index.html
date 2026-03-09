@@ -665,7 +665,7 @@
                         <button onclick="setStudentFilter('all')" id="filter-btn-all" class="teacher-tab active" data-testid="button-filter-all">Todos</button>
                         <button onclick="setStudentFilter('pending')" id="filter-btn-pending" class="teacher-tab" data-testid="button-filter-pending">Pendentes</button>
                         <button onclick="setStudentFilter('approved')" id="filter-btn-approved" class="teacher-tab" data-testid="button-filter-approved">Aprovados</button>
-                        <button onclick="setStudentFilter('missinglinks')" id="filter-btn-missinglinks" class="teacher-tab" data-testid="button-filter-missinglinks">Links Pendentes</button>
+                        <button onclick="setStudentFilter('missinglinks')" id="filter-btn-missinglinks" class="teacher-tab" data-testid="button-filter-missinglinks">Pendências</button>
                     </div>
 
                     <div id="teacher-students-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
@@ -1612,20 +1612,23 @@
                 snapshot.forEach(function(doc) {
                     var data = doc.data();
                     if (data.role !== 'teacher') {
-                        allStudentsCache.push({ uid: doc.id, ...data, missingCp: false, missingRecorded: false });
+                        allStudentsCache.push({ uid: doc.id, ...data, missingCp: false, missingRecorded: false, missingTeacher: false });
                         if (data.approved) {
                             var lvl = data.currentLevel || 'starter1';
                             linkIndices.push(allStudentsCache.length - 1);
                             linkPromises.push(firebaseDb.collection('users').doc(doc.id).collection('links').doc(lvl).get());
+                            linkPromises.push(firebaseDb.collection('users').doc(doc.id).collection('grades').doc(lvl).get());
                         }
                     }
                 });
                 var linkDocs = await Promise.all(linkPromises);
-                for (var li = 0; li < linkDocs.length; li++) {
-                    var idx = linkIndices[li];
+                for (var li = 0; li < linkDocs.length; li += 2) {
+                    var idx = linkIndices[li / 2];
                     var linkData = linkDocs[li].exists ? linkDocs[li].data() : {};
+                    var gradeData = linkDocs[li + 1].exists ? linkDocs[li + 1].data() : {};
                     allStudentsCache[idx].missingCp = !linkData.cpLink;
                     allStudentsCache[idx].missingRecorded = !linkData.recordedLink;
+                    allStudentsCache[idx].missingTeacher = !gradeData.teacherName || !gradeData.teacherName.trim();
                 }
                 updateTeacherStats();
                 teacherCurrentPage = 1;
@@ -1684,7 +1687,7 @@
             } else if (teacherStatusFilter === 'approved') {
                 list = list.filter(function(s) { return s.approved; });
             } else if (teacherStatusFilter === 'missinglinks') {
-                list = list.filter(function(s) { return s.approved && (s.missingCp || s.missingRecorded); });
+                list = list.filter(function(s) { return s.approved && (s.missingCp || s.missingRecorded || s.missingTeacher); });
             }
             if (!query) return list;
             return list.filter(function(s) {
@@ -1771,6 +1774,7 @@
                 if (s.approved) {
                     if (s.missingCp) linkTags += '<span style="font-size: 0.55rem; font-weight: 700; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 0.05rem 0.35rem; border-radius: 0.25rem; display: inline-flex; align-items: center; gap: 0.15rem;" data-testid="tag-missing-cp-' + s.uid + '"><svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> CP</span>';
                     if (s.missingRecorded) linkTags += '<span style="font-size: 0.55rem; font-weight: 700; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 0.05rem 0.35rem; border-radius: 0.25rem; display: inline-flex; align-items: center; gap: 0.15rem;" data-testid="tag-missing-recorded-' + s.uid + '"><svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Aulas Gravadas</span>';
+                    if (s.missingTeacher) linkTags += '<span style="font-size: 0.55rem; font-weight: 700; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 0.05rem 0.35rem; border-radius: 0.25rem; display: inline-flex; align-items: center; gap: 0.15rem;" data-testid="tag-missing-teacher-' + s.uid + '"><svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Professor(a)</span>';
                 }
                 return '<div class="student-card" onclick="openStudentDetail(\'' + s.uid + '\')" data-testid="card-student-' + s.uid + '">' +
                     '<div style="flex: 1; min-width: 0;">' +
