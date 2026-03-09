@@ -608,6 +608,11 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
                     Top Students
                 </button>
+
+                <button onclick="showTeacherSection('topteachers'); closeTeacherSidebar();" class="sidebar-item teacher-sidebar-nav" id="teacher-nav-topteachers" data-testid="button-teacher-nav-topteachers">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Top Teachers
+                </button>
             </div>
 
             <div style="padding: 0.75rem 1rem; border-top: 1px solid #e7e5e4; display: flex; justify-content: center;">
@@ -660,6 +665,7 @@
                         <button onclick="setStudentFilter('all')" id="filter-btn-all" class="teacher-tab active" data-testid="button-filter-all">Todos</button>
                         <button onclick="setStudentFilter('pending')" id="filter-btn-pending" class="teacher-tab" data-testid="button-filter-pending">Pendentes</button>
                         <button onclick="setStudentFilter('approved')" id="filter-btn-approved" class="teacher-tab" data-testid="button-filter-approved">Aprovados</button>
+                        <button onclick="setStudentFilter('missinglinks')" id="filter-btn-missinglinks" class="teacher-tab" data-testid="button-filter-missinglinks">Links Pendentes</button>
                     </div>
 
                     <div id="teacher-students-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
@@ -702,6 +708,10 @@
                         <div id="detail-tab-grades">
                             <div id="grade-level-tabs" style="display: flex; gap: 0.35rem; margin-bottom: 0.75rem; flex-wrap: wrap;"></div>
                             <div style="display: flex; flex-direction: column; gap: 0.5rem;" id="teacher-grades-form">
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: #f5f3ff; border: 1.5px solid #ede9fe; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
+                                    <span style="font-size: 0.8rem; color: #8671d1; font-weight: 700;">Professor(a)</span>
+                                    <input type="text" id="grade-teacher-name" placeholder="Nome do professor" style="width: 160px; text-align: right; padding: 0.3rem 0.5rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif; outline: none;" data-testid="input-grade-teacher-name">
+                                </div>
                                 <div style="display: flex; justify-content: space-between; align-items: center; background: #fafaf9; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
                                     <span style="font-size: 0.8rem; color: #44403c; font-weight: 500;">Midterm Test <span style="color: #a8a29e; font-size: 0.65rem;">(max 20)</span></span>
                                     <input type="number" min="0" max="20" id="grade-midterm" style="width: 60px; text-align: center; padding: 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif;" data-testid="input-grade-midterm">
@@ -784,6 +794,16 @@
                 <div style="max-width: 960px; margin: 0 auto;">
                     <div id="teacher-ranking-level-tabs" style="display: flex; gap: 0.35rem; margin-bottom: 1rem; flex-wrap: wrap;"></div>
                     <div id="teacher-ranking-content" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Carregando ranking...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEACHER: TOP TEACHERS SECTION -->
+            <div id="teacher-section-topteachers" class="w-full" style="padding: 0 1.5rem 2rem; display: none;">
+                <div style="max-width: 960px; margin: 0 auto;">
+                    <div id="topteachers-level-tabs" style="display: flex; gap: 0.35rem; margin-bottom: 1rem; flex-wrap: wrap;"></div>
+                    <div id="topteachers-content" style="display: flex; flex-direction: column; gap: 0.5rem;">
                         <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Carregando ranking...</p>
                     </div>
                 </div>
@@ -1508,7 +1528,9 @@
 
                     html += '<div style="margin-bottom: 1rem; border: 1.5px solid #e7e5e4; border-radius: 0.75rem; overflow: hidden;" data-testid="card-grades-' + lvl + '">';
                     html += '<div style="background: #f5f3ff; padding: 0.5rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">';
-                    html += '<span style="font-size: 0.85rem; font-weight: 800; color: #44403c;" data-testid="text-grade-level-' + lvl + '">' + lvlLabels[lvl] + '</span>';
+                    html += '<div><span style="font-size: 0.85rem; font-weight: 800; color: #44403c;" data-testid="text-grade-level-' + lvl + '">' + lvlLabels[lvl] + '</span>';
+                    if (g.teacherName) html += '<p style="font-size: 0.65rem; color: #8671d1; font-weight: 600; margin-top: 0.1rem;">Prof. ' + g.teacherName + '</p>';
+                    html += '</div>';
                     html += statusHtml;
                     html += '</div>';
                     html += '<div style="padding: 0.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.35rem;">';
@@ -1585,12 +1607,26 @@
             try {
                 var snapshot = await firebaseDb.collection('users').get();
                 allStudentsCache = [];
+                var linkPromises = [];
+                var linkIndices = [];
                 snapshot.forEach(function(doc) {
                     var data = doc.data();
                     if (data.role !== 'teacher') {
-                        allStudentsCache.push({ uid: doc.id, ...data });
+                        allStudentsCache.push({ uid: doc.id, ...data, missingCp: false, missingRecorded: false });
+                        if (data.approved) {
+                            var lvl = data.currentLevel || 'starter1';
+                            linkIndices.push(allStudentsCache.length - 1);
+                            linkPromises.push(firebaseDb.collection('users').doc(doc.id).collection('links').doc(lvl).get());
+                        }
                     }
                 });
+                var linkDocs = await Promise.all(linkPromises);
+                for (var li = 0; li < linkDocs.length; li++) {
+                    var idx = linkIndices[li];
+                    var linkData = linkDocs[li].exists ? linkDocs[li].data() : {};
+                    allStudentsCache[idx].missingCp = !linkData.cpLink;
+                    allStudentsCache[idx].missingRecorded = !linkData.recordedLink;
+                }
                 updateTeacherStats();
                 teacherCurrentPage = 1;
                 renderStudentsPaginated();
@@ -1647,6 +1683,8 @@
                 list = list.filter(function(s) { return !s.approved; });
             } else if (teacherStatusFilter === 'approved') {
                 list = list.filter(function(s) { return s.approved; });
+            } else if (teacherStatusFilter === 'missinglinks') {
+                list = list.filter(function(s) { return s.approved && (s.missingCp || s.missingRecorded); });
             }
             if (!query) return list;
             return list.filter(function(s) {
@@ -1729,6 +1767,11 @@
                 var lvlLabel = levelNames[s.currentLevel] || 'Starter 1';
                 var createdDate = formatFirebaseDate(s.createdAt);
                 var approvedDate = s.approved ? formatFirebaseDate(s.approvedAt) : '—';
+                var linkTags = '';
+                if (s.approved) {
+                    if (s.missingCp) linkTags += '<span style="font-size: 0.55rem; font-weight: 700; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 0.05rem 0.35rem; border-radius: 0.25rem; display: inline-flex; align-items: center; gap: 0.15rem;" data-testid="tag-missing-cp-' + s.uid + '"><svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> CP</span>';
+                    if (s.missingRecorded) linkTags += '<span style="font-size: 0.55rem; font-weight: 700; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 0.05rem 0.35rem; border-radius: 0.25rem; display: inline-flex; align-items: center; gap: 0.15rem;" data-testid="tag-missing-recorded-' + s.uid + '"><svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Aulas Gravadas</span>';
+                }
                 return '<div class="student-card" onclick="openStudentDetail(\'' + s.uid + '\')" data-testid="card-student-' + s.uid + '">' +
                     '<div style="flex: 1; min-width: 0;">' +
                         '<div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">' +
@@ -1740,6 +1783,7 @@
                             '<span style="font-size: 0.6rem; color: #a8a29e;">Cadastro: ' + createdDate + '</span>' +
                             '<span style="font-size: 0.6rem; color: #a8a29e;">Aprovação: ' + approvedDate + '</span>' +
                         '</div>' +
+                        (linkTags ? '<div style="display: flex; gap: 0.3rem; margin-top: 0.3rem; flex-wrap: wrap;">' + linkTags + '</div>' : '') +
                     '</div>' +
                     '<span class="' + statusClass + '" style="font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; gap: 0.2rem; flex-shrink: 0;">' + statusIcon + ' ' + statusText + '</span>' +
                 '</div>';
@@ -1861,6 +1905,7 @@
                         await firebaseDb.collection('users').doc(uid).collection('grades').doc('starter1').set(grades);
                     }
                 }
+                document.getElementById('grade-teacher-name').value = grades.teacherName || '';
                 document.getElementById('grade-midterm').value = grades.midterm !== undefined && grades.midterm !== null ? grades.midterm : '';
                 document.getElementById('grade-listening').value = grades.listening !== undefined && grades.listening !== null ? grades.listening : '';
                 document.getElementById('grade-grammar').value = grades.grammar !== undefined && grades.grammar !== null ? grades.grammar : '';
@@ -1904,6 +1949,7 @@
                     return isNaN(n) ? null : n;
                 }
                 var grades = {
+                    teacherName: document.getElementById('grade-teacher-name').value.trim(),
                     midterm: parseGradeVal('grade-midterm'),
                     listening: parseGradeVal('grade-listening'),
                     grammar: parseGradeVal('grade-grammar'),
@@ -2117,7 +2163,7 @@
         }
 
         function showTeacherSection(section) {
-            var sections = ['students', 'grades', 'links', 'streaks', 'ranking'];
+            var sections = ['students', 'grades', 'links', 'streaks', 'ranking', 'topteachers'];
             sections.forEach(function(s) {
                 var el = document.getElementById('teacher-section-' + s);
                 if (el) el.style.display = 'none';
@@ -2131,6 +2177,9 @@
             if (activeBtn) activeBtn.classList.add('active');
             if (section === 'ranking') {
                 loadTeacherRanking();
+            }
+            if (section === 'topteachers') {
+                loadTopTeachers();
             }
         }
 
@@ -2552,6 +2601,123 @@
                 }).join('');
             } catch(e) {
                 console.error('Erro ao carregar ranking:', e);
+                contentEl.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.8rem; padding: 2rem 0;">Erro ao carregar ranking.</p>';
+            }
+        }
+
+        var topTeachersLevel = 'all';
+
+        async function loadTopTeachers() {
+            var levelNames = { starter1: 'Starter 1', starter2: 'Starter 2' };
+            var allLevels = Object.keys(levelNames);
+            var tabsEl = document.getElementById('topteachers-level-tabs');
+            var isAllActive = topTeachersLevel === 'all';
+            var tabsHtml = '<button onclick="topTeachersLevel=\'all\'; loadTopTeachers();" class="teacher-tab' + (isAllActive ? ' active' : '') + '" data-testid="button-topteachers-tab-all">Geral</button>';
+            allLevels.forEach(function(lvl) {
+                var isActive = topTeachersLevel === lvl;
+                tabsHtml += '<button onclick="topTeachersLevel=\'' + lvl + '\'; loadTopTeachers();" class="teacher-tab' + (isActive ? ' active' : '') + '" data-testid="button-topteachers-tab-' + lvl + '">' + levelNames[lvl] + '</button>';
+            });
+            tabsEl.innerHTML = tabsHtml;
+            var contentEl = document.getElementById('topteachers-content');
+            contentEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Carregando ranking de professores...</p>';
+            try {
+                var usersSnap = await firebaseDb.collection('users').where('approved', '==', true).get();
+                var students = [];
+                var teacherAccounts = {};
+                usersSnap.forEach(function(doc) {
+                    var data = doc.data();
+                    if (data.role === 'teacher') {
+                        var tName = (data.name || '').trim();
+                        if (tName) {
+                            var firstName = tName.split(/\s+/)[0].toLowerCase();
+                            teacherAccounts[firstName] = { name: tName, avatarUrl: data.avatarUrl || null };
+                        }
+                        return;
+                    }
+                    students.push({ uid: doc.id, name: data.name || 'Aluno' });
+                });
+                var levelsToCheck = topTeachersLevel === 'all' ? allLevels : [topTeachersLevel];
+                var gradePromises = [];
+                var gradeMap = [];
+                students.forEach(function(s) {
+                    levelsToCheck.forEach(function(lvl) {
+                        gradeMap.push({ uid: s.uid, level: lvl });
+                        gradePromises.push(firebaseDb.collection('users').doc(s.uid).collection('grades').doc(lvl).get());
+                    });
+                });
+                var streakPromises = [];
+                students.forEach(function(s) {
+                    streakPromises.push(firebaseDb.collection('users').doc(s.uid).collection('streaks').doc('completed').get());
+                });
+                var gradeDocs = await Promise.all(gradePromises);
+                var streakDocs = await Promise.all(streakPromises);
+                var studentTeachers = {};
+                for (var gi = 0; gi < gradeDocs.length; gi++) {
+                    var gData = gradeDocs[gi].exists ? gradeDocs[gi].data() : {};
+                    if (gData.teacherName) {
+                        var key = gradeMap[gi].uid + '_' + gradeMap[gi].level;
+                        studentTeachers[key] = gData.teacherName.trim();
+                    }
+                }
+                var teacherScores = {};
+                for (var si = 0; si < students.length; si++) {
+                    var streakData = streakDocs[si].exists ? streakDocs[si].data() : {};
+                    var sKeys = Object.keys(streakData);
+                    levelsToCheck.forEach(function(lvl) {
+                        var tKey = students[si].uid + '_' + lvl;
+                        var teacher = studentTeachers[tKey];
+                        if (!teacher) return;
+                        var count = 0;
+                        for (var sk = 0; sk < sKeys.length; sk++) {
+                            if (sKeys[sk].startsWith(lvl + '_') && streakData[sKeys[sk]]) count++;
+                        }
+                        if (count > 0) {
+                            var tNorm = teacher.toLowerCase().trim();
+                            if (!teacherScores[tNorm]) {
+                                var tFirstName = teacher.split(/\s+/)[0].toLowerCase();
+                                var matchedAccount = teacherAccounts[tFirstName] || null;
+                                teacherScores[tNorm] = { name: teacher, streaks: 0, students: 0, studentSet: {}, avatarUrl: matchedAccount ? matchedAccount.avatarUrl : null };
+                            }
+                            teacherScores[tNorm].streaks += count;
+                            if (!teacherScores[tNorm].studentSet[students[si].uid]) {
+                                teacherScores[tNorm].studentSet[students[si].uid] = true;
+                                teacherScores[tNorm].students++;
+                            }
+                        }
+                    });
+                }
+                var sorted = Object.values(teacherScores).sort(function(a, b) { return b.streaks - a.streaks; });
+                if (sorted.length === 0) {
+                    contentEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Nenhum professor com streaks ainda. Preencha o campo "Professor(a)" nas notas dos alunos.</p>';
+                    return;
+                }
+                function ttIcon(n) {
+                    if (n === 1) return '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F1D24B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#F1D24B" stroke="none">1</text></svg>';
+                    if (n === 2) return '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#a8a29e" stroke="none">2</text></svg>';
+                    if (n === 3) return '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/><text x="12" y="11" text-anchor="middle" font-size="7" font-weight="900" fill="#fb923c" stroke="none">3</text></svg>';
+                    return '<div style="width: 28px; height: 28px; border-radius: 50%; background: #f5f5f4; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; color: #78716c;">' + n + '</div>';
+                }
+                function ttBg(n) { return n === 1 ? '#fef9c3' : n === 2 ? '#f5f5f4' : n === 3 ? '#fed7aa' : '#fafaf9'; }
+                function ttBorder(n) { return n === 1 ? '#F1D24B' : n === 2 ? '#d6d3d1' : n === 3 ? '#fb923c' : '#e7e5e4'; }
+                contentEl.innerHTML = sorted.map(function(t, idx) {
+                    var pos = idx + 1;
+                    return '<div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem; border-radius: 0.75rem; background: ' + ttBg(pos) + '; border: 1px solid ' + ttBorder(pos) + ';" data-testid="card-top-teacher-' + idx + '">' +
+                        '<div style="min-width: 32px; display: flex; align-items: center; justify-content: center;">' + ttIcon(pos) + '</div>' +
+                        (t.avatarUrl
+                            ? '<img src="' + t.avatarUrl + '" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #8671d1;">'
+                            : '<div style="width: 40px; height: 40px; border-radius: 50%; background: #f5f3ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>') +
+                        '<div style="flex: 1; min-width: 0;">' +
+                            '<p style="font-size: 0.9rem; font-weight: 700; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Prof. ' + t.name + '</p>' +
+                            '<p style="font-size: 0.65rem; color: #78716c;">' + t.students + ' aluno' + (t.students !== 1 ? 's' : '') + '</p>' +
+                        '</div>' +
+                        '<div style="display: flex; align-items: center; gap: 0.3rem; background: white; padding: 0.35rem 0.7rem; border-radius: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">' +
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F1D24B" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' +
+                            '<span style="font-size: 0.85rem; font-weight: 800; color: #44403c;">' + t.streaks + '</span>' +
+                        '</div>' +
+                    '</div>';
+                }).join('');
+            } catch(e) {
+                console.error('Erro ao carregar ranking de professores:', e);
                 contentEl.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.8rem; padding: 2rem 0;">Erro ao carregar ranking.</p>';
             }
         }
