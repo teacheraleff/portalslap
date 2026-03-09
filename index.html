@@ -1548,6 +1548,7 @@
         var teacherCurrentPage = 1;
         var teacherPageSize = 10;
         var teacherStatusFilter = 'all';
+        var teacherLevelFilter = 'all';
 
         function initTeacherDashboard() {
             allStudentsCache = [];
@@ -1608,15 +1609,24 @@
                 counts[lvl] = (counts[lvl] || 0) + 1;
             });
             var statsEl = document.getElementById('teacher-stats-bar');
-            var html = '<div style="flex: 1; min-width: 100px; background: #f5f3ff; border: 1px solid #ede9fe; border-radius: 0.5rem; padding: 0.6rem 0.75rem; text-align: center;">' +
-                '<p style="font-size: 1.25rem; font-weight: 800; color: #8671d1;">' + total + '</p>' +
+            var isAllActive = teacherLevelFilter === 'all';
+            var html = '<div onclick="setLevelFilter(\'all\')" style="flex: 1; min-width: 100px; background: ' + (isAllActive ? '#f5f3ff' : '#fafaf9') + '; border: 2px solid ' + (isAllActive ? '#8671d1' : '#e7e5e4') + '; border-radius: 0.5rem; padding: 0.6rem 0.75rem; text-align: center; cursor: pointer; transition: all 0.2s;" data-testid="stats-filter-all">' +
+                '<p style="font-size: 1.25rem; font-weight: 800; color: ' + (isAllActive ? '#8671d1' : '#44403c') + ';">' + total + '</p>' +
                 '<p style="font-size: 0.65rem; font-weight: 600; color: #78716c;">Total de Alunos</p></div>';
             Object.keys(levelNames).forEach(function(lvl) {
-                html += '<div style="flex: 1; min-width: 100px; background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 0.5rem; padding: 0.6rem 0.75rem; text-align: center;">' +
-                    '<p style="font-size: 1.25rem; font-weight: 800; color: #44403c;">' + (counts[lvl] || 0) + '</p>' +
+                var isActive = teacherLevelFilter === lvl;
+                html += '<div onclick="setLevelFilter(\'' + lvl + '\')" style="flex: 1; min-width: 100px; background: ' + (isActive ? '#f5f3ff' : '#fafaf9') + '; border: 2px solid ' + (isActive ? '#8671d1' : '#e7e5e4') + '; border-radius: 0.5rem; padding: 0.6rem 0.75rem; text-align: center; cursor: pointer; transition: all 0.2s;" data-testid="stats-filter-' + lvl + '">' +
+                    '<p style="font-size: 1.25rem; font-weight: 800; color: ' + (isActive ? '#8671d1' : '#44403c') + ';">' + (counts[lvl] || 0) + '</p>' +
                     '<p style="font-size: 0.65rem; font-weight: 600; color: #78716c;">' + levelNames[lvl] + '</p></div>';
             });
             statsEl.innerHTML = html;
+        }
+
+        window.setLevelFilter = function(lvl) {
+            teacherLevelFilter = lvl;
+            teacherCurrentPage = 1;
+            updateTeacherStats();
+            renderStudentsPaginated();
         }
 
         function setStudentFilter(filter) {
@@ -1630,6 +1640,9 @@
         function getFilteredStudents() {
             var query = document.getElementById('teacher-search-input').value.toLowerCase().trim();
             var list = allStudentsCache;
+            if (teacherLevelFilter !== 'all') {
+                list = list.filter(function(s) { return (s.currentLevel || 'starter1') === teacherLevelFilter; });
+            }
             if (teacherStatusFilter === 'pending') {
                 list = list.filter(function(s) { return !s.approved; });
             } else if (teacherStatusFilter === 'approved') {
@@ -2377,6 +2390,13 @@
             return !!userStreaksCache[currentLevel + '_' + aulaId + '_' + mode];
         }
 
+        var levelOrder = ['starter1', 'starter2', 'freshman1', 'freshman2', 'sophomore1', 'sophomore2', 'senior1', 'senior2'];
+
+        function getLevelIndex(lvl) {
+            var idx = levelOrder.indexOf(lvl);
+            return idx >= 0 ? idx : 0;
+        }
+
         async function openTopStudentsModal() {
             var modal = document.getElementById('top-students-modal');
             modal.style.display = 'flex';
@@ -2388,10 +2408,16 @@
                 var usersSnap = await firebaseDb.collection('users').where('approved', '==', true).get();
                 var students = [];
                 var promises = [];
+                var viewingLevelIdx = getLevelIndex(currentLevel);
                 usersSnap.forEach(function(doc) {
                     var data = doc.data();
                     if (data.role === 'teacher') return;
-                    students.push({ uid: doc.id, name: data.name || data.email || 'Aluno', avatarUrl: data.avatarUrl || null });
+                    var sName = (data.name || '').toLowerCase();
+                    if (sName.includes('teste')) return;
+                    var studentLevel = data.currentLevel || 'starter1';
+                    var studentLevelIdx = getLevelIndex(studentLevel);
+                    if (studentLevelIdx < viewingLevelIdx) return;
+                    students.push({ uid: doc.id, name: data.name || data.email || 'Aluno', avatarUrl: data.profilePhoto || data.avatarUrl || null });
                     promises.push(firebaseDb.collection('users').doc(doc.id).collection('streaks').doc('completed').get());
                 });
                 var streakDocs = await Promise.all(promises);
@@ -2467,9 +2493,15 @@
                 var usersSnap = await firebaseDb.collection('users').where('approved', '==', true).get();
                 var students = [];
                 var promises = [];
+                var viewingLevelIdx = getLevelIndex(teacherRankingLevel);
                 usersSnap.forEach(function(doc) {
                     var data = doc.data();
                     if (data.role === 'teacher') return;
+                    var sName = (data.name || '').toLowerCase();
+                    if (sName.includes('teste')) return;
+                    var studentLevel = data.currentLevel || 'starter1';
+                    var studentLevelIdx = getLevelIndex(studentLevel);
+                    if (studentLevelIdx < viewingLevelIdx) return;
                     students.push({ uid: doc.id, name: data.name || data.email || 'Aluno', avatarUrl: data.avatarUrl || null });
                     promises.push(firebaseDb.collection('users').doc(doc.id).collection('streaks').doc('completed').get());
                 });
@@ -3107,7 +3139,7 @@
                 { en: "There are many stores in my neighborhood.", pt: "Tem muitas lojas no meu bairro." },
                 { en: "Is there a hospital near here?", pt: "Tem um hospital perto daqui?" },
                 { en: "Are there many green spaces or parks?", pt: "Tem muitos espaços verdes ou parques?" },
-                { en: "My neighborhood is safe but noisy.", pt: "Meu bairro é seguro, mas barulhento." },
+                { en: "My neighborhood is safe but noisy.", pt: "Meu bairro é seguro mas barulhento." },
                 { en: "The bus stop is always crowded.", pt: "O ponto de ônibus está sempre lotado." },
                 { en: "There are not many restaurants around here.", pt: "Não tem muitos restaurantes por aqui." }
             ]
@@ -4007,16 +4039,33 @@
             if (answerSubmitted) return;
             answerSubmitted = true;
             const alert = document.getElementById('feedback-alert');
+            const rationaleEl = document.getElementById('rationale-display');
+            const rationaleContent = document.getElementById('rationale-content');
 
             if (correct) {
                 playCorrectSound();
                 quizStreak++;
-                document.getElementById('rationale-content').textContent = rationale;
-                document.getElementById('rationale-display').classList.remove('hidden');
+                rationaleContent.innerHTML = '<span style="color: #16a34a; font-weight: 700;">✓ Correto!</span> ' + rationale;
+                rationaleEl.classList.remove('hidden');
+                rationaleEl.style.borderColor = '#bbf7d0';
+                rationaleEl.style.background = '#f0fdf4';
             } else {
                 playIncorrectSound();
                 quizStreak = 0;
-                document.getElementById('rationale-display').classList.add('hidden');
+                var correctText = '';
+                if (currentQuestion && currentQuestion.options) {
+                    for (var ci = 0; ci < currentQuestion.options.length; ci++) {
+                        if (currentQuestion.options[ci].isCorrect) { correctText = currentQuestion.options[ci].text; break; }
+                    }
+                }
+                rationaleContent.innerHTML = '<span style="color: #dc2626; font-weight: 700;">✗ Resposta correta: ' + correctText + '</span><br>' + rationale;
+                rationaleEl.classList.remove('hidden');
+                rationaleEl.style.borderColor = '#fecaca';
+                rationaleEl.style.background = '#fef2f2';
+                if (currentQuestion) {
+                    var insertPos = Math.floor(Math.random() * Math.min(3, questionsPool.length));
+                    questionsPool.splice(insertPos, 0, currentQuestion);
+                }
             }
             alert.classList.add('hidden');
             document.getElementById('next-btn-container').classList.remove('hidden');
@@ -4027,6 +4076,9 @@
                 if (i === idx) {
                    if(correct) btn.classList.add('bg-green-50', 'border-green-400');
                    else btn.classList.add('bg-red-50', 'border-red-400');
+                }
+                if (!correct && currentQuestion && currentQuestion.options[i] && currentQuestion.options[i].isCorrect) {
+                    btn.classList.add('bg-green-50', 'border-green-400');
                 }
             });
         };
