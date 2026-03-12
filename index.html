@@ -5438,7 +5438,7 @@
             if (!questions) return;
             const area = document.getElementById('study-content-area');
             const shuffled = shuffle([...questions]);
-            const colors = ['#8671d1','#F1D24B','#ef4444','#0ea5e9','#22c55e','#ec4899','#f59e0b','#6366f1','#14b8a6','#f97316'];
+            const colors = ['#8671d1','#F1D24B','#FF5C3D','#84C7DF','#000000'];
 
             area.innerHTML = `
                 <div style="max-width: 700px; margin: 0 auto;">
@@ -5450,9 +5450,9 @@
                         ${shuffled.map((q, i) => {
                             const c = colors[i % colors.length];
                             return `
-                                <div class="boxes-card" data-index="${i}" data-opened="false"
+                                <div class="boxes-card" data-index="${i}" data-opened="false" data-color="${c}"
                                     onclick="revealBox(this, ${moduleId})"
-                                    style="aspect-ratio: 1; background: linear-gradient(135deg, ${c}, ${c}dd); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.4s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: relative; overflow: hidden; user-select: none;"
+                                    style="height: 70px; background: linear-gradient(135deg, ${c}, ${c}dd); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.4s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: relative; overflow: hidden; user-select: none;"
                                     data-testid="box-${i}">
                                     <span class="box-number" style="font-size: 1.8rem; font-weight: 900; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">${i + 1}</span>
                                     <div class="box-question" style="display: none; padding: 0.5rem; text-align: center;">
@@ -5461,13 +5461,6 @@
                                 </div>`;
                         }).join('')}
                     </div>
-                    <div id="boxes-active-question" style="margin-top: 1.5rem; display: none;" data-testid="boxes-active-question">
-                        <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8671d1; border-radius: 1rem; padding: 1.5rem; text-align: center;">
-                            <p style="font-size: 0.7rem; font-weight: 700; color: #8671d1; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Pergunta</p>
-                            <p id="boxes-question-text" style="font-size: 1.2rem; font-weight: 800; color: #1c1917; line-height: 1.4;"></p>
-                            <p style="font-size: 0.75rem; color: #78716c; margin-top: 0.75rem;">Responda em voz alta usando advérbios de frequência!</p>
-                        </div>
-                    </div>
                     <div id="boxes-complete" style="display: none; text-align: center; margin-top: 1.5rem;" data-testid="boxes-complete"></div>
                 </div>
             `;
@@ -5475,9 +5468,14 @@
 
         window.revealBox = function(el, moduleId) {
             if (el.dataset.opened === 'true') {
-                const q = el.querySelector('.box-question p').textContent;
-                document.getElementById('boxes-question-text').textContent = q;
-                document.getElementById('boxes-active-question').style.display = 'block';
+                el.dataset.opened = 'false';
+                const origColor = el.dataset.color;
+                el.style.background = `linear-gradient(135deg, ${origColor}, ${origColor}dd)`;
+                el.style.border = 'none';
+                el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                el.style.cursor = 'pointer';
+                el.querySelector('.box-number').style.display = '';
+                el.querySelector('.box-question').style.display = 'none';
                 return;
             }
             el.dataset.opened = 'true';
@@ -5491,10 +5489,6 @@
             el.querySelector('.box-question').style.justifyContent = 'center';
             el.querySelector('.box-question').style.width = '100%';
             el.querySelector('.box-question').style.height = '100%';
-
-            const q = el.querySelector('.box-question p').textContent;
-            document.getElementById('boxes-question-text').textContent = q;
-            document.getElementById('boxes-active-question').style.display = 'block';
 
             boxesOpenedCount++;
             const total = boxesData[moduleId].length;
