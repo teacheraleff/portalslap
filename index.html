@@ -2995,7 +2995,7 @@
             fillin: { title: "Como estudar com o Fill In", text: "Complete a frase digitando a palavra que falta no espaço em branco. Use a dica entre parênteses para ajudar. Acerte 5 seguidas para completar!" },
             categorize: { title: "Como estudar com o Categorizing", text: "Arraste cada item de comida para a categoria correta (Starter, Main Course, Side Dish, Beverage ou Dessert). Classifique todos corretamente para completar!" },
             boxes: { title: "Como estudar com o Boxes", text: "Clique em qualquer box para revelar uma pergunta. Leia a pergunta e tente formular uma resposta em inglês em voz alta. Clique novamente para fechar. Abra todas as 20 boxes!" },
-            exam: { title: "Sobre o Midterm Test", text: "O Midterm Test é uma avaliação de meio de curso que mede o seu progresso nas aulas anteriores. Ele contém questões de múltipla escolha e perguntas abertas sobre o conteúdo estudado até aqui. Responda uma questão por vez com atenção — após confirmar, você não poderá voltar. O cronômetro começa quando o professor abre a sala, então fique atento ao tempo restante. Sua nota preliminar aparece ao final, mas o professor fará a revisão completa. Boa sorte!" }
+            exam: { title: "Sobre o Midterm Test", text: "O Midterm Test é uma avaliação de meio de curso que mede o seu progresso nas aulas anteriores. Ele contém questões de múltipla escolha e perguntas abertas sobre o conteúdo estudado até aqui. Navegue entre as questões usando os botões Anterior e Próxima, ou clique nos números no topo para ir direto a qualquer questão. Você pode pular questões e voltar nelas depois — os números ficam verdes quando respondidos e cinza quando ainda estão em branco. Fique atento ao cronômetro no canto direito: o tempo começa quando o professor abre a sala. Ao finalizar, você verá quantas questões ficaram sem resposta antes de confirmar o envio. Boa sorte!" }
         };
 
         function showHelpModal() {
@@ -6761,7 +6761,7 @@
             document.getElementById('generator-view').classList.remove('hidden');
 
             document.getElementById('current-hw-display').textContent = examData.name;
-            document.getElementById('quiz-streak-bar').innerHTML = '<div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 0.5rem;"><span id="exam-progress-text" style="font-size: 0.75rem; font-weight: 700; color: #78716c;">Questão 1 de ' + examQuestions.length + '</span><span id="exam-timer-inline" style="background: #1c1917; color: white; padding: 0.25rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 900; font-family: monospace;" data-testid="text-exam-timer">00:00</span></div><div id="exam-dots" style="display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: center;"></div>';
+            document.getElementById('quiz-streak-bar').innerHTML = '<div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 0.5rem;"><span id="exam-progress-text" style="font-size: 0.75rem; font-weight: 700; color: #78716c;">Questão 1 de ' + examQuestions.length + '</span><div id="exam-dots" style="display: flex; flex-wrap: wrap; gap: 0.3rem; justify-content: center; flex: 1; margin: 0 0.75rem;"></div><span id="exam-timer-inline" style="background: #1c1917; color: white; padding: 0.25rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 900; font-family: monospace; white-space: nowrap;" data-testid="text-exam-timer">00:00</span></div>';
 
             if (examTimerInterval) clearInterval(examTimerInterval);
             updateExamTimerInline();
@@ -6801,11 +6801,9 @@
             dotsEl.innerHTML = examQuestions.map(function(_, i) {
                 var answered = examAnswers.hasOwnProperty(i) && examAnswers[i] !== '';
                 var isCurrent = i === examCurrentIdx;
-                var bg = isCurrent ? '#8671d1' : (answered ? '#16a34a' : '#d6d3d1');
-                var border = isCurrent ? '#8671d1' : (answered ? '#16a34a' : '#d6d3d1');
-                return '<button onclick="examGoTo(' + i + ')" style="width: 1.1rem; height: 1.1rem; border-radius: 50%; background: ' + bg + '; border: 2px solid ' + border + '; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; padding: 0;" title="Questão ' + (i + 1) + '" data-testid="exam-dot-' + i + '">' +
-                    (answered && !isCurrent ? '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>' : '') +
-                    '</button>';
+                var bg = isCurrent ? '#8671d1' : (answered ? '#16a34a' : '#e7e5e4');
+                var txtColor = (isCurrent || answered) ? 'white' : '#78716c';
+                return '<button onclick="examGoTo(' + i + ')" style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background: ' + bg + '; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; padding: 0; font-size: 0.55rem; font-weight: 800; color: ' + txtColor + '; font-family: \'DM Sans\', sans-serif;" title="Questão ' + (i + 1) + '" data-testid="exam-dot-' + i + '">' + (i + 1) + '</button>';
             }).join('');
         }
 
@@ -6932,7 +6930,6 @@
                     submittedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                var pct = Math.round((autoScore / examData.questions.length) * 100);
                 document.getElementById('main-question').innerHTML = '';
                 document.getElementById('options-container').innerHTML = '';
                 document.getElementById('rationale-display').classList.add('hidden');
@@ -6942,12 +6939,11 @@
 
                 document.getElementById('main-question').innerHTML = `
                     <div style="text-align: center; padding: 1rem 0;">
-                        <div style="width: 80px; height: 80px; background: ${pct >= 70 ? '#f0fdf4' : '#fef2f2'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 3px solid ${pct >= 70 ? '#16a34a' : '#ef4444'};">
-                            <span style="font-size: 1.5rem; font-weight: 900; color: ${pct >= 70 ? '#16a34a' : '#ef4444'};">${pct}%</span>
+                        <div style="width: 80px; height: 80px; background: #f0fdf4; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 3px solid #16a34a;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                         </div>
                         <h3 style="font-size: 1.2rem; font-weight: 800; color: #1c1917; margin-bottom: 0.5rem;">${autoSubmit ? 'Tempo Esgotado — Teste Enviado!' : 'Teste Enviado!'}</h3>
-                        <p style="color: #78716c; font-size: 0.85rem; margin-bottom: 0.25rem;">Sua nota: <strong>${autoScore}/${examData.questions.length}</strong></p>
-                        <p style="color: #a8a29e; font-size: 0.75rem; margin-bottom: 1.5rem;">O professor revisará suas respostas.</p>
+                        <p style="color: #78716c; font-size: 0.85rem; margin-bottom: 1.5rem;">Aguarde a correção do seu Teacher.</p>
                     </div>
                 `;
                 document.getElementById('options-container').innerHTML = '<button class="action-button w-full" onclick="showDashboard()" data-testid="button-exit-exam">VOLTAR</button>';
