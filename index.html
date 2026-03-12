@@ -628,7 +628,7 @@
 
                 <button onclick="showTeacherSection('exams'); closeTeacherSidebar();" class="sidebar-item teacher-sidebar-nav" id="teacher-nav-exams" data-testid="button-teacher-nav-exams">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                    Provas
+                    Testes
                 </button>
             </div>
 
@@ -830,11 +830,11 @@
             <div id="teacher-section-exams" class="w-full" style="padding: 0 1.5rem 2rem; display: none;">
                 <div style="max-width: 960px; margin: 0 auto;">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-                        <h3 style="font-size: 1.1rem; font-weight: 800; color: #1c1917;">Provas</h3>
-                        <button onclick="showCreateExamModal()" class="action-button-sm" data-testid="button-create-exam" style="font-size: 0.75rem;">+ NOVA PROVA</button>
+                        <h3 style="font-size: 1.1rem; font-weight: 800; color: #1c1917;">Testes</h3>
+                        <button onclick="showCreateExamModal()" class="action-button-sm" data-testid="button-create-exam" style="font-size: 0.75rem;">+ NOVO TESTE</button>
                     </div>
                     <div id="exam-sessions-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Carregando provas...</p>
+                        <p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Carregando testes...</p>
                     </div>
                 </div>
             </div>
@@ -1313,9 +1313,9 @@
     <!-- EXAM CREATE MODAL -->
     <div id="exam-create-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 20000; align-items: center; justify-content: center; padding: 1rem;">
         <div style="background: white; border-radius: 1rem; max-width: 520px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 1.5rem; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: #1c1917; margin-bottom: 1rem; text-align: center;">Abrir Prova</h3>
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: #1c1917; margin-bottom: 1rem; text-align: center;">Abrir Teste</h3>
             <div style="margin-bottom: 1rem;">
-                <label style="font-size: 0.75rem; font-weight: 700; color: #44403c; display: block; margin-bottom: 0.3rem;">Prova</label>
+                <label style="font-size: 0.75rem; font-weight: 700; color: #44403c; display: block; margin-bottom: 0.3rem;">Teste</label>
                 <select id="exam-select" style="width: 100%; padding: 0.5rem; border: 1px solid #d6d3d1; border-radius: 0.5rem; font-size: 0.85rem; font-family: 'DM Sans', sans-serif;" data-testid="select-exam">
                     <option value="starter1_midterm">Starter 1 — Midterm Test</option>
                 </select>
@@ -1335,7 +1335,7 @@
             </div>
             <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
                 <button onclick="closeExamModal()" class="secondary-button" style="flex: 1;" data-testid="button-cancel-exam">CANCELAR</button>
-                <button onclick="createExamSession()" class="action-button" style="flex: 1;" data-testid="button-confirm-exam">ABRIR PROVA</button>
+                <button onclick="createExamSession()" class="action-button" style="flex: 1;" data-testid="button-confirm-exam">ABRIR TESTE</button>
             </div>
         </div>
     </div>
@@ -1363,7 +1363,7 @@
             </div>
             <div id="exam-questions-area" style="display: flex; flex-direction: column; gap: 1rem;"></div>
             <div style="text-align: center; margin-top: 1.5rem; padding-bottom: 2rem;">
-                <button onclick="submitExam()" class="action-button" style="min-width: 200px;" data-testid="button-submit-exam">ENVIAR PROVA</button>
+                <button onclick="submitExam()" class="action-button" style="min-width: 200px;" data-testid="button-submit-exam">ENVIAR TESTE</button>
             </div>
         </div>
     </div>
@@ -3040,9 +3040,9 @@
             { id: 13, name: "Many & Much", hasHomework: true, fourthBtn: 'fillin', desc: "Aprenda quando usar many e much." },
             { id: 14, name: "Restaurant Pt. 1", hasHomework: true, thirdBtn: 'categorize', desc: "Vocabulário e frases para restaurante." },
             { id: 15, name: "Restaurant Pt. 2", hasHomework: true, desc: "Continue praticando situações em restaurante." },
-            { id: 16, name: "Midterm Test", hasHomework: false, desc: "Prova intermediária do módulo." },
+            { id: 16, name: "Midterm Test", hasHomework: false, desc: "Teste intermediário do módulo." },
             { id: 17, name: "Future Simple", hasHomework: true, desc: "Pratique o futuro simples com will." },
-            { id: 18, name: "MT Correction", hasHomework: false, desc: "Correção da prova intermediária." },
+            { id: 18, name: "MT Correction", hasHomework: false, desc: "Correção do teste intermediário." },
             { id: 19, name: "What Will You Do?", hasHomework: true, thirdBtn: 'chunks', desc: "Treine perguntas e respostas com will sobre o futuro." },
             { id: 20, name: "Occupations", hasHomework: true, specialMode: 'flashcards', thirdBtn: 'chunks', desc: "Vocabulário de profissões e perguntas sobre ocupação." },
             { id: 21, name: "False Friends", hasHomework: true, thirdBtn: 'chunks', desc: "Cuidado com os falsos cognatos!" },
@@ -3054,12 +3054,12 @@
             { id: 27, name: "Fast Food & Tastes", hasHomework: true, desc: "Vocabulário de fast food e sabores." },
             { id: 28, name: "Weather", hasHomework: true, desc: "Aprenda a falar sobre o clima em inglês." },
             { id: 29, name: "Kahoot Review", hasHomework: false, desc: "Revisão interativa com Kahoot." },
-            { id: 30, name: "Listening Test", hasHomework: false, desc: "Prova de compreensão auditiva." },
-            { id: 31, name: "Grammar Test", hasHomework: false, desc: "Prova de gramática do módulo." },
-            { id: 32, name: "GT & LT Correction", hasHomework: false, desc: "Correção das provas de gramática e listening." },
-            { id: 33, name: "OT Review", hasHomework: false, desc: "Revisão para a prova oral." },
-            { id: 34, name: "Oral Test Day 1", hasHomework: false, desc: "Primeiro dia da prova oral." },
-            { id: 35, name: "Oral Test Day 2", hasHomework: false, desc: "Segundo dia da prova oral." },
+            { id: 30, name: "Listening Test", hasHomework: false, desc: "Teste de compreensão auditiva." },
+            { id: 31, name: "Grammar Test", hasHomework: false, desc: "Teste de gramática do módulo." },
+            { id: 32, name: "GT & LT Correction", hasHomework: false, desc: "Correção dos testes de gramática e listening." },
+            { id: 33, name: "OT Review", hasHomework: false, desc: "Revisão para o teste oral." },
+            { id: 34, name: "Oral Test Day 1", hasHomework: false, desc: "Primeiro dia do teste oral." },
+            { id: 35, name: "Oral Test Day 2", hasHomework: false, desc: "Segundo dia do teste oral." },
             { id: 36, name: "General Feedback", hasHomework: false, desc: "Feedback geral do módulo." }
         ];
 
@@ -3474,9 +3474,9 @@
             { id: 12, name: "Countries and Nationalities", hasHomework: true, specialMode: 'flashcards', desc: "Aprenda países e nacionalidades em inglês." },
             { id: 13, name: "Neighborhood", hasHomework: true, specialMode: 'flashcards', thirdBtn: 'chunks', desc: "Vocabulário de lugares e locais do bairro." },
             { id: 14, name: "Family Members", hasHomework: true, desc: "Pratique os nomes dos membros da família." },
-            { id: 15, name: "Midterm Test", hasHomework: false, desc: "Prova intermediária do módulo." },
+            { id: 15, name: "Midterm Test", hasHomework: false, desc: "Teste intermediário do módulo." },
             { id: 16, name: "Can e Can't", hasHomework: true, specialMode: 'scramble', desc: "Pratique frases com can e can't (habilidades)." },
-            { id: 17, name: "Midterm Test Correction", hasHomework: false, desc: "Correção da prova intermediária." },
+            { id: 17, name: "Midterm Test Correction", hasHomework: false, desc: "Correção do teste intermediário." },
             { id: 18, name: "Simple Present pt. 1", hasHomework: true, specialMode: 'scramble', desc: "Monte frases no presente simples." },
             { id: 19, name: "Simple Present pt. 2", hasHomework: true, specialMode: 'scramble', desc: "Continue praticando o presente simples." },
             { id: 20, name: "Object Pronouns", hasHomework: true, specialMode: 'scramble', desc: "Treine me, you, him, her, us, them nas frases." },
@@ -3489,12 +3489,12 @@
             { id: 27, name: "Presentation", hasHomework: false, desc: "Aula de apresentação oral." },
             { id: 28, name: "Hours", hasHomework: true, specialMode: 'flashcards', thirdBtn: 'dictation', desc: "Aprenda a dizer as horas em inglês." },
             { id: 29, name: "Kahoot Review", hasHomework: false, desc: "Revisão interativa com Kahoot." },
-            { id: 30, name: "Listening Test", hasHomework: false, desc: "Prova de compreensão auditiva." },
-            { id: 31, name: "Grammar Test", hasHomework: false, desc: "Prova de gramática do módulo." },
-            { id: 32, name: "GT e LT Review", hasHomework: false, desc: "Revisão das provas de gramática e listening." },
-            { id: 33, name: "OT Review", hasHomework: false, desc: "Revisão para a prova oral." },
-            { id: 34, name: "Oral Test Day 1", hasHomework: false, desc: "Primeiro dia da prova oral." },
-            { id: 35, name: "Oral Test Day 2", hasHomework: false, desc: "Segundo dia da prova oral." },
+            { id: 30, name: "Listening Test", hasHomework: false, desc: "Teste de compreensão auditiva." },
+            { id: 31, name: "Grammar Test", hasHomework: false, desc: "Teste de gramática do módulo." },
+            { id: 32, name: "GT e LT Review", hasHomework: false, desc: "Revisão dos testes de gramática e listening." },
+            { id: 33, name: "OT Review", hasHomework: false, desc: "Revisão para o teste oral." },
+            { id: 34, name: "Oral Test Day 1", hasHomework: false, desc: "Primeiro dia do teste oral." },
+            { id: 35, name: "Oral Test Day 2", hasHomework: false, desc: "Segundo dia do teste oral." },
             { id: 36, name: "General Feedback", hasHomework: false, desc: "Feedback geral do módulo." }
         ];
 
@@ -4563,8 +4563,9 @@
                 const fiBtn = aula.fourthBtn === 'fillin' ? `<button class="secondary-button-sm" onclick="openFillIn(${aula.id})">FILL IN</button>` : '';
                 const catBtn = (aula.thirdBtn === 'categorize' || categorizeData[aula.id]) ? `<button class="secondary-button-sm" onclick="openCategorize(${aula.id})">CATEGORIZING</button>` : '';
                 const boxBtn = boxesData[aula.id] ? `<button class="secondary-button-sm" onclick="openBoxes(${aula.id})">BOXES</button>` : '';
-                const examKey = aula.name === 'Midterm Test' ? currentLevel + '_midterm' : null;
-                const examBtn = (examKey && examBank[examKey] && studentActiveExam) ? `<button class="action-button-sm" onclick="startStudentExam(studentActiveExam)" data-testid="button-start-exam-${aula.id}">ABRIR PROVA</button>` : '';
+                const isMidterm = aula.name === 'Midterm Test';
+                const examKey = isMidterm ? currentLevel + '_midterm' : null;
+                const examBtn = (examKey && examBank[examKey] && studentActiveExam) ? `<button style="background: #16a34a; color: white; border: none; border-radius: 0.5rem; padding: 0.35rem 0.75rem; font-size: 0.7rem; font-weight: 800; cursor: pointer; font-family: 'DM Sans', sans-serif; text-transform: uppercase; animation: pulse 2s infinite;" onclick="startStudentExam(studentActiveExam)" data-testid="button-start-exam-${aula.id}">TESTE DISPONÍVEL</button>` : '';
 
                 let allStreaks = [];
                 if (aula.hasHomework && activeQuiz[aula.id]) allStreaks.push({ label: 'Homework', done: isStreakDone(aula.id, 'homework') });
@@ -4583,8 +4584,8 @@
                 ).join('')}</div>` : '';
 
                 return `
-                <div class="level-card relative ${(!aula.hasHomework && !examBtn) ? 'locked' : ''}" id="module-${aula.id}">
-                    ${(!aula.hasHomework && !examBtn) ? `
+                <div class="level-card relative ${(!aula.hasHomework && !isMidterm) ? 'locked' : ''}" id="module-${aula.id}">
+                    ${(!aula.hasHomework && !isMidterm) ? `
                         <div class="lock-overlay">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                         </div>
@@ -4596,8 +4597,8 @@
                         ${streakHtml}
                     </div>
                     <div class="flex flex-wrap gap-1.5">
-                        ${sBtn} ${tBtn} ${dBtn} ${chBtn} ${hBtn} ${cBtn} ${fiBtn} ${catBtn} ${boxBtn} ${examBtn}
-                        ${examBtn ? '' : `<button class="action-button-sm uppercase" ${(!aula.hasHomework || !activeQuiz[aula.id]) ? 'disabled' : `onclick="openPractice(${aula.id})"`}>HOMEWORK</button>`}
+                        ${sBtn} ${tBtn} ${dBtn} ${chBtn} ${hBtn} ${cBtn} ${fiBtn} ${catBtn} ${boxBtn}
+                        ${isMidterm ? (examBtn || '<button class="action-button-sm uppercase" disabled>SEM TESTE</button>') : `<button class="action-button-sm uppercase" ${(!aula.hasHomework || !activeQuiz[aula.id]) ? 'disabled' : `onclick="openPractice(${aula.id})"`}>HOMEWORK</button>`}
                     </div>
                 </div>`
             }).join('');
@@ -6576,8 +6577,8 @@
                 closeExamModal();
                 loadExamSessions();
             } catch(e) {
-                console.error('Erro ao criar sessão de prova:', e);
-                alert('Erro ao criar a prova. Tente novamente.');
+                console.error('Erro ao criar sessão de teste:', e);
+                alert('Erro ao criar o teste. Tente novamente.');
             }
         }
 
@@ -6586,7 +6587,7 @@
             try {
                 var snap = await firebaseDb.collection('examSessions').orderBy('createdAt', 'desc').get();
                 if (snap.empty) {
-                    listEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Nenhuma prova criada ainda.</p>';
+                    listEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Nenhum teste criado ainda.</p>';
                     return;
                 }
                 var html = '';
@@ -6620,12 +6621,12 @@
                 listEl.innerHTML = html;
             } catch(e) {
                 console.error('Erro ao carregar sessões:', e);
-                listEl.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.8rem; padding: 2rem 0;">Erro ao carregar provas.</p>';
+                listEl.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.8rem; padding: 2rem 0;">Erro ao carregar testes.</p>';
             }
         }
 
         window.closeExamSession = async function(sessionId) {
-            if (!confirm('Encerrar esta prova? Alunos não poderão mais acessar.')) return;
+            if (!confirm('Encerrar este teste? Alunos não poderão mais acessar.')) return;
             try {
                 await firebaseDb.collection('examSessions').doc(sessionId).update({ active: false });
                 loadExamSessions();
@@ -6648,7 +6649,7 @@
 
                 var html = '';
                 if (subSnap.empty) {
-                    html = '<p style="text-align: center; color: #a8a29e; font-size: 0.85rem; padding: 1rem;">Nenhuma prova enviada ainda.</p>';
+                    html = '<p style="text-align: center; color: #a8a29e; font-size: 0.85rem; padding: 1rem;">Nenhum teste enviado ainda.</p>';
                 } else {
                     subSnap.docs.forEach(function(doc) {
                         var sub = doc.data();
@@ -6714,7 +6715,7 @@
                     if (!alreadySubmitted) return { sessionId: doc.id, ...d };
                 }
                 return null;
-            } catch(e) { console.error('Erro ao verificar prova:', e); return null; }
+            } catch(e) { console.error('Erro ao verificar teste:', e); return null; }
         }
 
         async function showStudentExamIfAvailable() {
@@ -6790,7 +6791,7 @@
         }
 
         window.submitExam = async function(autoSubmit) {
-            if (!autoSubmit && !confirm('Tem certeza que deseja enviar a prova? Você não poderá alterar suas respostas.')) return;
+            if (!autoSubmit && !confirm('Tem certeza que deseja enviar o teste? Você não poderá alterar suas respostas.')) return;
             if (examTimerInterval) clearInterval(examTimerInterval);
 
             var examData = examBank[activeExamSession.examKey];
@@ -6817,6 +6818,7 @@
                     answers: answers,
                     autoScore: autoScore,
                     totalQuestions: examData.questions.length,
+                    autoSubmitted: !!autoSubmit,
                     submittedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
@@ -6826,7 +6828,7 @@
                         <div style="width: 80px; height: 80px; background: ${pct >= 70 ? '#f0fdf4' : '#fef2f2'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 3px solid ${pct >= 70 ? '#16a34a' : '#ef4444'};">
                             <span style="font-size: 1.5rem; font-weight: 900; color: ${pct >= 70 ? '#16a34a' : '#ef4444'};">${pct}%</span>
                         </div>
-                        <h3 style="font-size: 1.2rem; font-weight: 800; color: #1c1917; margin-bottom: 0.5rem;">Prova Enviada!</h3>
+                        <h3 style="font-size: 1.2rem; font-weight: 800; color: #1c1917; margin-bottom: 0.5rem;">${autoSubmit ? 'Tempo Esgotado — Teste Enviado!' : 'Teste Enviado!'}</h3>
                         <p style="color: #78716c; font-size: 0.85rem; margin-bottom: 0.25rem;">Sua nota preliminar: <strong>${autoScore}/${examData.questions.length}</strong></p>
                         <p style="color: #a8a29e; font-size: 0.75rem; margin-bottom: 1.5rem;">O professor revisará suas respostas.</p>
                         <button onclick="exitExam()" class="action-button" data-testid="button-exit-exam">VOLTAR AO PORTAL</button>
@@ -6836,7 +6838,7 @@
                 document.getElementById('exam-timer').style.display = 'none';
             } catch(e) {
                 console.error(e);
-                alert('Erro ao enviar a prova. Tente novamente.');
+                alert('Erro ao enviar o teste. Tente novamente.');
             }
         }
 
