@@ -182,7 +182,7 @@
         .login-input:focus { border-color: #8671d1; }
         .login-error { color: #ef4444; font-size: 0.8rem; font-weight: 600; margin-top: 0.5rem; display: none; }
         .login-tabs { display: flex; border-radius: 0.75rem; overflow: hidden; border: 2px solid #e2e8f0; margin-bottom: 1.5rem; }
-        .login-tab { flex: 1; padding: 0.65rem; text-align: center; font-weight: 700; font-size: 0.875rem; cursor: pointer; transition: 0.2s; background: white; color: #78716c; }
+        .login-tab { flex: 1; padding: 0.65rem 0.35rem; text-align: center; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: 0.2s; background: white; color: #78716c; }
         .login-tab.active { background: #8671d1; color: white; }
         .user-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: white; border: 1px solid #e2e8f0; padding: 0.35rem 0.75rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 600; color: #44403c; }
         .logout-btn { background: none; border: none; color: #ef4444; font-weight: 700; font-size: 0.7rem; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
@@ -218,13 +218,14 @@
         <div class="login-card">
             <div class="text-center mb-6">
                 <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1759294967/SLAP_TIPO_PRETO_2_kismg9.png" alt="SLAP Logo" class="w-28 h-auto mx-auto mb-4">
-                <h2 class="text-xl font-bold text-stone-800">Portal do Aluno</h2>
-                <p class="text-stone-500 text-sm mt-1">Faça login para acessar seus estudos</p>
+                <h2 class="text-xl font-bold text-stone-800" id="login-title">Portal do Aluno</h2>
+                <p class="text-stone-500 text-sm mt-1" id="login-subtitle">Faça login para acessar seus estudos</p>
             </div>
 
             <div class="login-tabs" data-testid="login-tabs">
-                <div class="login-tab active" data-testid="tab-login" onclick="switchLoginTab('login')">ENTRAR</div>
-                <div class="login-tab" data-testid="tab-register" onclick="switchLoginTab('register')">CADASTRAR</div>
+                <div class="login-tab active" id="tab-login-student" data-testid="tab-login-student" onclick="switchLoginTab('login-student')">LOGIN ALUNO</div>
+                <div class="login-tab" id="tab-login-teacher" data-testid="tab-login-teacher" onclick="switchLoginTab('login-teacher')">LOGIN PROF</div>
+                <div class="login-tab" id="tab-register" data-testid="tab-register" onclick="switchLoginTab('register')">CADASTRAR</div>
             </div>
 
             <form id="login-form" onsubmit="handleLogin(event)">
@@ -237,7 +238,7 @@
                     <input type="password" id="login-password" class="login-input" placeholder="Sua senha" required minlength="6" data-testid="input-login-password">
                 </div>
                 <p id="login-error" class="login-error" data-testid="text-login-error"></p>
-                <button type="submit" id="login-submit-btn" class="action-button w-full mt-4" data-testid="button-login-submit">ENTRAR</button>
+                <button type="submit" id="login-submit-btn" class="action-button w-full mt-4" data-testid="button-login-submit">ENTRAR COMO ALUNO</button>
             </form>
 
             <form id="register-form" class="hidden" onsubmit="handleRegister(event)">
@@ -252,6 +253,10 @@
                 <div class="mb-1">
                     <label class="block text-sm font-bold text-stone-600 mb-1">Senha</label>
                     <input type="password" id="register-password" class="login-input" placeholder="Mínimo 6 caracteres" required minlength="6" data-testid="input-register-password">
+                </div>
+                <div class="mb-3" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="register-teacher-checkbox" style="width: 18px; height: 18px; accent-color: #8671d1; cursor: pointer;" data-testid="checkbox-register-teacher">
+                    <label for="register-teacher-checkbox" style="font-size: 0.85rem; font-weight: 600; color: #44403c; cursor: pointer;">Sou Professor(a)</label>
                 </div>
                 <p id="register-error" class="login-error" data-testid="text-register-error"></p>
                 <button type="submit" id="register-submit-btn" class="action-button w-full mt-4" data-testid="button-register-submit">CRIAR CONTA</button>
@@ -563,9 +568,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
             <div style="text-align: center; margin-bottom: 1.25rem;">
-                <div style="width: 48px; height: 48px; background: #fef9c3; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F1D24B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-                </div>
+                <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1759294967/SLAP_TIPO_PRETO_2_kismg9.png" alt="SLAP Logo" style="width: 70px; margin: 0 auto 0.75rem;">
                 <h3 style="font-size: 1.15rem; font-weight: 800; color: #1c1917; font-family: 'DM Sans', sans-serif;">Top Students</h3>
                 <p style="font-size: 0.75rem; color: #78716c; margin-top: 0.25rem;" id="top-students-level-label" data-testid="text-top-students-level"></p>
             </div>
@@ -906,9 +909,15 @@
 
         <div id="dashboard-view" class="w-full">
             <div class="max-w-xl mx-auto mb-6">
-                <div class="relative">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2" class="absolute left-3 top-1/2 -translate-y-1/2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                    <input type="text" id="search-input" placeholder="Pesquisar aula..." class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-stone-200 focus:border-primary focus:outline-none text-stone-700 font-medium" oninput="filterModules(this.value)">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div id="badge-counter" onclick="showBadgeDetail()" style="display: flex; align-items: center; gap: 0.4rem; background: #f5f3ff; border: 2px solid #8671d1; border-radius: 0.75rem; padding: 0.55rem 0.75rem; cursor: pointer; flex-shrink: 0; transition: all 0.2s;" data-testid="badge-counter">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                        <span id="badge-counter-text" style="font-size: 0.85rem; font-weight: 800; color: #8671d1; white-space: nowrap;">0/0</span>
+                    </div>
+                    <div class="relative" style="flex: 1;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2" class="absolute left-3 top-1/2 -translate-y-1/2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" id="search-input" placeholder="Pesquisar aula..." class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-stone-200 focus:border-primary focus:outline-none text-stone-700 font-medium" oninput="filterModules(this.value)">
+                    </div>
                 </div>
             </div>
             <div id="level-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20"></div>
@@ -1314,14 +1323,31 @@
             }
         }
 
+        var loginMode = 'student';
+
         function switchLoginTab(tab) {
-            const tabs = document.querySelectorAll('.login-tab');
-            tabs[0].classList.toggle('active', tab === 'login');
-            tabs[1].classList.toggle('active', tab === 'register');
-            document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+            document.getElementById('tab-login-student').classList.toggle('active', tab === 'login-student');
+            document.getElementById('tab-login-teacher').classList.toggle('active', tab === 'login-teacher');
+            document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+            var isLogin = (tab === 'login-student' || tab === 'login-teacher');
+            document.getElementById('login-form').classList.toggle('hidden', !isLogin);
             document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
             document.getElementById('login-error').style.display = 'none';
             document.getElementById('register-error').style.display = 'none';
+            if (tab === 'login-student') {
+                loginMode = 'student';
+                document.getElementById('login-title').textContent = 'Portal do Aluno';
+                document.getElementById('login-subtitle').textContent = 'Faça login para acessar seus estudos';
+                document.getElementById('login-submit-btn').textContent = 'ENTRAR COMO ALUNO';
+            } else if (tab === 'login-teacher') {
+                loginMode = 'teacher';
+                document.getElementById('login-title').textContent = 'Portal do Professor';
+                document.getElementById('login-subtitle').textContent = 'Faça login para acessar o painel';
+                document.getElementById('login-submit-btn').textContent = 'ENTRAR COMO PROFESSOR';
+            } else {
+                document.getElementById('login-title').textContent = 'Criar Conta';
+                document.getElementById('login-subtitle').textContent = 'Cadastre-se para começar';
+            }
         }
 
         function getFirebaseErrorMessage(code) {
@@ -1352,16 +1378,36 @@
             const password = document.getElementById('login-password').value;
             const errorEl = document.getElementById('login-error');
             const btn = document.getElementById('login-submit-btn');
+            var btnLabel = loginMode === 'teacher' ? 'ENTRAR COMO PROFESSOR' : 'ENTRAR COMO ALUNO';
             errorEl.style.display = 'none';
             btn.disabled = true;
             btn.textContent = 'ENTRANDO...';
             try {
-                await firebaseAuth.signInWithEmailAndPassword(email, password);
+                var cred = await firebaseAuth.signInWithEmailAndPassword(email, password);
+                var userDoc = await firebaseDb.collection('users').doc(cred.user.uid).get();
+                var userData = userDoc.exists ? userDoc.data() : {};
+                var isTeacher = userData.role === 'teacher';
+                if (loginMode === 'teacher' && !isTeacher) {
+                    await firebaseAuth.signOut();
+                    errorEl.textContent = 'Esta conta não é de professor. Use "Login Aluno".';
+                    errorEl.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = btnLabel;
+                    return;
+                }
+                if (loginMode === 'student' && isTeacher) {
+                    await firebaseAuth.signOut();
+                    errorEl.textContent = 'Esta conta é de professor. Use "Login Professor".';
+                    errorEl.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = btnLabel;
+                    return;
+                }
             } catch (err) {
                 errorEl.textContent = getFirebaseErrorMessage(err.code);
                 errorEl.style.display = 'block';
                 btn.disabled = false;
-                btn.textContent = 'ENTRAR';
+                btn.textContent = btnLabel;
             }
         }
 
@@ -1376,14 +1422,19 @@
             btn.disabled = true;
             btn.textContent = 'CRIANDO...';
             try {
+                var isTeacherReg = document.getElementById('register-teacher-checkbox').checked;
                 const cred = await firebaseAuth.createUserWithEmailAndPassword(email, password);
                 await cred.user.updateProfile({ displayName: name });
-                await firebaseDb.collection('users').doc(cred.user.uid).set({
+                var userData = {
                     name: name,
                     email: email,
                     approved: false,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                };
+                if (isTeacherReg) {
+                    userData.role = 'teacher';
+                }
+                await firebaseDb.collection('users').doc(cred.user.uid).set(userData);
             } catch (err) {
                 errorEl.textContent = getFirebaseErrorMessage(err.code);
                 errorEl.style.display = 'block';
@@ -2343,7 +2394,7 @@
             } else {
                 showScreen('login');
                 document.getElementById('login-submit-btn').disabled = false;
-                document.getElementById('login-submit-btn').textContent = 'ENTRAR';
+                document.getElementById('login-submit-btn').textContent = loginMode === 'teacher' ? 'ENTRAR COMO PROFESSOR' : 'ENTRAR COMO ALUNO';
                 document.getElementById('register-submit-btn').disabled = false;
                 document.getElementById('register-submit-btn').textContent = 'CRIAR CONTA';
             }
@@ -2430,6 +2481,7 @@
             userStreaksCache[key] = true;
             var oldKey = aulaId + '_' + mode;
             if (userStreaksCache[oldKey]) delete userStreaksCache[oldKey];
+            updateBadgeCounter();
             if (firebaseDb && currentUser) {
                 try {
                     await firebaseDb.collection('users').doc(currentUser.uid).collection('streaks').doc('completed').set(userStreaksCache);
@@ -2441,6 +2493,106 @@
 
         function isStreakDone(aulaId, mode) {
             return !!userStreaksCache[currentLevel + '_' + aulaId + '_' + mode];
+        }
+
+        function countBadgesForLevel() {
+            var aulas = getActiveAulas();
+            var quizD = getActiveQuizData();
+            var isS1 = currentLevel === 'starter1';
+            var total = 0;
+            var done = 0;
+            aulas.forEach(function(aula) {
+                var streaks = [];
+                if (aula.hasHomework && quizD[aula.id]) streaks.push('homework');
+                if (aula.specialMode === 'chunks') streaks.push('chunks');
+                if (aula.specialMode === 'scramble') streaks.push('scramble');
+                if (aula.specialMode === 'mistake') streaks.push('mistake');
+                if (aula.thirdBtn === 'dictation') streaks.push('dictation');
+                if (aula.thirdBtn === 'chunks') streaks.push('chunks');
+                if ((isS1 && [6, 23, 26].includes(aula.id)) || aula.thirdBtn === 'hangman') streaks.push('hangman');
+                if (isS1 && [12, 14].includes(aula.id)) streaks.push('wordsearch');
+                if (aula.fourthBtn === 'fillin') streaks.push('fillin');
+                total += streaks.length;
+                streaks.forEach(function(m) {
+                    if (isStreakDone(aula.id, m)) done++;
+                });
+            });
+            return { total: total, done: done };
+        }
+
+        function updateBadgeCounter() {
+            var b = countBadgesForLevel();
+            var el = document.getElementById('badge-counter-text');
+            if (el) el.textContent = b.done + '/' + b.total;
+            var container = document.getElementById('badge-counter');
+            if (container) {
+                if (b.done === b.total && b.total > 0) {
+                    container.style.background = '#f0fdf4';
+                    container.style.borderColor = '#16a34a';
+                    el.style.color = '#16a34a';
+                    container.querySelector('svg').setAttribute('stroke', '#16a34a');
+                } else {
+                    container.style.background = '#f5f3ff';
+                    container.style.borderColor = '#8671d1';
+                    el.style.color = '#8671d1';
+                    container.querySelector('svg').setAttribute('stroke', '#8671d1');
+                }
+            }
+        }
+
+        function showBadgeDetail() {
+            var aulas = getActiveAulas();
+            var quizD = getActiveQuizData();
+            var isS1 = currentLevel === 'starter1';
+            var b = countBadgesForLevel();
+            var levelLabel = currentLevel === 'starter2' ? 'Starter 2' : 'Starter 1';
+            var pct = b.total > 0 ? Math.round((b.done / b.total) * 100) : 0;
+            var rows = '';
+            aulas.forEach(function(aula) {
+                var streaks = [];
+                if (aula.hasHomework && quizD[aula.id]) streaks.push({ label: 'Homework', mode: 'homework' });
+                if (aula.specialMode === 'chunks') streaks.push({ label: 'Chunks', mode: 'chunks' });
+                if (aula.specialMode === 'scramble') streaks.push({ label: 'Unscramble', mode: 'scramble' });
+                if (aula.specialMode === 'mistake') streaks.push({ label: 'Detetive', mode: 'mistake' });
+                if (aula.thirdBtn === 'dictation') streaks.push({ label: 'Ditado', mode: 'dictation' });
+                if (aula.thirdBtn === 'chunks') streaks.push({ label: 'Chunks', mode: 'chunks' });
+                if ((isS1 && [6, 23, 26].includes(aula.id)) || aula.thirdBtn === 'hangman') streaks.push({ label: 'Forca', mode: 'hangman' });
+                if (isS1 && [12, 14].includes(aula.id)) streaks.push({ label: 'Caça-Palavras', mode: 'wordsearch' });
+                if (aula.fourthBtn === 'fillin') streaks.push({ label: 'Fill In', mode: 'fillin' });
+                if (streaks.length === 0) return;
+                var doneCount = streaks.filter(function(s) { return isStreakDone(aula.id, s.mode); }).length;
+                var tags = streaks.map(function(s) {
+                    var isDone = isStreakDone(aula.id, s.mode);
+                    return isDone
+                        ? '<span style="font-size:0.6rem;font-weight:700;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;padding:0.1rem 0.35rem;border-radius:1rem;">&#10003; ' + s.label + '</span>'
+                        : '<span style="font-size:0.6rem;font-weight:700;color:#dc2626;background:#fef2f2;border:1px solid #fecaca;padding:0.1rem 0.35rem;border-radius:1rem;">&#10007; ' + s.label + '</span>';
+                }).join(' ');
+                rows += '<div style="padding:0.6rem;border-bottom:1px solid #f5f5f4;">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem;">' +
+                        '<span style="font-size:0.8rem;font-weight:600;color:#1c1917;">' + aula.name + '</span>' +
+                        '<span style="font-size:0.7rem;font-weight:700;color:' + (doneCount === streaks.length ? '#16a34a' : '#78716c') + ';">' + doneCount + '/' + streaks.length + '</span>' +
+                    '</div>' +
+                    '<div style="display:flex;flex-wrap:wrap;gap:0.25rem;">' + tags + '</div>' +
+                '</div>';
+            });
+            var overlay = document.createElement('div');
+            overlay.id = 'badge-detail-overlay';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+            overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+            overlay.innerHTML = '<div style="background:white;border-radius:1rem;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 25px 50px rgba(0,0,0,0.25);" onclick="event.stopPropagation()">' +
+                '<div style="padding:1.25rem;border-bottom:1px solid #e7e5e4;display:flex;align-items:center;justify-content:space-between;">' +
+                    '<div style="display:flex;align-items:center;gap:0.5rem;">' +
+                        '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>' +
+                        '<div><p style="font-size:1rem;font-weight:800;color:#1c1917;">Badges — ' + levelLabel + '</p><p style="font-size:0.7rem;color:#78716c;">' + b.done + ' de ' + b.total + ' conquistas (' + pct + '%)</p></div>' +
+                    '</div>' +
+                    '<button onclick="document.getElementById(\'badge-detail-overlay\').remove()" style="background:none;border:none;cursor:pointer;padding:0.25rem;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
+                '</div>' +
+                '<div style="padding:0 0.5rem;">' +
+                    '<div style="margin:0.75rem 0.5rem;background:#f5f3ff;border-radius:0.5rem;overflow:hidden;height:8px;"><div style="height:100%;background:#8671d1;border-radius:0.5rem;width:' + pct + '%;transition:width 0.3s;"></div></div>' +
+                    rows +
+                '</div>' +
+            '</div>';
+            document.body.appendChild(overlay);
         }
 
         var levelOrder = ['starter1', 'starter2', 'freshman1', 'freshman2', 'sophomore1', 'sophomore2', 'senior1', 'senior2'];
@@ -4157,6 +4309,7 @@
                     </div>
                 </div>`
             }).join('');
+            updateBadgeCounter();
         }
 
         window.openPractice = function(id) {
