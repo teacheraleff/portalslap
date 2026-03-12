@@ -6512,6 +6512,11 @@
                     { q: "Which is NOT a color?", type: 'multiple', options: ['Purple','Yellow','Desk','Orange'], answer: 'Desk' },
                     { q: "Choose the correct question: '_____ is your name?'", type: 'multiple', options: ['Who','What','Where','When'], answer: 'What' },
                     { q: "What is the opposite of 'hot'?", type: 'multiple', options: ['warm','cool','cold','big'], answer: 'cold' },
+                    { q: "Choose the correct sentence:", type: 'multiple', options: ["I have 20 years old.","I am 20 years old.","I have 20 years.","I got 20 years old."], answer: "I am 20 years old." },
+                    { q: "Which word is a verb?", type: 'multiple', options: ['Beautiful','Quickly','Table','Run'], answer: 'Run' },
+                    { q: "Complete: 'There ___ two cats on the sofa.'", type: 'multiple', options: ['is','has','are','have'], answer: 'are' },
+                    { q: "Choose the correct preposition: 'She is ___ home.'", type: 'multiple', options: ['in','on','at','to'], answer: 'at' },
+                    { q: "Which is the correct negative form? 'I ___ like coffee.'", type: 'multiple', options: ["don't","doesn't","isn't","am not"], answer: "don't" },
                     { q: "Write the number in English: 15", type: 'text', answer: 'fifteen' },
                     { q: "Complete with 'a' or 'an': '___ apple'", type: 'text', answer: 'an' },
                     { q: "Write the correct form: 'She (go) ___ to school every day.'", type: 'text', answer: 'goes' },
@@ -6657,34 +6662,73 @@
                 if (subSnap.empty) {
                     html = '<p style="text-align: center; color: #a8a29e; font-size: 0.85rem; padding: 1rem;">Nenhum teste enviado ainda.</p>';
                 } else {
-                    subSnap.docs.forEach(function(doc) {
-                        var sub = doc.data();
+                    subSnap.docs.forEach(function(subDoc) {
+                        var sub = subDoc.data();
+                        var subId = subDoc.id;
                         var name = studentNames[sub.studentUid] || sub.studentEmail || 'Aluno';
-                        var score = sub.autoScore || 0;
                         var total = examData.questions.length;
-                        var pct = Math.round((score / total) * 100);
-                        var barColor = pct >= 70 ? '#16a34a' : pct >= 50 ? '#f59e0b' : '#ef4444';
+                        var savedScores = sub.teacherScores || {};
+                        var finalGrade = sub.finalGrade;
+                        var graded = finalGrade !== undefined && finalGrade !== null;
+
+                        var defaultScores = examData.questions.map(function(qq, idx) {
+                            if (savedScores[idx] !== undefined) return savedScores[idx];
+                            var studentAns = (sub.answers || {})[idx];
+                            if (!studentAns || studentAns === '') return 0;
+                            if (qq.type === 'text') return 0;
+                            return studentAns === qq.answer ? 1 : 0;
+                        });
+                        var currentTotal = defaultScores.reduce(function(a, b) { return a + b; }, 0);
+                        var displayTotal = graded ? finalGrade : currentTotal;
+                        var barPct = Math.round((displayTotal / total) * 100);
+                        var barColor = barPct >= 70 ? '#16a34a' : barPct >= 50 ? '#f59e0b' : '#ef4444';
 
                         html += `
-                        <div style="border: 1px solid #e7e5e4; border-radius: 0.75rem; padding: 0.75rem; margin-bottom: 0.5rem;">
+                        <div style="border: 1px solid #e7e5e4; border-radius: 0.75rem; padding: 0.75rem; margin-bottom: 0.5rem;" id="exam-sub-${subId}">
                             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
                                 <span style="font-weight: 700; font-size: 0.85rem; color: #1c1917;">${name}</span>
-                                <span style="font-weight: 800; font-size: 0.9rem; color: ${barColor};">${score}/${total} (${pct}%)</span>
+                                <span style="font-weight: 800; font-size: 0.9rem; color: ${barColor};" id="exam-total-${subId}">${displayTotal}/${total}</span>
                             </div>
                             <div style="background: #f5f5f4; border-radius: 1rem; height: 6px; overflow: hidden;">
-                                <div style="background: ${barColor}; height: 100%; width: ${pct}%; border-radius: 1rem; transition: width 0.5s;"></div>
+                                <div style="background: ${barColor}; height: 100%; width: ${barPct}%; border-radius: 1rem; transition: width 0.5s;" id="exam-bar-${subId}"></div>
                             </div>
+                            ${graded ? '<p style="font-size: 0.6rem; color: #16a34a; font-weight: 700; margin-top: 0.25rem;">✓ Corrigido</p>' : '<p style="font-size: 0.6rem; color: #f59e0b; font-weight: 700; margin-top: 0.25rem;">⏳ Pendente de correção</p>'}
+                            ${sub.autoSubmitted ? '<p style="font-size: 0.6rem; color: #ef4444; font-weight: 600; margin-top: 0.15rem;">⚠ Enviado por tempo esgotado</p>' : ''}
                             <details style="margin-top: 0.5rem;">
-                                <summary style="font-size: 0.7rem; font-weight: 600; color: #8671d1; cursor: pointer;">Ver respostas</summary>
+                                <summary style="font-size: 0.7rem; font-weight: 600; color: #8671d1; cursor: pointer;">Corrigir / Ver respostas</summary>
                                 <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem;">
-                                    ${examData.questions.map((qq, idx) => {
+                                    ${examData.questions.map(function(qq, idx) {
                                         var studentAns = (sub.answers || {})[idx];
-                                        var correct = qq.type === 'text' ? (studentAns || '').toLowerCase().trim() === qq.answer.toLowerCase().trim() : studentAns === qq.answer;
-                                        return `<div style="padding: 0.4rem 0.5rem; border-radius: 0.375rem; background: ${correct ? '#f0fdf4' : '#fef2f2'}; border: 1px solid ${correct ? '#bbf7d0' : '#fecaca'};">
-                                            <p style="font-size: 0.7rem; font-weight: 600; color: #44403c;">${idx + 1}. ${qq.q}</p>
-                                            <p style="font-size: 0.65rem; color: ${correct ? '#16a34a' : '#dc2626'};">Resposta: ${studentAns || '(vazio)'} ${correct ? '✓' : '✗ Correto: ' + qq.answer}</p>
-                                        </div>`;
+                                        var isText = qq.type === 'text';
+                                        var correct = isText ? (studentAns || '').toLowerCase().trim() === qq.answer.toLowerCase().trim() : studentAns === qq.answer;
+                                        var qScore = defaultScores[idx];
+                                        var bgColor = isText ? '#f5f3ff' : (correct ? '#f0fdf4' : '#fef2f2');
+                                        var borderColor = isText ? '#ddd6fe' : (correct ? '#bbf7d0' : '#fecaca');
+                                        var ansColor = isText ? '#5b21b6' : (correct ? '#16a34a' : '#dc2626');
+                                        var ansText = isText
+                                            ? 'Resposta: ' + (studentAns || '(vazio)') + ' &nbsp;|&nbsp; Gabarito: ' + qq.answer
+                                            : 'Resposta: ' + (studentAns || '(vazio)') + ' ' + (correct ? '✓' : '✗ Correto: ' + qq.answer);
+                                        var savedComment = (sub.teacherComments || {})[idx] || '';
+                                        return '<div style="padding: 0.5rem; border-radius: 0.375rem; background: ' + bgColor + '; border: 1px solid ' + borderColor + ';">' +
+                                            '<p style="font-size: 0.7rem; font-weight: 600; color: #44403c; margin-bottom: 0.2rem;">' + (idx + 1) + '. ' + qq.q + (isText ? ' <span style="font-size:0.55rem;background:#ede9fe;color:#7c3aed;padding:0.1rem 0.3rem;border-radius:0.25rem;font-weight:700;margin-left:0.3rem;">ESCRITA</span>' : '') + '</p>' +
+                                            '<p style="font-size: 0.65rem; color: ' + ansColor + '; margin-bottom: 0.3rem;">' + ansText + '</p>' +
+                                            '<div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.3rem;">' +
+                                                '<label style="font-size: 0.6rem; font-weight: 700; color: #78716c;">Nota:</label>' +
+                                                '<input type="number" min="0" max="1" step="0.1" value="' + qScore + '" ' +
+                                                    'style="width: 3.5rem; padding: 0.15rem 0.3rem; border: 1px solid #d6d3d1; border-radius: 0.375rem; font-size: 0.7rem; font-weight: 700; text-align: center; font-family: DM Sans, sans-serif;" ' +
+                                                    'class="exam-score-input" data-subid="' + subId + '" data-qidx="' + idx + '" data-total="' + total + '" ' +
+                                                    'oninput="updateExamTotal(\'' + subId + '\', ' + total + ')" data-testid="input-score-' + subId + '-' + idx + '">' +
+                                                '<span style="font-size: 0.55rem; color: #a8a29e;">/ 1</span>' +
+                                            '</div>' +
+                                            '<input type="text" placeholder="Comentário do professor (opcional)" value="' + savedComment.replace(/"/g, '&quot;') + '" ' +
+                                                'style="width: 100%; padding: 0.25rem 0.4rem; border: 1px solid #e7e5e4; border-radius: 0.375rem; font-size: 0.6rem; color: #44403c; font-family: DM Sans, sans-serif; background: white;" ' +
+                                                'class="exam-comment-input" data-subid="' + subId + '" data-qidx="' + idx + '" data-testid="input-comment-' + subId + '-' + idx + '">' +
+                                        '</div>';
                                     }).join('')}
+                                </div>
+                                <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+                                    <button onclick="saveExamGrade('${subId}')" style="flex: 1; background: #8671d1; color: white; border: none; border-radius: 0.5rem; padding: 0.5rem; font-size: 0.75rem; font-weight: 800; cursor: pointer; font-family: DM Sans, sans-serif;" data-testid="button-save-grade-${subId}">SALVAR NOTA</button>
+                                    <button onclick="exportExamPDF('${subId}', '${sessionId}')" style="flex: 1; background: #1c1917; color: white; border: none; border-radius: 0.5rem; padding: 0.5rem; font-size: 0.75rem; font-weight: 800; cursor: pointer; font-family: DM Sans, sans-serif;" data-testid="button-export-${subId}">EXPORTAR</button>
                                 </div>
                             </details>
                         </div>`;
@@ -6704,6 +6748,150 @@
             } catch(e) {
                 console.error(e);
                 contentEl.innerHTML = '<p style="text-align: center; color: #ef4444;">Erro ao carregar resultados.</p>';
+            }
+        }
+
+        window.updateExamTotal = function(subId, totalQ) {
+            var inputs = document.querySelectorAll('.exam-score-input[data-subid="' + subId + '"]');
+            var sum = 0;
+            inputs.forEach(function(inp) {
+                var val = parseFloat(inp.value);
+                if (isNaN(val)) val = 0;
+                if (val < 0) { val = 0; inp.value = '0'; }
+                if (val > 1) { val = 1; inp.value = '1'; }
+                sum += val;
+            });
+            sum = Math.round(sum * 10) / 10;
+            var pct = Math.round((sum / totalQ) * 100);
+            var barColor = pct >= 70 ? '#16a34a' : pct >= 50 ? '#f59e0b' : '#ef4444';
+            var totalEl = document.getElementById('exam-total-' + subId);
+            var barEl = document.getElementById('exam-bar-' + subId);
+            if (totalEl) { totalEl.textContent = sum + '/' + totalQ; totalEl.style.color = barColor; }
+            if (barEl) { barEl.style.width = pct + '%'; barEl.style.background = barColor; }
+        }
+
+        window.saveExamGrade = async function(subId) {
+            var inputs = document.querySelectorAll('.exam-score-input[data-subid="' + subId + '"]');
+            var commentInputs = document.querySelectorAll('.exam-comment-input[data-subid="' + subId + '"]');
+            var teacherScores = {};
+            var teacherComments = {};
+            var sum = 0;
+            inputs.forEach(function(inp) {
+                var idx = parseInt(inp.getAttribute('data-qidx'));
+                var val = parseFloat(inp.value);
+                if (isNaN(val)) val = 0;
+                if (val < 0) val = 0;
+                if (val > 1) val = 1;
+                teacherScores[idx] = val;
+                sum += val;
+            });
+            commentInputs.forEach(function(inp) {
+                var idx = parseInt(inp.getAttribute('data-qidx'));
+                var val = (inp.value || '').trim();
+                if (val) teacherComments[idx] = val;
+            });
+            sum = Math.round(sum * 10) / 10;
+            try {
+                await firebaseDb.collection('examSubmissions').doc(subId).update({
+                    teacherScores: teacherScores,
+                    teacherComments: teacherComments,
+                    finalGrade: sum,
+                    gradedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                var statusEl = document.getElementById('exam-sub-' + subId);
+                if (statusEl) {
+                    var pendingEl = statusEl.querySelector('p[style*="f59e0b"]');
+                    if (pendingEl) { pendingEl.innerHTML = '✓ Corrigido'; pendingEl.style.color = '#16a34a'; }
+                }
+                alert('Nota salva: ' + sum + '/' + inputs.length);
+            } catch(e) {
+                console.error(e);
+                alert('Erro ao salvar nota. Tente novamente.');
+            }
+        }
+
+        window.exportExamPDF = async function(subId, sessionId) {
+            try {
+                var subDoc = await firebaseDb.collection('examSubmissions').doc(subId).get();
+                var sub = subDoc.data();
+                var sessionDoc = await firebaseDb.collection('examSessions').doc(sessionId).get();
+                var sessionData = sessionDoc.data();
+                var examData = examBank[sessionData.examKey];
+                var studentNames = sessionData.studentNames || {};
+                var name = studentNames[sub.studentUid] || sub.studentEmail || 'Aluno';
+                var scores = sub.teacherScores || {};
+                var comments = sub.teacherComments || {};
+                var finalGrade = sub.finalGrade;
+                var total = examData.questions.length;
+                var graded = finalGrade !== undefined && finalGrade !== null;
+
+                var questionsHtml = examData.questions.map(function(qq, idx) {
+                    var studentAns = (sub.answers || {})[idx] || '(vazio)';
+                    var isText = qq.type === 'text';
+                    var qScore = scores[idx] !== undefined ? scores[idx] : (isText ? '-' : (studentAns === qq.answer ? 1 : 0));
+                    var correct = isText ? null : (studentAns === qq.answer);
+                    var statusIcon = isText ? '✏️' : (correct ? '✅' : '❌');
+                    var bgColor = isText ? '#f5f3ff' : (correct ? '#f0fdf4' : '#fef2f2');
+                    var borderColor = isText ? '#ddd6fe' : (correct ? '#bbf7d0' : '#fecaca');
+                    var comment = comments[idx] || '';
+
+                    return '<div style="padding:12px;border-radius:8px;background:' + bgColor + ';border:1px solid ' + borderColor + ';margin-bottom:8px;">' +
+                        '<p style="font-size:13px;font-weight:700;color:#1c1917;margin:0 0 4px;">' + statusIcon + ' Questão ' + (idx + 1) + (isText ? ' <span style="font-size:10px;background:#ede9fe;color:#7c3aed;padding:2px 6px;border-radius:4px;">ESCRITA</span>' : '') + '</p>' +
+                        '<p style="font-size:12px;color:#44403c;margin:0 0 6px;">' + qq.q + '</p>' +
+                        '<p style="font-size:11px;color:#57534e;margin:0 0 2px;"><strong>Resposta do aluno:</strong> ' + studentAns + '</p>' +
+                        (isText ? '<p style="font-size:11px;color:#78716c;margin:0 0 2px;"><strong>Gabarito:</strong> ' + qq.answer + '</p>' :
+                            (!correct ? '<p style="font-size:11px;color:#dc2626;margin:0 0 2px;"><strong>Resposta correta:</strong> ' + qq.answer + '</p>' : '')) +
+                        '<p style="font-size:11px;font-weight:700;color:#8671d1;margin:4px 0 0;">Nota: ' + qScore + ' / 1</p>' +
+                        (comment ? '<p style="font-size:11px;color:#57534e;margin:4px 0 0;padding:6px 8px;background:#fff;border-radius:4px;border-left:3px solid #8671d1;"><strong>Professor:</strong> ' + comment + '</p>' : '') +
+                    '</div>';
+                }).join('');
+
+                var gradeDisplay = graded ? finalGrade : '-';
+                var pct = graded ? Math.round((finalGrade / total) * 100) : '-';
+                var gradeColor = graded ? (pct >= 70 ? '#16a34a' : pct >= 50 ? '#f59e0b' : '#ef4444') : '#78716c';
+
+                var htmlContent = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Prova - ' + name + '</title>' +
+                    '<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">' +
+                    '<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:"DM Sans",sans-serif;background:#fff;color:#1c1917;padding:24px;max-width:800px;margin:0 auto}' +
+                    '@media print{body{padding:12px}button{display:none!important}}</style></head><body>' +
+                    '<div style="text-align:center;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #8671d1;">' +
+                        '<h1 style="font-size:20px;font-weight:900;color:#8671d1;margin-bottom:4px;">SLAP — Portal do Aluno</h1>' +
+                        '<h2 style="font-size:16px;font-weight:700;color:#1c1917;margin-bottom:12px;">' + examData.name + '</h2>' +
+                        '<div style="display:flex;justify-content:center;gap:24px;font-size:12px;color:#78716c;">' +
+                            '<span><strong>Aluno:</strong> ' + name + '</span>' +
+                            '<span><strong>Data:</strong> ' + (sub.submittedAt ? new Date(sub.submittedAt.seconds * 1000).toLocaleDateString('pt-BR') : '-') + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="display:flex;justify-content:center;gap:16px;margin-bottom:24px;">' +
+                        '<div style="text-align:center;padding:12px 24px;border-radius:12px;background:#f5f5f4;">' +
+                            '<p style="font-size:11px;color:#78716c;font-weight:600;">NOTA FINAL</p>' +
+                            '<p style="font-size:28px;font-weight:900;color:' + gradeColor + ';">' + gradeDisplay + '<span style="font-size:14px;color:#a8a29e;">/' + total + '</span></p>' +
+                        '</div>' +
+                        (graded ? '<div style="text-align:center;padding:12px 24px;border-radius:12px;background:#f5f5f4;">' +
+                            '<p style="font-size:11px;color:#78716c;font-weight:600;">PERCENTUAL</p>' +
+                            '<p style="font-size:28px;font-weight:900;color:' + gradeColor + ';">' + pct + '%</p>' +
+                        '</div>' : '') +
+                    '</div>' +
+                    (sub.autoSubmitted ? '<p style="text-align:center;font-size:11px;color:#ef4444;font-weight:600;margin-bottom:16px;">⚠ Teste enviado automaticamente por tempo esgotado</p>' : '') +
+                    '<div style="margin-bottom:16px;">' + questionsHtml + '</div>' +
+                    '<div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid #e7e5e4;">' +
+                        '<p style="font-size:10px;color:#a8a29e;">Documento gerado pelo SLAP — Portal do Aluno</p>' +
+                    '</div>' +
+                    '<div style="text-align:center;margin-top:16px;"><button onclick="window.print()" style="background:#8671d1;color:white;border:none;border-radius:8px;padding:10px 32px;font-size:13px;font-weight:800;cursor:pointer;font-family:DM Sans,sans-serif;">IMPRIMIR / SALVAR PDF</button></div>' +
+                '</body></html>';
+
+                var blob = new Blob([htmlContent], { type: 'text/html' });
+                var url = URL.createObjectURL(blob);
+                var win = window.open(url, '_blank');
+                if (!win) {
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Prova_' + name.replace(/\s+/g, '_') + '.html';
+                    a.click();
+                }
+            } catch(e) {
+                console.error(e);
+                alert('Erro ao exportar. Salve a nota antes de exportar.');
             }
         }
 
