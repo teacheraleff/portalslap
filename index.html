@@ -980,7 +980,7 @@
 
         <div id="study-view" class="hidden w-full">
             <div class="study-container max-w-4xl mx-auto text-center">
-                 <button class="back-button mb-4 flex items-center gap-2" onclick="showDashboard()">
+                 <button class="back-button mb-4 flex items-center gap-2" onclick="handleStudyBack()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
                     Voltar ao Menu
                  </button>
@@ -1352,21 +1352,6 @@
     </div>
 
     <!-- STUDENT EXAM SCREEN -->
-    <div id="exam-screen" class="hidden" style="min-height: 100vh; background: #fafaf9;">
-        <div style="max-width: 700px; margin: 0 auto; padding: 1rem;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-                <div>
-                    <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1759294967/SLAP_TIPO_PRETO_2_kismg9.png" alt="SLAP" style="width: 60px; margin-bottom: 0.25rem;">
-                    <h2 id="exam-screen-title" style="font-size: 1.1rem; font-weight: 800; color: #1c1917;"></h2>
-                </div>
-                <div id="exam-timer" style="background: #1c1917; color: white; padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 1.2rem; font-weight: 900; font-family: monospace;" data-testid="text-exam-timer">60:00</div>
-            </div>
-            <div id="exam-questions-area" style="display: flex; flex-direction: column; gap: 1rem;"></div>
-            <div style="text-align: center; margin-top: 1.5rem; padding-bottom: 2rem;">
-                <button onclick="submitExam()" class="action-button" style="min-width: 200px;" data-testid="button-submit-exam">ENVIAR TESTE</button>
-            </div>
-        </div>
-    </div>
 
     <!-- HELP MODAL -->
     <div id="help-modal" class="modal-overlay" onclick="if(event.target === this) this.classList.remove('active')">
@@ -4489,7 +4474,18 @@
             document.getElementById('study-view').classList.remove('hidden');
         }
 
+        window.handleStudyBack = function() {
+            if (currentStudyMode === 'exam' && activeExamSession) {
+                if (!confirm('Sair do teste? Suas respostas serão enviadas automaticamente.')) return;
+                submitExam(true);
+                return;
+            }
+            showDashboard();
+        }
+
         window.showDashboard = function() {
+            if (examTimerInterval) { clearInterval(examTimerInterval); examTimerInterval = null; }
+            activeExamSession = null;
             if (wsTimer) { clearInterval(wsTimer); wsTimer = null; }
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             document.getElementById('study-content-area').innerHTML = '';
@@ -6730,33 +6726,11 @@
             var examData = examBank[examSession.examKey];
             if (!examData) return;
 
-            document.querySelectorAll('#login-screen, #journey-screen, #main-wrapper, #teacher-wrapper, #pending-screen').forEach(el => el.classList.add('hidden'));
-            document.getElementById('exam-screen').classList.remove('hidden');
-            document.getElementById('exam-screen-title').textContent = examData.name;
-
-            var area = document.getElementById('exam-questions-area');
-            area.innerHTML = examData.questions.map((qq, idx) => {
-                if (qq.type === 'multiple') {
-                    return `
-                    <div style="background: white; border: 1px solid #e7e5e4; border-radius: 0.75rem; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);" data-testid="exam-q-${idx}">
-                        <p style="font-weight: 700; font-size: 0.85rem; color: #1c1917; margin-bottom: 0.75rem;"><span style="color: #8671d1; font-weight: 800;">${idx + 1}.</span> ${qq.q}</p>
-                        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-                            ${qq.options.map((opt, oi) => `
-                                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; border: 1px solid #e7e5e4; border-radius: 0.5rem; cursor: pointer; font-size: 0.8rem; color: #44403c; transition: all 0.2s;" onmouseover="this.style.borderColor='#8671d1'" onmouseout="this.style.borderColor='#e7e5e4'" data-testid="exam-opt-${idx}-${oi}">
-                                    <input type="radio" name="exam-q-${idx}" value="${opt.replace(/"/g, '&quot;')}" style="accent-color: #8671d1;">
-                                    ${opt}
-                                </label>
-                            `).join('')}
-                        </div>
-                    </div>`;
-                } else {
-                    return `
-                    <div style="background: white; border: 1px solid #e7e5e4; border-radius: 0.75rem; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);" data-testid="exam-q-${idx}">
-                        <p style="font-weight: 700; font-size: 0.85rem; color: #1c1917; margin-bottom: 0.75rem;"><span style="color: #8671d1; font-weight: 800;">${idx + 1}.</span> ${qq.q}</p>
-                        <input type="text" id="exam-text-${idx}" placeholder="Digite sua resposta..." style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d6d3d1; border-radius: 0.5rem; font-size: 0.85rem; font-family: 'DM Sans', sans-serif;" data-testid="exam-input-${idx}">
-                    </div>`;
-                }
-            }).join('');
+            currentStudyMode = 'exam';
+            showStudyView();
+            document.getElementById('study-title').textContent = examData.name;
+            document.getElementById('study-instruction').textContent = '';
+            document.getElementById('streak-bar-container').classList.add('hidden');
 
             var durationSecs = (examSession.duration || 60) * 60;
             var startTs = examSession.createdAt || examSession.startedAt;
@@ -6767,26 +6741,63 @@
             } else {
                 examTimeLeft = durationSecs;
             }
-            updateExamTimer();
+
+            var timerHtml = function() {
+                var mins = Math.floor(examTimeLeft / 60);
+                var secs = examTimeLeft % 60;
+                return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+            };
+
+            var contentArea = document.getElementById('study-content-area');
+            contentArea.innerHTML = `
+                <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+                    <div id="exam-timer-inline" style="background: #1c1917; color: white; padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 1.2rem; font-weight: 900; font-family: monospace;" data-testid="text-exam-timer">${timerHtml()}</div>
+                </div>
+                <div id="exam-questions-inline" style="display: flex; flex-direction: column; gap: 1rem; text-align: left;">
+                    ${examData.questions.map(function(qq, idx) {
+                        if (qq.type === 'multiple') {
+                            return '<div style="background: white; border: 1px solid #e7e5e4; border-radius: 0.75rem; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);" data-testid="exam-q-' + idx + '">' +
+                                '<p style="font-weight: 700; font-size: 0.85rem; color: #1c1917; margin-bottom: 0.75rem;"><span style="color: #8671d1; font-weight: 800;">' + (idx + 1) + '.</span> ' + qq.q + '</p>' +
+                                '<div style="display: flex; flex-direction: column; gap: 0.4rem;">' +
+                                qq.options.map(function(opt, oi) {
+                                    return '<label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; border: 1px solid #e7e5e4; border-radius: 0.5rem; cursor: pointer; font-size: 0.8rem; color: #44403c; transition: all 0.2s;" data-testid="exam-opt-' + idx + '-' + oi + '">' +
+                                        '<input type="radio" name="exam-q-' + idx + '" value="' + opt.replace(/"/g, '&quot;') + '" style="accent-color: #8671d1;"> ' + opt + '</label>';
+                                }).join('') +
+                                '</div></div>';
+                        } else {
+                            return '<div style="background: white; border: 1px solid #e7e5e4; border-radius: 0.75rem; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);" data-testid="exam-q-' + idx + '">' +
+                                '<p style="font-weight: 700; font-size: 0.85rem; color: #1c1917; margin-bottom: 0.75rem;"><span style="color: #8671d1; font-weight: 800;">' + (idx + 1) + '.</span> ' + qq.q + '</p>' +
+                                '<input type="text" id="exam-text-' + idx + '" placeholder="Digite sua resposta..." style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d6d3d1; border-radius: 0.5rem; font-size: 0.85rem; font-family: \'DM Sans\', sans-serif;" data-testid="exam-input-' + idx + '"></div>';
+                        }
+                    }).join('')}
+                </div>
+                <div style="text-align: center; margin-top: 1.5rem; padding-bottom: 2rem;">
+                    <button onclick="submitExam()" class="action-button" style="min-width: 200px;" data-testid="button-submit-exam">ENVIAR TESTE</button>
+                </div>
+            `;
+
             if (examTimerInterval) clearInterval(examTimerInterval);
             examTimerInterval = setInterval(function() {
                 examTimeLeft--;
-                updateExamTimer();
+                var el = document.getElementById('exam-timer-inline');
+                if (el) {
+                    var mins = Math.floor(examTimeLeft / 60);
+                    var secs = examTimeLeft % 60;
+                    el.textContent = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+                    if (examTimeLeft <= 300) {
+                        el.style.background = '#ef4444';
+                        el.style.animation = examTimeLeft <= 60 ? 'pulse 1s infinite' : 'none';
+                    }
+                }
                 if (examTimeLeft <= 0) {
                     clearInterval(examTimerInterval);
                     submitExam(true);
                 }
             }, 1000);
-        }
 
-        function updateExamTimer() {
-            var mins = Math.floor(examTimeLeft / 60);
-            var secs = examTimeLeft % 60;
-            var el = document.getElementById('exam-timer');
-            el.textContent = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
-            if (examTimeLeft <= 300) {
-                el.style.background = '#ef4444';
-                el.style.animation = examTimeLeft <= 60 ? 'pulse 1s infinite' : 'none';
+            if (examTimeLeft <= 0) {
+                clearInterval(examTimerInterval);
+                submitExam(true);
             }
         }
 
@@ -6823,7 +6834,7 @@
                 });
 
                 var pct = Math.round((autoScore / examData.questions.length) * 100);
-                document.getElementById('exam-questions-area').innerHTML = `
+                document.getElementById('study-content-area').innerHTML = `
                     <div style="text-align: center; padding: 2rem 0;">
                         <div style="width: 80px; height: 80px; background: ${pct >= 70 ? '#f0fdf4' : '#fef2f2'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 3px solid ${pct >= 70 ? '#16a34a' : '#ef4444'};">
                             <span style="font-size: 1.5rem; font-weight: 900; color: ${pct >= 70 ? '#16a34a' : '#ef4444'};">${pct}%</span>
@@ -6831,11 +6842,9 @@
                         <h3 style="font-size: 1.2rem; font-weight: 800; color: #1c1917; margin-bottom: 0.5rem;">${autoSubmit ? 'Tempo Esgotado — Teste Enviado!' : 'Teste Enviado!'}</h3>
                         <p style="color: #78716c; font-size: 0.85rem; margin-bottom: 0.25rem;">Sua nota preliminar: <strong>${autoScore}/${examData.questions.length}</strong></p>
                         <p style="color: #a8a29e; font-size: 0.75rem; margin-bottom: 1.5rem;">O professor revisará suas respostas.</p>
-                        <button onclick="exitExam()" class="action-button" data-testid="button-exit-exam">VOLTAR AO PORTAL</button>
+                        <button onclick="showDashboard()" class="action-button" data-testid="button-exit-exam">VOLTAR</button>
                     </div>
                 `;
-                document.querySelector('[data-testid="button-submit-exam"]').style.display = 'none';
-                document.getElementById('exam-timer').style.display = 'none';
             } catch(e) {
                 console.error(e);
                 alert('Erro ao enviar o teste. Tente novamente.');
@@ -6844,12 +6853,7 @@
 
         window.exitExam = function() {
             activeExamSession = null;
-            document.getElementById('exam-screen').classList.add('hidden');
-            document.getElementById('exam-timer').style.display = '';
-            document.getElementById('exam-timer').style.background = '#1c1917';
-            document.getElementById('exam-timer').style.animation = 'none';
-            document.querySelector('[data-testid="button-submit-exam"]').style.display = '';
-            onAuthStateChanged(currentUser);
+            showDashboard();
         }
 
     </script>
