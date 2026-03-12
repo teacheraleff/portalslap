@@ -1328,6 +1328,7 @@
 
         var loginMode = 'student';
         var loginRoleChecking = false;
+        var teacherAsStudent = false;
 
         function switchLoginTab(tab) {
             document.getElementById('tab-login-student').classList.toggle('active', tab === 'login-student');
@@ -1403,13 +1404,16 @@
                     return;
                 }
                 if (loginMode === 'student' && isTeacher) {
-                    await firebaseAuth.signOut();
                     loginRoleChecking = false;
-                    errorEl.textContent = 'Esta conta é de professor. Use "Login Prof".';
-                    errorEl.style.display = 'block';
-                    btn.disabled = false;
-                    btn.textContent = btnLabel;
-                    showScreen('login');
+                    teacherAsStudent = true;
+                    currentUser = cred.user;
+                    await loadUserStreaks();
+                    syncChunksStreaks();
+                    const displayName = cred.user.displayName || cred.user.email.split('@')[0];
+                    document.getElementById('journey-user-name').textContent = displayName;
+                    const lvl = userData.currentLevel || 'starter1';
+                    updateJourneyMap(lvl);
+                    showScreen('journey');
                     return;
                 }
                 loginRoleChecking = false;
@@ -1457,6 +1461,7 @@
 
         function handleLogout() {
             if (firebaseAuth) {
+                teacherAsStudent = false;
                 currentUser = null;
                 setAvatarImage(null);
                 var tImg = document.getElementById('teacher-sidebar-avatar-img');
@@ -2390,9 +2395,16 @@
             setAvatarImage(null);
             if (user) {
                 const result = await checkUserApproval(user);
-                if (result.role === 'teacher') {
+                if (result.role === 'teacher' && !teacherAsStudent) {
                     showScreen('teacher');
                     initTeacherDashboard();
+                } else if (result.role === 'teacher' && teacherAsStudent) {
+                    await loadUserStreaks();
+                    syncChunksStreaks();
+                    const displayName = user.displayName || user.email.split('@')[0];
+                    document.getElementById('journey-user-name').textContent = displayName;
+                    updateJourneyMap(result.currentLevel || 'starter1');
+                    showScreen('journey');
                 } else if (result.approved) {
                     await loadUserStreaks();
                     syncChunksStreaks();
