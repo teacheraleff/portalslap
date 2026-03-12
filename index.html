@@ -5461,7 +5461,11 @@
                         <div style="width: 48px; height: 48px; background: #FF5C3D; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
                             <span id="box-overlay-number" style="font-size: 1.2rem; font-weight: 900; color: white;"></span>
                         </div>
-                        <p id="box-overlay-question" style="font-size: 1.35rem; font-weight: 800; color: #1c1917; line-height: 1.4; margin-bottom: 1.5rem;"></p>
+                        <p id="box-overlay-question" style="font-size: 1.35rem; font-weight: 800; color: #1c1917; line-height: 1.4; margin-bottom: 1rem;"></p>
+                        <button onclick="speakBoxQuestion()" style="background: none; border: 2px solid #FF5C3D; border-radius: 50%; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 1.25rem; transition: background 0.2s;" onmouseover="this.style.background='#FFF0ED'" onmouseout="this.style.background='none'" data-testid="box-speak-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF5C3D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                        </button>
+                        <br>
                         <button onclick="closeBoxOverlay()" style="background: #FF5C3D; color: white; border: none; border-radius: 0.75rem; padding: 0.6rem 2rem; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: 'DM Sans', sans-serif;" data-testid="box-close-btn">FECHAR</button>
                     </div>
                 </div>
@@ -5469,6 +5473,11 @@
             const style = document.createElement('style');
             style.textContent = '@keyframes boxPopIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }';
             if (!document.getElementById('box-anim-style')) { style.id = 'box-anim-style'; document.head.appendChild(style); }
+        }
+
+        window.speakBoxQuestion = function() {
+            const text = document.getElementById('box-overlay-question').textContent;
+            if (text) speakText(text);
         }
 
         window.closeBoxOverlay = function() {
