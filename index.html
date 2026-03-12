@@ -2905,7 +2905,8 @@
             wordsearch: { title: "Como estudar com o Caça-Palavras", text: "Encontre as palavras escondidas no grid. Elas podem estar na horizontal ou vertical. Você tem 2 minutos!" },
             homework: { title: "Como estudar com o Homework", text: "Responda as questões corretamente. Leia a explicação quando acertar. Acerte 10 seguidas para completar a missão!" },
             fillin: { title: "Como estudar com o Fill In", text: "Complete a frase digitando a palavra que falta no espaço em branco. Use a dica entre parênteses para ajudar. Acerte 5 seguidas para completar!" },
-            categorize: { title: "Como estudar com o Categorizing", text: "Arraste cada item de comida para a categoria correta (Starter, Main Course, Side Dish, Beverage ou Dessert). Classifique todos corretamente para completar!" }
+            categorize: { title: "Como estudar com o Categorizing", text: "Arraste cada item de comida para a categoria correta (Starter, Main Course, Side Dish, Beverage ou Dessert). Classifique todos corretamente para completar!" },
+            boxes: { title: "Como estudar com o Boxes", text: "Clique em qualquer box para revelar uma pergunta. Leia a pergunta e tente formular uma resposta em inglês em voz alta. Clique novamente para fechar. Abra todas as 20 boxes!" }
         };
 
         function showHelpModal() {
@@ -5438,8 +5439,6 @@
             if (!questions) return;
             const area = document.getElementById('study-content-area');
             const shuffled = shuffle([...questions]);
-            const colors = ['#8671d1','#F1D24B','#FF5C3D','#84C7DF','#000000'];
-
             area.innerHTML = `
                 <div style="max-width: 700px; margin: 0 auto;">
                     <p style="text-align: center; color: #78716c; font-size: 0.85rem; margin-bottom: 0.5rem;">Clique nas boxes e responda em voz alta!</p>
@@ -5447,48 +5446,56 @@
                         <span id="boxes-counter" style="font-size: 0.75rem; font-weight: 700; color: #a8a29e;" data-testid="boxes-counter">0 / ${shuffled.length} abertas</span>
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem;" data-testid="boxes-grid">
-                        ${shuffled.map((q, i) => {
-                            const c = colors[i % colors.length];
-                            return `
-                                <div class="boxes-card" data-index="${i}" data-opened="false" data-color="${c}"
-                                    onclick="revealBox(this, ${moduleId})"
-                                    style="height: 70px; background: linear-gradient(135deg, ${c}, ${c}dd); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.4s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: relative; overflow: hidden; user-select: none;"
-                                    data-testid="box-${i}">
-                                    <span class="box-number" style="font-size: 1.8rem; font-weight: 900; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">${i + 1}</span>
-                                    <div class="box-question" style="display: none; padding: 0.5rem; text-align: center;">
-                                        <p style="font-size: 0.75rem; font-weight: 700; color: #1c1917; line-height: 1.3;">${q}</p>
-                                    </div>
-                                </div>`;
-                        }).join('')}
+                        ${shuffled.map((q, i) => `
+                            <div class="boxes-card" data-index="${i}" data-opened="false" data-question="${q.replace(/"/g, '&quot;')}"
+                                onclick="revealBox(this, ${moduleId})"
+                                style="height: 65px; background: #FF5C3D; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(255,92,61,0.3); user-select: none;"
+                                data-testid="box-${i}">
+                                <span class="box-number" style="font-size: 1.6rem; font-weight: 900; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">${i + 1}</span>
+                            </div>`).join('')}
                     </div>
                     <div id="boxes-complete" style="display: none; text-align: center; margin-top: 1.5rem;" data-testid="boxes-complete"></div>
                 </div>
+                <div id="box-overlay" onclick="closeBoxOverlay()" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 19000; align-items: center; justify-content: center; padding: 1.5rem;" data-testid="box-overlay">
+                    <div onclick="event.stopPropagation()" style="background: white; border-radius: 1.25rem; max-width: 420px; width: 100%; padding: 2rem 1.5rem; box-shadow: 0 12px 40px rgba(0,0,0,0.25); text-align: center; animation: boxPopIn 0.3s ease;">
+                        <div style="width: 48px; height: 48px; background: #FF5C3D; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                            <span id="box-overlay-number" style="font-size: 1.2rem; font-weight: 900; color: white;"></span>
+                        </div>
+                        <p id="box-overlay-question" style="font-size: 1.35rem; font-weight: 800; color: #1c1917; line-height: 1.4; margin-bottom: 1.5rem;"></p>
+                        <button onclick="closeBoxOverlay()" style="background: #FF5C3D; color: white; border: none; border-radius: 0.75rem; padding: 0.6rem 2rem; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: 'DM Sans', sans-serif;" data-testid="box-close-btn">FECHAR</button>
+                    </div>
+                </div>
             `;
+            const style = document.createElement('style');
+            style.textContent = '@keyframes boxPopIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }';
+            if (!document.getElementById('box-anim-style')) { style.id = 'box-anim-style'; document.head.appendChild(style); }
+        }
+
+        window.closeBoxOverlay = function() {
+            const overlay = document.getElementById('box-overlay');
+            if (overlay) overlay.style.display = 'none';
         }
 
         window.revealBox = function(el, moduleId) {
+            const question = el.dataset.question;
+            const num = el.querySelector('.box-number').textContent;
+
             if (el.dataset.opened === 'true') {
-                el.dataset.opened = 'false';
-                const origColor = el.dataset.color;
-                el.style.background = `linear-gradient(135deg, ${origColor}, ${origColor}dd)`;
-                el.style.border = 'none';
-                el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                el.style.cursor = 'pointer';
-                el.querySelector('.box-number').style.display = '';
-                el.querySelector('.box-question').style.display = 'none';
+                document.getElementById('box-overlay-number').textContent = num;
+                document.getElementById('box-overlay-question').textContent = question;
+                const overlay = document.getElementById('box-overlay');
+                overlay.style.display = 'flex';
                 return;
             }
+
             el.dataset.opened = 'true';
-            el.style.background = 'white';
-            el.style.border = '2px solid #d6d3d1';
+            el.style.background = '#FFD3CA';
             el.style.boxShadow = '0 2px 6px rgba(0,0,0,0.08)';
-            el.style.cursor = 'default';
-            el.querySelector('.box-number').style.display = 'none';
-            el.querySelector('.box-question').style.display = 'flex';
-            el.querySelector('.box-question').style.alignItems = 'center';
-            el.querySelector('.box-question').style.justifyContent = 'center';
-            el.querySelector('.box-question').style.width = '100%';
-            el.querySelector('.box-question').style.height = '100%';
+            el.querySelector('.box-number').style.opacity = '0.4';
+
+            document.getElementById('box-overlay-number').textContent = num;
+            document.getElementById('box-overlay-question').textContent = question;
+            document.getElementById('box-overlay').style.display = 'flex';
 
             boxesOpenedCount++;
             const total = boxesData[moduleId].length;
