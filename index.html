@@ -2049,7 +2049,7 @@
                 var student = allStudentsCache.find(function(s) { return s.uid === uid; });
                 var studentLevel = (student && student.currentLevel) || 'starter1';
                 var aulaList = studentLevel === 'starter2' ? aulaStarter2 : aulaNames;
-                var modeNames = { homework: 'Homework', flashcards: 'Flashcards', listening: 'Listening', chunks: 'Chunks', scramble: 'Unscramble', mistake: 'Detetive', dictation: 'Ditado', hangman: 'Forca', wordsearch: 'Caça-Palavras', fillin: 'Fill In' };
+                var modeNames = { homework: 'Homework', flashcards: 'Flashcards', listening: 'Listening', chunks: 'Chunks', scramble: 'Unscramble', mistake: 'Detetive', dictation: 'Ditado', hangman: 'Forca', wordsearch: 'Caça-Palavras', fillin: 'Fill In', categorize: 'Categorizing' };
                 var levelNames = { starter1: 'Starter 1', starter2: 'Starter 2', freshman1: 'Freshman 1', freshman2: 'Freshman 2', sophomore1: 'Sophomore 1', sophomore2: 'Sophomore 2', senior1: 'Senior 1', senior2: 'Senior 2', acc: 'ACC' };
                 var parsed = keys.map(function(key) {
                     var parts = key.split('_');
@@ -2525,6 +2525,7 @@
                 if ((isS1 && [6, 23, 26].includes(aula.id)) || aula.thirdBtn === 'hangman') streaks.push('hangman');
                 if (isS1 && [12, 14].includes(aula.id)) streaks.push('wordsearch');
                 if (aula.fourthBtn === 'fillin') streaks.push('fillin');
+                if (aula.thirdBtn === 'categorize' || categorizeData[aula.id]) streaks.push('categorize');
                 total += streaks.length;
                 streaks.forEach(function(m) {
                     if (isStreakDone(aula.id, m)) done++;
@@ -2572,6 +2573,7 @@
                 if ((isS1 && [6, 23, 26].includes(aula.id)) || aula.thirdBtn === 'hangman') streaks.push({ label: 'Forca', mode: 'hangman' });
                 if (isS1 && [12, 14].includes(aula.id)) streaks.push({ label: 'Caça-Palavras', mode: 'wordsearch' });
                 if (aula.fourthBtn === 'fillin') streaks.push({ label: 'Fill In', mode: 'fillin' });
+                if (aula.thirdBtn === 'categorize' || categorizeData[aula.id]) streaks.push({ label: 'Categorizing', mode: 'categorize' });
                 if (streaks.length === 0) return;
                 var doneCount = streaks.filter(function(s) { return isStreakDone(aula.id, s.mode); }).length;
                 var tags = streaks.map(function(s) {
@@ -2902,7 +2904,8 @@
             hangman: { title: "Como estudar com a Forca", text: "Adivinhe a palavra letra por letra. Cada erro desenha uma parte do boneco. Se completar o desenho, você perde!" },
             wordsearch: { title: "Como estudar com o Caça-Palavras", text: "Encontre as palavras escondidas no grid. Elas podem estar na horizontal ou vertical. Você tem 2 minutos!" },
             homework: { title: "Como estudar com o Homework", text: "Responda as questões corretamente. Leia a explicação quando acertar. Acerte 10 seguidas para completar a missão!" },
-            fillin: { title: "Como estudar com o Fill In", text: "Complete a frase digitando a palavra que falta no espaço em branco. Use a dica entre parênteses para ajudar. Acerte 5 seguidas para completar!" }
+            fillin: { title: "Como estudar com o Fill In", text: "Complete a frase digitando a palavra que falta no espaço em branco. Use a dica entre parênteses para ajudar. Acerte 5 seguidas para completar!" },
+            categorize: { title: "Como estudar com o Categorizing", text: "Arraste cada item de comida para a categoria correta (Starter, Main Course, Side Dish, Beverage ou Dessert). Classifique todos corretamente para completar!" }
         };
 
         function showHelpModal() {
@@ -2925,19 +2928,19 @@
             { id: 6, name: "Prepositions Of Place", hasHomework: true, specialMode: 'scramble', desc: "Pratique in, on, at, next to, between, behind..." },
             { id: 7, name: "In, On, At + Transportations", hasHomework: true, specialMode: 'scramble', thirdBtn: 'hangman', desc: "Preposições com meios de transporte." },
             { id: 8, name: "Possessives", hasHomework: true, thirdBtn: 'chunks', fourthBtn: 'fillin', desc: "Possessive adjectives, pronouns e genitive case ('s e of)." },
-            { id: 9, name: "Parts of the House", hasHomework: true, desc: "Vocabulário dos cômodos da casa." },
+            { id: 9, name: "Parts of the House", hasHomework: true, specialMode: 'flashcards', desc: "Vocabulário dos cômodos da casa." },
             { id: 10, name: "Furniture & Chores", hasHomework: true, specialMode: 'flashcards', desc: "Móveis e tarefas domésticas em inglês." },
             { id: 11, name: "Present Continuous", hasHomework: true, desc: "Pratique o presente contínuo: am/is/are + -ing." },
             { id: 12, name: "Present Continuous For Future", hasHomework: true, thirdBtn: 'chunks', fourthBtn: 'fillin', desc: "Use o presente contínuo para falar de planos futuros." },
             { id: 13, name: "Many & Much", hasHomework: true, fourthBtn: 'fillin', desc: "Aprenda quando usar many e much." },
-            { id: 14, name: "Restaurant Pt. 1", hasHomework: true, desc: "Vocabulário e frases para restaurante." },
+            { id: 14, name: "Restaurant Pt. 1", hasHomework: true, thirdBtn: 'categorize', desc: "Vocabulário e frases para restaurante." },
             { id: 15, name: "Restaurant Pt. 2", hasHomework: true, desc: "Continue praticando situações em restaurante." },
             { id: 16, name: "Midterm Test", hasHomework: false, desc: "Prova intermediária do módulo." },
             { id: 17, name: "Future Simple", hasHomework: true, desc: "Pratique o futuro simples com will." },
             { id: 18, name: "MT Correction", hasHomework: false, desc: "Correção da prova intermediária." },
             { id: 19, name: "What Will You Do?", hasHomework: true, thirdBtn: 'chunks', desc: "Treine perguntas e respostas com will sobre o futuro." },
             { id: 20, name: "Occupations", hasHomework: true, specialMode: 'flashcards', thirdBtn: 'chunks', desc: "Vocabulário de profissões e perguntas sobre ocupação." },
-            { id: 21, name: "False Friends", hasHomework: true, desc: "Cuidado com os falsos cognatos!" },
+            { id: 21, name: "False Friends", hasHomework: true, thirdBtn: 'chunks', desc: "Cuidado com os falsos cognatos!" },
             { id: 22, name: "Agreeing & Disagreeing", hasHomework: true, desc: "Aprenda a concordar e discordar em inglês." },
             { id: 23, name: "Describing People", hasHomework: true, desc: "Descreva pessoas usando adjetivos em inglês." },
             { id: 24, name: "Movie Genres", hasHomework: true, specialMode: 'listening', thirdBtn: 'hangman', desc: "Vocabulário de gêneros de filmes.", items: [{n:"Action",w:"Ação"},{n:"Comedy",w:"Comédia"},{n:"Drama",w:"Drama"},{n:"Horror",w:"Terror"},{n:"Romance",w:"Romance"},{n:"Thriller",w:"Suspense"},{n:"Science Fiction",w:"Ficção Científica"},{n:"Animation",w:"Animação"},{n:"Adventure",w:"Aventura"},{n:"Fantasy",w:"Fantasia"},{n:"Documentary",w:"Documentário"},{n:"Musical",w:"Musical"},{n:"Mystery",w:"Mistério"},{n:"Western",w:"Faroeste"},{n:"Crime",w:"Crime"},{n:"War",w:"Guerra"},{n:"Biography",w:"Biografia"},{n:"Family",w:"Família"},{n:"Superhero",w:"Super-herói"},{n:"Historical",w:"Histórico"}] },
@@ -3567,6 +3570,28 @@
                 { front: "Eletricista", back: "Electrician" },
                 { front: "Psicólogo(a)", back: "Psychologist" },
                 { front: "Farmacêutico(a)", back: "Pharmacist" }
+            ],
+            9: [
+                { front: "Cozinha", back: "Kitchen" },
+                { front: "Quarto", back: "Bedroom" },
+                { front: "Banheiro", back: "Bathroom" },
+                { front: "Sala de Estar", back: "Living Room" },
+                { front: "Sala de Jantar", back: "Dining Room" },
+                { front: "Garagem", back: "Garage" },
+                { front: "Quintal", back: "Yard" },
+                { front: "Sótão", back: "Attic" },
+                { front: "Porão", back: "Basement" },
+                { front: "Varanda", back: "Balcony" },
+                { front: "Corredor", back: "Hallway" },
+                { front: "Escritório", back: "Office" },
+                { front: "Lavanderia", back: "Laundry Room" },
+                { front: "Jardim", back: "Garden" },
+                { front: "Escada", back: "Stairs" },
+                { front: "Telhado", back: "Roof" },
+                { front: "Parede", back: "Wall" },
+                { front: "Porta", back: "Door" },
+                { front: "Janela", back: "Window" },
+                { front: "Chão / Piso", back: "Floor" }
             ]
         };
 
@@ -3669,6 +3694,20 @@
                 { en: "She works as a lawyer.", pt: "Ela trabalha como advogada." },
                 { en: "He wants to be a pilot.", pt: "Ele quer ser piloto." },
                 { en: "What does your mother do?", pt: "O que sua mãe faz? (profissão)" }
+            ],
+            21: [
+                { en: "The actual price is $50.", pt: "O preço real é $50. (actual = real, não 'atual')" },
+                { en: "She is pretending to be sick.", pt: "Ela está fingindo estar doente. (pretend = fingir, não 'pretender')" },
+                { en: "I go to the library every week.", pt: "Eu vou à biblioteca toda semana. (library = biblioteca, não 'livraria')" },
+                { en: "Push the door to open it.", pt: "Empurre a porta para abri-la. (push = empurrar, não 'puxar')" },
+                { en: "The lecture starts at 10 a.m.", pt: "A palestra começa às 10h. (lecture = palestra, não 'leitura')" },
+                { en: "This fabric is very soft.", pt: "Este tecido é muito macio. (fabric = tecido, não 'fábrica')" },
+                { en: "Where is the exit?", pt: "Onde fica a saída? (exit = saída, não 'êxito')" },
+                { en: "Eventually, he found the answer.", pt: "Finalmente, ele encontrou a resposta. (eventually = finalmente, não 'eventualmente')" },
+                { en: "My parents live in São Paulo.", pt: "Meus pais moram em São Paulo. (parents = pais, não 'parentes')" },
+                { en: "She is a very sensible person.", pt: "Ela é uma pessoa muito sensata. (sensible = sensato, não 'sensível')" },
+                { en: "He is actually from Brazil.", pt: "Ele na verdade é do Brasil. (actually = na verdade, não 'atualmente')" },
+                { en: "I need to attend the meeting.", pt: "Eu preciso participar da reunião. (attend = participar, não 'atender')" }
             ]
         };
 
@@ -4417,6 +4456,7 @@
                 const hBtn = ((isS1 && [6, 23, 26].includes(aula.id)) || aula.thirdBtn === 'hangman') ? `<button class="secondary-button-sm" onclick="openHangman(${aula.id})">FORCA</button>` : '';
                 const cBtn = (isS1 && [12, 14].includes(aula.id)) ? `<button class="secondary-button-sm" onclick="openWordSearch(${aula.id})">CAÇA-PALAVRAS</button>` : '';
                 const fiBtn = aula.fourthBtn === 'fillin' ? `<button class="secondary-button-sm" onclick="openFillIn(${aula.id})">FILL IN</button>` : '';
+                const catBtn = (aula.thirdBtn === 'categorize' || categorizeData[aula.id]) ? `<button class="secondary-button-sm" onclick="openCategorize(${aula.id})">CATEGORIZING</button>` : '';
 
                 let allStreaks = [];
                 if (aula.hasHomework && activeQuiz[aula.id]) allStreaks.push({ label: 'Homework', done: isStreakDone(aula.id, 'homework') });
@@ -4428,6 +4468,7 @@
                 if ((isS1 && [6, 23, 26].includes(aula.id)) || aula.thirdBtn === 'hangman') allStreaks.push({ label: 'Forca', done: isStreakDone(aula.id, 'hangman') });
                 if (isS1 && [12, 14].includes(aula.id)) allStreaks.push({ label: 'Caça-Palavras', done: isStreakDone(aula.id, 'wordsearch') });
                 if (aula.fourthBtn === 'fillin') allStreaks.push({ label: 'Fill In', done: isStreakDone(aula.id, 'fillin') });
+                if (aula.thirdBtn === 'categorize' || categorizeData[aula.id]) allStreaks.push({ label: 'Categorizing', done: isStreakDone(aula.id, 'categorize') });
                 const streakHtml = allStreaks.length > 0 ? `<div style="display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.5rem;">${allStreaks.map(s => s.done
                     ? `<span style="font-size: 0.6rem; font-weight: 700; color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 0.1rem 0.4rem; border-radius: 1rem; display: inline-flex; align-items: center; gap: 0.2rem;" data-testid="streak-done-${s.label}"><svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='#16a34a' stroke-width='3'><polyline points='20 6 9 17 4 12'/></svg> ${s.label}</span>`
                     : `<span style="font-size: 0.6rem; font-weight: 700; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 0.1rem 0.4rem; border-radius: 1rem; display: inline-flex; align-items: center; gap: 0.2rem;" data-testid="streak-pending-${s.label}"><svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='#dc2626' stroke-width='2'><circle cx='12' cy='12' r='10'/><line x1='15' y1='9' x2='9' y2='15'/><line x1='9' y1='9' x2='15' y2='15'/></svg> ${s.label}</span>`
@@ -4447,7 +4488,7 @@
                         ${streakHtml}
                     </div>
                     <div class="flex flex-wrap gap-1.5">
-                        ${sBtn} ${tBtn} ${dBtn} ${chBtn} ${hBtn} ${cBtn} ${fiBtn}
+                        ${sBtn} ${tBtn} ${dBtn} ${chBtn} ${hBtn} ${cBtn} ${fiBtn} ${catBtn}
                         <button class="action-button-sm uppercase" ${(!aula.hasHomework || !activeQuiz[aula.id]) ? 'disabled' : `onclick="openPractice(${aula.id})"`}>HOMEWORK</button>
                     </div>
                 </div>`
@@ -4955,7 +4996,7 @@
                 `<div style="width: 12px; height: 12px; border-radius: 50%; ${i < fillInStreak ? 'background: #8671d1;' : 'background: #e5e7eb;'} transition: background 0.3s;"></div>`
             ).join('');
 
-            document.getElementById('study-content').innerHTML = `
+            document.getElementById('study-content-area').innerHTML = `
                 <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem;" data-testid="fillin-streak-bar">
                     ${streakDots}
                 </div>
@@ -4999,7 +5040,7 @@
                 feedback.innerHTML = `<p style="color: #16a34a; font-weight: 700;">Correto!</p>`;
 
                 if (fillInStreak >= 5) {
-                    saveStreakDone(currentAulaId, 'fillin');
+                    markStreakDone(currentAulaId, 'fillin');
                     feedback.innerHTML = `
                         <div style="text-align: center;">
                             <p style="color: #16a34a; font-weight: 700; font-size: 1.2rem; margin-bottom: 1rem;">Missão completa!</p>
@@ -5015,6 +5056,342 @@
                 fillInStreak = 0;
                 feedback.innerHTML = `<p style="color: #dc2626; font-weight: 700;">Resposta: <span style="color: #1c1917;">${item.answer}</span></p>`;
                 setTimeout(() => loadNextFillIn(), 2000);
+            }
+        }
+
+        const categorizeData = {
+            7: {
+                categories: ['IN', 'ON', 'BY'],
+                items: [
+                    { name: 'a car', category: 'IN' },
+                    { name: 'a taxi', category: 'IN' },
+                    { name: 'a helicopter', category: 'IN' },
+                    { name: 'an ambulance', category: 'IN' },
+                    { name: 'a truck', category: 'IN' },
+                    { name: 'a van', category: 'IN' },
+                    { name: 'a bus', category: 'ON' },
+                    { name: 'a train', category: 'ON' },
+                    { name: 'a plane', category: 'ON' },
+                    { name: 'a ship', category: 'ON' },
+                    { name: 'a motorcycle', category: 'ON' },
+                    { name: 'a bicycle', category: 'ON' },
+                    { name: 'a boat', category: 'ON' },
+                    { name: 'the subway', category: 'ON' },
+                    { name: 'a ferry', category: 'ON' },
+                    { name: 'a horse', category: 'ON' },
+                    { name: 'bus', category: 'BY' },
+                    { name: 'car', category: 'BY' },
+                    { name: 'train', category: 'BY' },
+                    { name: 'plane', category: 'BY' },
+                    { name: 'bike', category: 'BY' },
+                    { name: 'subway', category: 'BY' },
+                    { name: 'taxi', category: 'BY' },
+                    { name: 'foot', category: 'ON' }
+                ]
+            },
+            13: {
+                categories: ['MANY (contável)', 'MUCH (incontável)'],
+                items: [
+                    { name: 'Books', category: 'MANY (contável)' },
+                    { name: 'Chairs', category: 'MANY (contável)' },
+                    { name: 'Dogs', category: 'MANY (contável)' },
+                    { name: 'Eggs', category: 'MANY (contável)' },
+                    { name: 'Friends', category: 'MANY (contável)' },
+                    { name: 'Students', category: 'MANY (contável)' },
+                    { name: 'Cars', category: 'MANY (contável)' },
+                    { name: 'Apples', category: 'MANY (contável)' },
+                    { name: 'Cats', category: 'MANY (contável)' },
+                    { name: 'Questions', category: 'MANY (contável)' },
+                    { name: 'People', category: 'MANY (contável)' },
+                    { name: 'Shoes', category: 'MANY (contável)' },
+                    { name: 'Water', category: 'MUCH (incontável)' },
+                    { name: 'Money', category: 'MUCH (incontável)' },
+                    { name: 'Sugar', category: 'MUCH (incontável)' },
+                    { name: 'Rice', category: 'MUCH (incontável)' },
+                    { name: 'Milk', category: 'MUCH (incontável)' },
+                    { name: 'Coffee', category: 'MUCH (incontável)' },
+                    { name: 'Time', category: 'MUCH (incontável)' },
+                    { name: 'Homework', category: 'MUCH (incontável)' },
+                    { name: 'Information', category: 'MUCH (incontável)' },
+                    { name: 'Music', category: 'MUCH (incontável)' },
+                    { name: 'Bread', category: 'MUCH (incontável)' },
+                    { name: 'Juice', category: 'MUCH (incontável)' }
+                ]
+            },
+            14: {
+                categories: ['Starter', 'Main Course', 'Side Dish', 'Beverage', 'Dessert'],
+                items: [
+                    { name: 'Bruschetta', category: 'Starter' },
+                    { name: 'Garlic Bread', category: 'Starter' },
+                    { name: 'Soup', category: 'Starter' },
+                    { name: 'Salad', category: 'Starter' },
+                    { name: 'Spring Rolls', category: 'Starter' },
+                    { name: 'Steak', category: 'Main Course' },
+                    { name: 'Grilled Chicken', category: 'Main Course' },
+                    { name: 'Pasta', category: 'Main Course' },
+                    { name: 'Fish and Chips', category: 'Main Course' },
+                    { name: 'Burger', category: 'Main Course' },
+                    { name: 'Lasagna', category: 'Main Course' },
+                    { name: 'Pizza', category: 'Main Course' },
+                    { name: 'French Fries', category: 'Side Dish' },
+                    { name: 'Rice', category: 'Side Dish' },
+                    { name: 'Mashed Potatoes', category: 'Side Dish' },
+                    { name: 'Coleslaw', category: 'Side Dish' },
+                    { name: 'Beans', category: 'Side Dish' },
+                    { name: 'Soda', category: 'Beverage' },
+                    { name: 'Orange Juice', category: 'Beverage' },
+                    { name: 'Water', category: 'Beverage' },
+                    { name: 'Coffee', category: 'Beverage' },
+                    { name: 'Milkshake', category: 'Beverage' },
+                    { name: 'Lemonade', category: 'Beverage' },
+                    { name: 'Ice Cream', category: 'Dessert' },
+                    { name: 'Cake', category: 'Dessert' },
+                    { name: 'Brownie', category: 'Dessert' },
+                    { name: 'Pudding', category: 'Dessert' },
+                    { name: 'Petit Gâteau', category: 'Dessert' },
+                    { name: 'Apple Pie', category: 'Dessert' }
+                ]
+            }
+        };
+
+        let catDragItem = null;
+
+        window.openCategorize = function(moduleId) {
+            currentAulaId = moduleId;
+            currentStudyMode = 'categorize';
+            showStudyView();
+            document.getElementById('study-title').textContent = "Categorizing";
+            document.getElementById('study-instruction').textContent = "";
+            renderCategorize(moduleId);
+        }
+
+        function renderCategorize(moduleId) {
+            const data = categorizeData[moduleId];
+            if (!data) return;
+            const area = document.getElementById('study-content-area');
+            const shuffled = shuffle([...data.items]);
+            const defaultPalette = [
+                { bg: '#fef3c7', border: '#f59e0b', text: '#92400e' },
+                { bg: '#fee2e2', border: '#ef4444', text: '#991b1b' },
+                { bg: '#e0f2fe', border: '#0ea5e9', text: '#075985' },
+                { bg: '#f0fdf4', border: '#22c55e', text: '#166534' },
+                { bg: '#fce7f3', border: '#ec4899', text: '#9d174d' },
+                { bg: '#ede9fe', border: '#8b5cf6', text: '#5b21b6' },
+                { bg: '#fef9c3', border: '#eab308', text: '#854d0e' }
+            ];
+            const catColors = {};
+            data.categories.forEach((cat, i) => { catColors[cat] = defaultPalette[i % defaultPalette.length]; });
+
+            area.innerHTML = `
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <p style="text-align: center; color: #78716c; font-size: 0.85rem; margin-bottom: 1rem;">Arraste cada item para a categoria correta</p>
+                    <div id="cat-items-bank" style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; min-height: 50px; padding: 1rem; background: #f5f5f4; border-radius: 1rem; margin-bottom: 1.5rem; border: 2px dashed #d6d3d1;" data-testid="cat-items-bank">
+                        ${shuffled.map((item, i) => `
+                            <div class="cat-draggable" draggable="true" data-category="${item.category}" data-name="${item.name}" data-index="${i}"
+                                style="padding: 0.4rem 0.8rem; background: white; border: 2px solid #d6d3d1; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 600; color: #1c1917; cursor: grab; user-select: none; transition: transform 0.15s, box-shadow 0.15s; font-family: 'DM Sans', sans-serif;"
+                                data-testid="cat-item-${item.name.replace(/\s+/g, '-').toLowerCase()}">${item.name}</div>
+                        `).join('')}
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem;" data-testid="cat-boxes-grid">
+                        ${data.categories.map(cat => {
+                            const c = catColors[cat];
+                            return `
+                                <div class="cat-drop-zone" data-cat="${cat}"
+                                    style="background: ${c.bg}; border: 2px dashed ${c.border}; border-radius: 0.75rem; padding: 0.5rem; min-height: 140px; transition: border-style 0.2s, box-shadow 0.2s;"
+                                    data-testid="cat-box-${cat.replace(/\s+/g, '-').toLowerCase()}">
+                                    <div style="text-align: center; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: ${c.text}; margin-bottom: 0.5rem; padding: 0.25rem 0.5rem; background: white; border-radius: 0.5rem; border: 1px solid ${c.border};">${cat}</div>
+                                    <div class="cat-drop-items" style="display: flex; flex-direction: column; gap: 0.3rem; min-height: 30px;"></div>
+                                </div>`;
+                        }).join('')}
+                    </div>
+                    <div style="text-align: center; margin-top: 1.5rem;">
+                        <button class="action-button" onclick="checkCategorize(${moduleId})" data-testid="cat-check-btn">VERIFICAR</button>
+                    </div>
+                    <div id="cat-feedback" style="text-align: center; margin-top: 1rem;"></div>
+                </div>
+            `;
+
+            initCatDragDrop();
+        }
+
+        function initCatDragDrop() {
+            const items = document.querySelectorAll('.cat-draggable');
+            const zones = document.querySelectorAll('.cat-drop-zone');
+            const bank = document.getElementById('cat-items-bank');
+
+            items.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    catDragItem = this;
+                    this.style.opacity = '0.5';
+                    this.style.transform = 'scale(0.95)';
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+                item.addEventListener('dragend', function() {
+                    this.style.opacity = '1';
+                    this.style.transform = 'scale(1)';
+                    catDragItem = null;
+                    zones.forEach(z => {
+                        z.style.borderStyle = 'dashed';
+                        z.style.boxShadow = 'none';
+                    });
+                    bank.style.borderColor = '#d6d3d1';
+                    bank.style.boxShadow = 'none';
+                });
+                item.addEventListener('touchstart', function(e) {
+                    catDragItem = this;
+                    this.style.opacity = '0.7';
+                }, { passive: true });
+            });
+
+            function setupDropZone(zone) {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    this.style.borderStyle = 'solid';
+                    this.style.boxShadow = '0 0 0 3px rgba(134,113,209,0.3)';
+                });
+                zone.addEventListener('dragleave', function() {
+                    this.style.borderStyle = 'dashed';
+                    this.style.boxShadow = 'none';
+                });
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.style.borderStyle = 'dashed';
+                    this.style.boxShadow = 'none';
+                    if (catDragItem) {
+                        const container = this.querySelector('.cat-drop-items') || this;
+                        container.appendChild(catDragItem);
+                        catDragItem.style.opacity = '1';
+                        catDragItem.style.transform = 'scale(1)';
+                        catDragItem.style.borderColor = this.style.borderColor;
+                    }
+                });
+                zone.addEventListener('touchend', function(e) {
+                    if (catDragItem) {
+                        const container = this.querySelector('.cat-drop-items') || this;
+                        container.appendChild(catDragItem);
+                        catDragItem.style.opacity = '1';
+                        catDragItem = null;
+                    }
+                });
+            }
+
+            zones.forEach(setupDropZone);
+
+            bank.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                this.style.borderColor = '#8671d1';
+                this.style.boxShadow = '0 0 0 3px rgba(134,113,209,0.3)';
+            });
+            bank.addEventListener('dragleave', function() {
+                this.style.borderColor = '#d6d3d1';
+                this.style.boxShadow = 'none';
+            });
+            bank.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#d6d3d1';
+                this.style.boxShadow = 'none';
+                if (catDragItem) {
+                    this.appendChild(catDragItem);
+                    catDragItem.style.opacity = '1';
+                    catDragItem.style.transform = 'scale(1)';
+                    catDragItem.style.borderColor = '#d6d3d1';
+                }
+            });
+
+            items.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (this.dataset.selected === 'true') {
+                        this.dataset.selected = 'false';
+                        this.style.boxShadow = 'none';
+                        this.style.borderColor = '#d6d3d1';
+                        return;
+                    }
+                    items.forEach(it => { it.dataset.selected = 'false'; it.style.boxShadow = 'none'; });
+                    this.dataset.selected = 'true';
+                    this.style.boxShadow = '0 0 0 3px rgba(134,113,209,0.5)';
+                });
+            });
+
+            zones.forEach(zone => {
+                zone.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('cat-draggable')) return;
+                    const selected = document.querySelector('.cat-draggable[data-selected="true"]');
+                    if (selected) {
+                        const container = this.querySelector('.cat-drop-items') || this;
+                        container.appendChild(selected);
+                        selected.dataset.selected = 'false';
+                        selected.style.boxShadow = 'none';
+                        selected.style.borderColor = this.style.borderColor;
+                    }
+                });
+            });
+
+            bank.addEventListener('click', function(e) {
+                if (e.target.classList.contains('cat-draggable')) return;
+                const selected = document.querySelector('.cat-draggable[data-selected="true"]');
+                if (selected) {
+                    this.appendChild(selected);
+                    selected.dataset.selected = 'false';
+                    selected.style.boxShadow = 'none';
+                    selected.style.borderColor = '#d6d3d1';
+                }
+            });
+        }
+
+        window.checkCategorize = function(moduleId) {
+            const zones = document.querySelectorAll('.cat-drop-zone');
+            const bank = document.getElementById('cat-items-bank');
+            const feedback = document.getElementById('cat-feedback');
+            const bankItems = bank.querySelectorAll('.cat-draggable');
+
+            if (bankItems.length > 0) {
+                feedback.innerHTML = `<p style="color: #f59e0b; font-weight: 700;">Ainda há itens para classificar!</p>`;
+                return;
+            }
+
+            let correct = 0;
+            let total = 0;
+            let wrongItems = [];
+
+            zones.forEach(zone => {
+                const cat = zone.dataset.cat;
+                const items = zone.querySelectorAll('.cat-draggable');
+                items.forEach(item => {
+                    total++;
+                    if (item.dataset.category === cat) {
+                        correct++;
+                        item.style.background = '#f0fdf4';
+                        item.style.borderColor = '#22c55e';
+                        item.style.color = '#166534';
+                    } else {
+                        item.style.background = '#fef2f2';
+                        item.style.borderColor = '#ef4444';
+                        item.style.color = '#991b1b';
+                        wrongItems.push(item);
+                    }
+                });
+            });
+
+            if (correct === total) {
+                markStreakDone(currentAulaId, 'categorize');
+                feedback.innerHTML = `
+                    <div style="text-align: center;">
+                        <p style="color: #16a34a; font-weight: 800; font-size: 1.3rem; margin-bottom: 0.5rem;">Perfeito! ${correct}/${total} corretos!</p>
+                        <p style="color: #78716c; font-size: 0.85rem; margin-bottom: 1rem;">Você categorizou todos os itens corretamente!</p>
+                        <button class="action-button" onclick="showDashboard()" data-testid="cat-back-btn">VOLTAR</button>
+                        <button class="secondary-button mt-2" onclick="renderCategorize(${moduleId})" data-testid="cat-retry-btn">JOGAR NOVAMENTE</button>
+                    </div>`;
+                try { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); } catch(e) {}
+            } else {
+                const wrongNames = wrongItems.map(i => i.dataset.name + ' → ' + i.dataset.category).join(', ');
+                feedback.innerHTML = `
+                    <div style="text-align: center;">
+                        <p style="color: #dc2626; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;">${correct}/${total} corretos</p>
+                        <p style="color: #78716c; font-size: 0.8rem; margin-bottom: 1rem;">Os itens em vermelho estão na categoria errada. Tente novamente!</p>
+                        <button class="action-button" onclick="renderCategorize(${moduleId})" data-testid="cat-retry-btn">TENTAR NOVAMENTE</button>
+                    </div>`;
             }
         }
 
