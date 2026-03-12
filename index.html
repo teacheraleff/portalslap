@@ -6761,7 +6761,7 @@
             document.getElementById('generator-view').classList.remove('hidden');
 
             document.getElementById('current-hw-display').textContent = examData.name;
-            document.getElementById('quiz-streak-bar').innerHTML = '<div style="display: flex; align-items: center; justify-content: space-between; width: 100%;"><span id="exam-progress-text" style="font-size: 0.75rem; font-weight: 700; color: #78716c;">Questão 1 de ' + examQuestions.length + '</span><span id="exam-timer-inline" style="background: #1c1917; color: white; padding: 0.25rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 900; font-family: monospace;" data-testid="text-exam-timer">00:00</span></div>';
+            document.getElementById('quiz-streak-bar').innerHTML = '<div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 0.5rem;"><span id="exam-progress-text" style="font-size: 0.75rem; font-weight: 700; color: #78716c;">Questão 1 de ' + examQuestions.length + '</span><span id="exam-timer-inline" style="background: #1c1917; color: white; padding: 0.25rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 900; font-family: monospace;" data-testid="text-exam-timer">00:00</span></div><div id="exam-dots" style="display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: center;"></div>';
 
             if (examTimerInterval) clearInterval(examTimerInterval);
             updateExamTimerInline();
@@ -6795,12 +6795,39 @@
             }
         }
 
-        function loadExamQuestion() {
-            if (examCurrentIdx >= examQuestions.length) {
-                submitExamFromFlow(false);
-                return;
-            }
+        function renderExamDots() {
+            var dotsEl = document.getElementById('exam-dots');
+            if (!dotsEl) return;
+            dotsEl.innerHTML = examQuestions.map(function(_, i) {
+                var answered = examAnswers.hasOwnProperty(i) && examAnswers[i] !== '';
+                var isCurrent = i === examCurrentIdx;
+                var bg = isCurrent ? '#8671d1' : (answered ? '#16a34a' : '#d6d3d1');
+                var border = isCurrent ? '#8671d1' : (answered ? '#16a34a' : '#d6d3d1');
+                return '<button onclick="examGoTo(' + i + ')" style="width: 1.1rem; height: 1.1rem; border-radius: 50%; background: ' + bg + '; border: 2px solid ' + border + '; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; padding: 0;" title="Questão ' + (i + 1) + '" data-testid="exam-dot-' + i + '">' +
+                    (answered && !isCurrent ? '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>' : '') +
+                    '</button>';
+            }).join('');
+        }
 
+        window.examGoTo = function(idx) {
+            saveCurrentExamAnswer();
+            examCurrentIdx = idx;
+            loadExamQuestion();
+        }
+
+        function saveCurrentExamAnswer() {
+            var qq = examQuestions[examCurrentIdx];
+            if (!qq) return;
+            if (qq.type === 'multiple') {
+                var sel = document.querySelector('#options-container .option-button.exam-selected');
+                if (sel) examAnswers[examCurrentIdx] = sel.dataset.examValue;
+            } else {
+                var input = document.getElementById('exam-text-input');
+                if (input && input.value.trim()) examAnswers[examCurrentIdx] = input.value.trim();
+            }
+        }
+
+        function loadExamQuestion() {
             var qq = examQuestions[examCurrentIdx];
             var progEl = document.getElementById('exam-progress-text');
             if (progEl) progEl.textContent = 'Questão ' + (examCurrentIdx + 1) + ' de ' + examQuestions.length;
@@ -6808,79 +6835,74 @@
             document.getElementById('main-question').innerHTML = '<span style="color: #8671d1; font-weight: 800;">' + (examCurrentIdx + 1) + '.</span> ' + qq.q;
             document.getElementById('rationale-display').classList.add('hidden');
             document.getElementById('feedback-alert').classList.add('hidden');
-            document.getElementById('next-btn-container').classList.add('hidden');
-            answerSubmitted = false;
+
+            var savedAnswer = examAnswers[examCurrentIdx] || '';
 
             var container = document.getElementById('options-container');
             if (qq.type === 'multiple') {
                 container.innerHTML = qq.options.map(function(opt, i) {
-                    return '<button class="option-button w-full border-2 border-slate-200 p-4 rounded-xl font-bold text-left hover:border-yellow-400 transition-all flex items-center" onclick="submitExamAnswer(\'' + opt.replace(/'/g, "\\'").replace(/"/g, '&quot;') + '\', ' + i + ')" data-testid="exam-opt-' + examCurrentIdx + '-' + i + '">' +
+                    var isSelected = savedAnswer === opt;
+                    return '<button class="option-button w-full border-2 p-4 rounded-xl font-bold text-left transition-all flex items-center ' + (isSelected ? 'exam-selected border-purple-400 bg-purple-50' : 'border-slate-200 hover:border-yellow-400') + '" onclick="selectExamOption(this, \'' + opt.replace(/'/g, "\\'").replace(/"/g, '&quot;') + '\')" data-exam-value="' + opt.replace(/"/g, '&quot;') + '" data-testid="exam-opt-' + examCurrentIdx + '-' + i + '">' +
                         '<span class="w-8 h-8 rounded-full bg-yellow-50 text-amber-700 flex items-center justify-center font-bold mr-3 flex-shrink-0 text-sm border border-yellow-300">' + String.fromCharCode(65 + i) + '</span>' +
                         '<span>' + opt + '</span></button>';
                 }).join('');
             } else {
-                container.innerHTML = '<input type="text" id="exam-text-input" placeholder="Digite sua resposta..." style="width: 100%; padding: 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.75rem; font-size: 0.95rem; font-family: \'DM Sans\', sans-serif;" data-testid="exam-input-' + examCurrentIdx + '">' +
-                    '<button class="action-button w-full mt-3" onclick="submitExamTextAnswer()" data-testid="button-confirm-text">CONFIRMAR</button>';
+                container.innerHTML = '<input type="text" id="exam-text-input" placeholder="Digite sua resposta..." value="' + savedAnswer.replace(/"/g, '&quot;') + '" style="width: 100%; padding: 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.75rem; font-size: 0.95rem; font-family: \'DM Sans\', sans-serif;" data-testid="exam-input-' + examCurrentIdx + '">';
             }
+
+            var navHtml = '<div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">';
+            if (examCurrentIdx > 0) {
+                navHtml += '<button class="secondary-button" style="flex: 1;" onclick="examPrev()">← ANTERIOR</button>';
+            }
+            if (examCurrentIdx < examQuestions.length - 1) {
+                navHtml += '<button class="action-button" style="flex: 1;" onclick="examNext()">PRÓXIMA →</button>';
+            } else {
+                var unanswered = 0;
+                for (var ci = 0; ci < examQuestions.length; ci++) { if (!examAnswers.hasOwnProperty(ci) || examAnswers[ci] === '') unanswered++; }
+                var finLabel = unanswered > 0 ? 'FINALIZAR (' + unanswered + ' sem resposta)' : 'FINALIZAR TESTE';
+                navHtml += '<button class="action-button" style="flex: 1; background: #16a34a;" onclick="examFinish()">' + finLabel + '</button>';
+            }
+            navHtml += '</div>';
+
+            var nextContainer = document.getElementById('next-btn-container');
+            nextContainer.classList.remove('hidden');
+            nextContainer.innerHTML = navHtml;
+
+            renderExamDots();
         }
 
-        window.submitExamAnswer = function(answer, idx) {
-            if (answerSubmitted) return;
-            answerSubmitted = true;
-
-            var qq = examQuestions[examCurrentIdx];
-            examAnswers[examCurrentIdx] = answer;
-            var isCorrect = answer === qq.answer;
-
-            var btns = document.querySelectorAll('#options-container .option-button');
-            btns.forEach(function(btn, i) {
-                btn.disabled = true;
-                btn.style.pointerEvents = 'none';
-                var optText = qq.options[i];
-                if (optText === qq.answer) {
-                    btn.style.borderColor = '#16a34a';
-                    btn.style.background = '#f0fdf4';
-                } else if (i === idx && !isCorrect) {
-                    btn.style.borderColor = '#ef4444';
-                    btn.style.background = '#fef2f2';
-                }
+        window.selectExamOption = function(btn, value) {
+            document.querySelectorAll('#options-container .option-button').forEach(function(b) {
+                b.classList.remove('exam-selected', 'border-purple-400', 'bg-purple-50');
+                b.classList.add('border-slate-200');
             });
-
-            if (isCorrect) playCorrectSound(); else playIncorrectSound();
-
-            var nextContainer = document.getElementById('next-btn-container');
-            nextContainer.classList.remove('hidden');
-            nextContainer.innerHTML = '<button class="action-button w-full" onclick="examCurrentIdx++; loadExamQuestion();">' + (examCurrentIdx < examQuestions.length - 1 ? 'Próxima Questão' : 'Finalizar Teste') + '</button>';
+            btn.classList.add('exam-selected', 'border-purple-400', 'bg-purple-50');
+            btn.classList.remove('border-slate-200');
+            examAnswers[examCurrentIdx] = value;
+            renderExamDots();
         }
 
-        window.submitExamTextAnswer = function() {
-            var input = document.getElementById('exam-text-input');
-            if (!input) return;
-            var val = input.value.trim();
-            examAnswers[examCurrentIdx] = val;
+        window.examPrev = function() {
+            saveCurrentExamAnswer();
+            examCurrentIdx--;
+            loadExamQuestion();
+        }
 
-            var qq = examQuestions[examCurrentIdx];
-            var isCorrect = val.toLowerCase() === qq.answer.toLowerCase();
+        window.examNext = function() {
+            saveCurrentExamAnswer();
+            examCurrentIdx++;
+            loadExamQuestion();
+        }
 
-            input.disabled = true;
-            input.style.borderColor = isCorrect ? '#16a34a' : '#ef4444';
-            input.style.background = isCorrect ? '#f0fdf4' : '#fef2f2';
-
-            if (!isCorrect) {
-                var hint = document.createElement('p');
-                hint.style.cssText = 'color: #16a34a; font-weight: 700; font-size: 0.85rem; margin-top: 0.5rem;';
-                hint.textContent = 'Resposta correta: ' + qq.answer;
-                input.parentNode.insertBefore(hint, input.nextSibling);
-            }
-
-            if (isCorrect) playCorrectSound(); else playIncorrectSound();
-
-            var confirmBtn = document.querySelector('[data-testid="button-confirm-text"]');
-            if (confirmBtn) confirmBtn.style.display = 'none';
-
-            var nextContainer = document.getElementById('next-btn-container');
-            nextContainer.classList.remove('hidden');
-            nextContainer.innerHTML = '<button class="action-button w-full" onclick="examCurrentIdx++; loadExamQuestion();">' + (examCurrentIdx < examQuestions.length - 1 ? 'Próxima Questão' : 'Finalizar Teste') + '</button>';
+        window.examFinish = function() {
+            saveCurrentExamAnswer();
+            var unanswered = 0;
+            for (var ci = 0; ci < examQuestions.length; ci++) { if (!examAnswers.hasOwnProperty(ci) || examAnswers[ci] === '') unanswered++; }
+            var msg = unanswered > 0
+                ? 'Você tem ' + unanswered + ' questão(ões) sem resposta. Deseja enviar mesmo assim?'
+                : 'Tem certeza que deseja enviar o teste?';
+            if (!confirm(msg)) return;
+            submitExamFromFlow(false);
         }
 
         async function submitExamFromFlow(autoSubmit) {
@@ -6936,6 +6958,7 @@
         }
 
         window.submitExam = function(autoSubmit) {
+            if (!autoSubmit) saveCurrentExamAnswer();
             submitExamFromFlow(autoSubmit);
         }
 
