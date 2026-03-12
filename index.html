@@ -2389,6 +2389,7 @@
         function enterLevel(level) {
             if (level === 'starter1' || level === 'starter2') {
                 currentLevel = level;
+                studentActiveExam = null;
                 showScreen('app');
                 const displayName = currentUser.displayName || currentUser.email.split('@')[0];
                 const firstName = displayName.split(' ')[0];
@@ -2399,6 +2400,9 @@
                 renderDashboard();
                 loadStudentLinks();
                 loadUserAvatar();
+                checkStudentExam().then(function(exam) {
+                    if (exam) { studentActiveExam = exam; renderDashboard(); }
+                }).catch(function() {});
             }
         }
 
@@ -4536,8 +4540,7 @@
             }
         }
 
-        async function renderDashboard() {
-            studentActiveExam = await checkStudentExam();
+        function renderDashboard() {
             const container = document.getElementById('level-cards-container');
             const activeAulas = getActiveAulas();
             const activeQuiz = getActiveQuizData();
@@ -6754,7 +6757,15 @@
                 }
             }).join('');
 
-            examTimeLeft = (examSession.duration || 60) * 60;
+            var durationSecs = (examSession.duration || 60) * 60;
+            var startTs = examSession.createdAt || examSession.startedAt;
+            if (startTs) {
+                var startMs = startTs.toDate ? startTs.toDate().getTime() : (typeof startTs === 'number' ? startTs : new Date(startTs).getTime());
+                var elapsed = Math.floor((Date.now() - startMs) / 1000);
+                examTimeLeft = Math.max(0, durationSecs - elapsed);
+            } else {
+                examTimeLeft = durationSecs;
+            }
             updateExamTimer();
             if (examTimerInterval) clearInterval(examTimerInterval);
             examTimerInterval = setInterval(function() {
