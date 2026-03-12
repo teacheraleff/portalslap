@@ -910,9 +910,12 @@
         <div id="dashboard-view" class="w-full">
             <div class="max-w-xl mx-auto mb-6">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <div id="badge-counter" onclick="showBadgeDetail()" style="display: flex; align-items: center; gap: 0.4rem; background: #f5f3ff; border: 2px solid #8671d1; border-radius: 0.75rem; padding: 0.55rem 0.75rem; cursor: pointer; flex-shrink: 0; transition: all 0.2s;" data-testid="badge-counter">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
-                        <span id="badge-counter-text" style="font-size: 0.85rem; font-weight: 800; color: #8671d1; white-space: nowrap;">0/0</span>
+                    <div id="badge-counter" onclick="showBadgeDetail()" style="display: flex; flex-direction: column; align-items: center; gap: 0.15rem; background: #f5f3ff; border: 2px solid #8671d1; border-radius: 0.75rem; padding: 0.4rem 0.75rem; cursor: pointer; flex-shrink: 0; transition: all 0.2s;" data-testid="badge-counter">
+                        <div style="display: flex; align-items: center; gap: 0.3rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                            <span id="badge-counter-text" style="font-size: 0.8rem; font-weight: 800; color: #8671d1; white-space: nowrap;">0/0</span>
+                        </div>
+                        <span style="font-size: 0.55rem; font-weight: 800; color: #8671d1; letter-spacing: 0.05em;">BADGES</span>
                     </div>
                     <div class="relative" style="flex: 1;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2" class="absolute left-3 top-1/2 -translate-y-1/2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -1324,6 +1327,7 @@
         }
 
         var loginMode = 'student';
+        var loginRoleChecking = false;
 
         function switchLoginTab(tab) {
             document.getElementById('tab-login-student').classList.toggle('active', tab === 'login-student');
@@ -1382,6 +1386,7 @@
             errorEl.style.display = 'none';
             btn.disabled = true;
             btn.textContent = 'ENTRANDO...';
+            loginRoleChecking = true;
             try {
                 var cred = await firebaseAuth.signInWithEmailAndPassword(email, password);
                 var userDoc = await firebaseDb.collection('users').doc(cred.user.uid).get();
@@ -1389,21 +1394,28 @@
                 var isTeacher = userData.role === 'teacher';
                 if (loginMode === 'teacher' && !isTeacher) {
                     await firebaseAuth.signOut();
+                    loginRoleChecking = false;
                     errorEl.textContent = 'Esta conta não é de professor. Use "Login Aluno".';
                     errorEl.style.display = 'block';
                     btn.disabled = false;
                     btn.textContent = btnLabel;
+                    showScreen('login');
                     return;
                 }
                 if (loginMode === 'student' && isTeacher) {
                     await firebaseAuth.signOut();
-                    errorEl.textContent = 'Esta conta é de professor. Use "Login Professor".';
+                    loginRoleChecking = false;
+                    errorEl.textContent = 'Esta conta é de professor. Use "Login Prof".';
                     errorEl.style.display = 'block';
                     btn.disabled = false;
                     btn.textContent = btnLabel;
+                    showScreen('login');
                     return;
                 }
+                loginRoleChecking = false;
+                onAuthStateChanged(cred.user);
             } catch (err) {
+                loginRoleChecking = false;
                 errorEl.textContent = getFirebaseErrorMessage(err.code);
                 errorEl.style.display = 'block';
                 btn.disabled = false;
@@ -2373,6 +2385,7 @@
         }
 
         async function onAuthStateChanged(user) {
+            if (loginRoleChecking) return;
             currentUser = user;
             setAvatarImage(null);
             if (user) {
@@ -2580,12 +2593,13 @@
             overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
             overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
             overlay.innerHTML = '<div style="background:white;border-radius:1rem;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 25px 50px rgba(0,0,0,0.25);" onclick="event.stopPropagation()">' +
-                '<div style="padding:1.25rem;border-bottom:1px solid #e7e5e4;display:flex;align-items:center;justify-content:space-between;">' +
-                    '<div style="display:flex;align-items:center;gap:0.5rem;">' +
-                        '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>' +
-                        '<div><p style="font-size:1rem;font-weight:800;color:#1c1917;">Badges — ' + levelLabel + '</p><p style="font-size:0.7rem;color:#78716c;">' + b.done + ' de ' + b.total + ' conquistas (' + pct + '%)</p></div>' +
+                '<div style="padding:1.25rem;border-bottom:1px solid #e7e5e4;position:relative;">' +
+                    '<button onclick="document.getElementById(\'badge-detail-overlay\').remove()" style="position:absolute;top:0.75rem;right:0.75rem;background:none;border:none;cursor:pointer;padding:0.25rem;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
+                    '<div style="text-align:center;">' +
+                        '<img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1759294967/SLAP_TIPO_PRETO_2_kismg9.png" alt="SLAP Logo" style="width:70px;margin:0 auto 0.75rem;">' +
+                        '<p style="font-size:1rem;font-weight:800;color:#1c1917;">Badges — ' + levelLabel + '</p>' +
+                        '<p style="font-size:0.7rem;color:#78716c;margin-top:0.25rem;">' + b.done + ' de ' + b.total + ' conquistas (' + pct + '%)</p>' +
                     '</div>' +
-                    '<button onclick="document.getElementById(\'badge-detail-overlay\').remove()" style="background:none;border:none;cursor:pointer;padding:0.25rem;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
                 '</div>' +
                 '<div style="padding:0 0.5rem;">' +
                     '<div style="margin:0.75rem 0.5rem;background:#f5f3ff;border-radius:0.5rem;overflow:hidden;height:8px;"><div style="height:100%;background:#8671d1;border-radius:0.5rem;width:' + pct + '%;transition:width 0.3s;"></div></div>' +
@@ -3162,6 +3176,126 @@
                 {q: "Qual é a tradução de 'waiter'?", options: [{text:"Garçom", isCorrect:true}, {text:"Motorista", isCorrect:false}, {text:"Vendedor", isCorrect:false}, {text:"Cozinheiro", isCorrect:false}], rationale: "Waiter = garçom. Waitress = garçonete."},
                 {q: "Complete: 'My mother is ____ doctor. She works at a hospital.'", options: [{text:"a", isCorrect:true}, {text:"an", isCorrect:false}, {text:"the", isCorrect:false}, {text:"-", isCorrect:false}], rationale: "Doctor começa com consoante → 'a'. 'She is a doctor.'"},
                 {q: "Qual é a profissão de quem trabalha em uma escola?", options: [{text:"Teacher", isCorrect:true}, {text:"Chef", isCorrect:false}, {text:"Mechanic", isCorrect:false}, {text:"Farmer", isCorrect:false}], rationale: "Teacher = professor(a). Trabalha em escola (school)."}
+            ],
+            9: [
+                {q: "You cook in the ____.", options: [{text:"bedroom", isCorrect:false}, {text:"kitchen", isCorrect:true}, {text:"bathroom", isCorrect:false}, {text:"garage", isCorrect:false}], rationale: "Kitchen = cozinha. É onde cozinhamos."},
+                {q: "You sleep in the ____.", options: [{text:"living room", isCorrect:false}, {text:"bedroom", isCorrect:true}, {text:"kitchen", isCorrect:false}, {text:"yard", isCorrect:false}], rationale: "Bedroom = quarto. É onde dormimos."},
+                {q: "Escolha a frase correta:", options: [{text:"I take a shower in the bathroom.", isCorrect:true}, {text:"I take a shower in the kitchen.", isCorrect:false}, {text:"I take a shower in the garage.", isCorrect:false}, {text:"I take a shower in the yard.", isCorrect:false}], rationale: "Bathroom = banheiro. Tomamos banho no banheiro."},
+                {q: "We watch TV in the ____.", options: [{text:"living room", isCorrect:true}, {text:"bathroom", isCorrect:false}, {text:"garage", isCorrect:false}, {text:"kitchen", isCorrect:false}], rationale: "Living room = sala de estar. Assistimos TV na sala."},
+                {q: "You park your car in the ____.", options: [{text:"bedroom", isCorrect:false}, {text:"garage", isCorrect:true}, {text:"bathroom", isCorrect:false}, {text:"kitchen", isCorrect:false}], rationale: "Garage = garagem. Estacionamos o carro na garagem."},
+                {q: "You eat dinner in the ____.", options: [{text:"bathroom", isCorrect:false}, {text:"dining room", isCorrect:true}, {text:"garage", isCorrect:false}, {text:"yard", isCorrect:false}], rationale: "Dining room = sala de jantar."},
+                {q: "Escolha a frase correta:", options: [{text:"The yard is outside the house.", isCorrect:true}, {text:"The yard is inside the house.", isCorrect:false}, {text:"The yard is a bedroom.", isCorrect:false}, {text:"The yard is a kitchen.", isCorrect:false}], rationale: "Yard = quintal. Fica do lado de fora da casa."},
+                {q: "You brush your teeth in the ____.", options: [{text:"bathroom", isCorrect:true}, {text:"kitchen", isCorrect:false}, {text:"garage", isCorrect:false}, {text:"living room", isCorrect:false}], rationale: "Bathroom = banheiro. Escovamos os dentes no banheiro."},
+                {q: "You relax in the ____.", options: [{text:"living room", isCorrect:true}, {text:"bathroom", isCorrect:false}, {text:"garage", isCorrect:false}, {text:"kitchen", isCorrect:false}], rationale: "Living room = sala de estar. Relaxamos na sala."},
+                {q: "You cook and wash dishes in the ____.", options: [{text:"bedroom", isCorrect:false}, {text:"kitchen", isCorrect:true}, {text:"yard", isCorrect:false}, {text:"garage", isCorrect:false}], rationale: "Kitchen = cozinha. Cozinhamos e lavamos louça na cozinha."}
+            ],
+            10: [
+                {q: "You sit on a ____.", options: [{text:"chair", isCorrect:true}, {text:"refrigerator", isCorrect:false}, {text:"sink", isCorrect:false}, {text:"shower", isCorrect:false}], rationale: "Chair = cadeira. Sentamos em uma cadeira."},
+                {q: "You sleep on a ____.", options: [{text:"sofa", isCorrect:false}, {text:"bed", isCorrect:true}, {text:"table", isCorrect:false}, {text:"desk", isCorrect:false}], rationale: "Bed = cama. Dormimos em uma cama."},
+                {q: "Escolha a frase correta:", options: [{text:"I clean the house on Saturday.", isCorrect:true}, {text:"I cleaning the house on Saturday.", isCorrect:false}, {text:"I cleans the house on Saturday.", isCorrect:false}, {text:"I cleaned the house every Saturday yesterday.", isCorrect:false}], rationale: "Simple Present: I clean (sem -ing, sem -s para I)."},
+                {q: "Complete: 'She ____ the dishes every day.'", options: [{text:"wash", isCorrect:false}, {text:"washes", isCorrect:true}, {text:"washing", isCorrect:false}, {text:"washed", isCorrect:false}], rationale: "She (3ª pessoa) + washes. Wash → washes."},
+                {q: "You put clothes in the ____.", options: [{text:"washing machine", isCorrect:true}, {text:"chair", isCorrect:false}, {text:"sink", isCorrect:false}, {text:"bed", isCorrect:false}], rationale: "Washing machine = máquina de lavar."},
+                {q: "Complete: 'He ____ the floor every morning.'", options: [{text:"sweep", isCorrect:false}, {text:"sweeps", isCorrect:true}, {text:"sweeping", isCorrect:false}, {text:"swept", isCorrect:false}], rationale: "He (3ª pessoa) + sweeps. Sweep = varrer."},
+                {q: "Escolha a frase correta:", options: [{text:"The sofa is in the living room.", isCorrect:true}, {text:"The sofa is in the bathroom.", isCorrect:false}, {text:"The sofa is a chore.", isCorrect:false}, {text:"The sofa cleans the house.", isCorrect:false}], rationale: "Sofa = sofá. Fica na sala de estar."},
+                {q: "Complete: 'We ____ the trash every night.'", options: [{text:"take out", isCorrect:true}, {text:"takes out", isCorrect:false}, {text:"taking out", isCorrect:false}, {text:"took out", isCorrect:false}], rationale: "We + take out (sem -s). Take out the trash = tirar o lixo."},
+                {q: "You keep food in the ____.", options: [{text:"refrigerator", isCorrect:true}, {text:"chair", isCorrect:false}, {text:"bed", isCorrect:false}, {text:"table", isCorrect:false}], rationale: "Refrigerator = geladeira. Guardamos comida na geladeira."},
+                {q: "Complete: 'She ____ the bed every morning.'", options: [{text:"make", isCorrect:false}, {text:"makes", isCorrect:true}, {text:"making", isCorrect:false}, {text:"made", isCorrect:false}], rationale: "She (3ª pessoa) + makes. Make the bed = arrumar a cama."}
+            ],
+            14: [
+                {q: "When you want a table for two people, you say:", options: [{text:"I want two chairs.", isCorrect:false}, {text:"Table for two, please.", isCorrect:true}, {text:"Give me two plates.", isCorrect:false}, {text:"Two food, please.", isCorrect:false}], rationale: "'Table for two, please' é a forma educada de pedir mesa para dois."},
+                {q: "If you want the special dish of the day, you say:", options: [{text:"I want today food.", isCorrect:false}, {text:"I'd like the daily special, please.", isCorrect:true}, {text:"Give me special food now.", isCorrect:false}, {text:"Food of day give me.", isCorrect:false}], rationale: "'I'd like the daily special' = Eu gostaria do prato do dia."},
+                {q: "If you don't want onions, you say:", options: [{text:"No onions, please.", isCorrect:true}, {text:"I don't like onion is.", isCorrect:false}, {text:"Without onion I.", isCorrect:false}, {text:"Onion no.", isCorrect:false}], rationale: "'No onions, please' é a forma correta e educada."},
+                {q: "If you have an allergy, you say:", options: [{text:"I don't eat nuts maybe.", isCorrect:false}, {text:"I'm allergic to nuts.", isCorrect:true}, {text:"Nuts are bad.", isCorrect:false}, {text:"I no nuts.", isCorrect:false}], rationale: "'I'm allergic to...' = Eu sou alérgico a..."},
+                {q: "Where do you usually find many fast food options in a mall?", options: [{text:"Sushi bar", isCorrect:false}, {text:"Food court", isCorrect:true}, {text:"Bistro", isCorrect:false}, {text:"Fine dining", isCorrect:false}], rationale: "Food court = praça de alimentação."},
+                {q: "A 'dessert' is:", options: [{text:"The main course", isCorrect:false}, {text:"A drink", isCorrect:false}, {text:"The sweet dish at the end", isCorrect:true}, {text:"A side dish", isCorrect:false}], rationale: "Dessert = sobremesa, prato doce no final da refeição."},
+                {q: "A 'starter' or 'appetizer' is:", options: [{text:"The last dish", isCorrect:false}, {text:"The first small dish", isCorrect:true}, {text:"A drink", isCorrect:false}, {text:"A kids' menu", isCorrect:false}], rationale: "Starter/Appetizer = entrada, primeiro prato pequeno."},
+                {q: "If you want to pay, you say:", options: [{text:"Bring money.", isCorrect:false}, {text:"Could I have the bill, please?", isCorrect:true}, {text:"I pay now you.", isCorrect:false}, {text:"Money please give.", isCorrect:false}], rationale: "'Could I have the bill, please?' = Poderia trazer a conta, por favor?"},
+                {q: "A 'beverage' is:", options: [{text:"Food", isCorrect:false}, {text:"A drink", isCorrect:true}, {text:"A dessert", isCorrect:false}, {text:"A table", isCorrect:false}], rationale: "Beverage = bebida."},
+                {q: "If you want to know about vegetarian food, you say:", options: [{text:"Do you have a vegetarian option?", isCorrect:true}, {text:"Where vegetable?", isCorrect:false}, {text:"I eat only green.", isCorrect:false}, {text:"Vegetarian is here?", isCorrect:false}], rationale: "'Do you have a vegetarian option?' é a forma correta de perguntar."}
+            ],
+            15: [
+                {q: "Escolha a forma correta de pedir comida:", options: [{text:"I like a pizza.", isCorrect:false}, {text:"I'd like a pizza.", isCorrect:true}, {text:"I liking pizza.", isCorrect:false}, {text:"I want pizza is.", isCorrect:false}], rationale: "'I'd like...' = Eu gostaria de... (forma educada de pedir)."},
+                {q: "Complete: '_____ a burger and fries, please?'", options: [{text:"I have", isCorrect:false}, {text:"Can I have", isCorrect:true}, {text:"I will", isCorrect:false}, {text:"Do I have", isCorrect:false}], rationale: "'Can I have...?' = Posso pedir...? (forma educada)."},
+                {q: "Complete: 'For my main course, _____.'", options: [{text:"I dessert ice cream", isCorrect:false}, {text:"I'll have the steak", isCorrect:true}, {text:"I like water", isCorrect:false}, {text:"I am eating soup yesterday", isCorrect:false}], rationale: "'I'll have the steak' = Vou querer o bife (prato principal)."},
+                {q: "Complete: 'For dessert, _____.'", options: [{text:"I'll have the ice cream", isCorrect:true}, {text:"I have steak", isCorrect:false}, {text:"I drink salad", isCorrect:false}, {text:"I eating beans", isCorrect:false}], rationale: "'I'll have the ice cream' = Vou querer o sorvete de sobremesa."},
+                {q: "Escolha a frase correta:", options: [{text:"I'll have the fish and rice.", isCorrect:true}, {text:"I have the fish tomorrow.", isCorrect:false}, {text:"I having fish.", isCorrect:false}, {text:"I has fish.", isCorrect:false}], rationale: "'I'll have...' é usado para pedir comida no momento."},
+                {q: "If you want pasta, you say:", options: [{text:"I'd like pasta, please.", isCorrect:true}, {text:"I pasta like.", isCorrect:false}, {text:"Pasta I will yesterday.", isCorrect:false}, {text:"I liking pasta.", isCorrect:false}], rationale: "'I'd like pasta, please' = Eu gostaria de massa, por favor."},
+                {q: "Escolha a forma correta de pedir a conta:", options: [{text:"Give money now.", isCorrect:false}, {text:"Could we have the check, please?", isCorrect:true}, {text:"I pay you.", isCorrect:false}, {text:"Where is money?", isCorrect:false}], rationale: "'Could we have the check, please?' = forma educada de pedir a conta."},
+                {q: "Which one is a beverage?", options: [{text:"Fries", isCorrect:false}, {text:"Soup", isCorrect:false}, {text:"Soda", isCorrect:true}, {text:"Steak", isCorrect:false}], rationale: "Soda = refrigerante. É uma bebida (beverage)."},
+                {q: "Escolha a frase correta:", options: [{text:"For my main course, I'll have the burger.", isCorrect:true}, {text:"For my dessert, I'll have the steak.", isCorrect:false}, {text:"For my beverage, I'll have fries.", isCorrect:false}, {text:"For my salad, I'll have coffee food.", isCorrect:false}], rationale: "Burger é prato principal (main course), não sobremesa ou bebida."},
+                {q: "Which one is a dessert?", options: [{text:"Beans", isCorrect:false}, {text:"Rice", isCorrect:false}, {text:"Petit gâteau", isCorrect:true}, {text:"Salad", isCorrect:false}], rationale: "Petit gâteau é uma sobremesa (dessert)."}
+            ],
+            21: [
+                {q: "'Actual' significa:", options: [{text:"Atual", isCorrect:false}, {text:"Real / verdadeiro", isCorrect:true}, {text:"Atualizado", isCorrect:false}, {text:"Antigo", isCorrect:false}], rationale: "Actual = real/verdadeiro (não 'atual'). É um falso cognato!"},
+                {q: "'Pretend' significa:", options: [{text:"Pretender", isCorrect:false}, {text:"Fingir", isCorrect:true}, {text:"Planejar", isCorrect:false}, {text:"Gostar", isCorrect:false}], rationale: "Pretend = fingir (não 'pretender'). Falso cognato!"},
+                {q: "'Library' é:", options: [{text:"Livraria", isCorrect:false}, {text:"Biblioteca", isCorrect:true}, {text:"Livro grande", isCorrect:false}, {text:"Papelaria", isCorrect:false}], rationale: "Library = biblioteca (não 'livraria'). Bookstore = livraria."},
+                {q: "'Push' significa:", options: [{text:"Puxar", isCorrect:false}, {text:"Empurrar", isCorrect:true}, {text:"Pressionar botão", isCorrect:false}, {text:"Carregar", isCorrect:false}], rationale: "Push = empurrar (não 'puxar'). Pull = puxar."},
+                {q: "'Lecture' é:", options: [{text:"Leitura", isCorrect:false}, {text:"Palestra / aula", isCorrect:true}, {text:"Livro", isCorrect:false}, {text:"Biblioteca", isCorrect:false}], rationale: "Lecture = palestra/aula (não 'leitura'). Reading = leitura."},
+                {q: "'Fabric' significa:", options: [{text:"Fábrica", isCorrect:false}, {text:"Tecido", isCorrect:true}, {text:"Ferramenta", isCorrect:false}, {text:"Produto", isCorrect:false}], rationale: "Fabric = tecido (não 'fábrica'). Factory = fábrica."},
+                {q: "'Exit' significa:", options: [{text:"Êxito", isCorrect:false}, {text:"Saída", isCorrect:true}, {text:"Entrada", isCorrect:false}, {text:"Porta principal", isCorrect:false}], rationale: "Exit = saída (não 'êxito'). Success = êxito/sucesso."},
+                {q: "'Eventually' significa:", options: [{text:"Eventualmente", isCorrect:false}, {text:"Finalmente / no fim", isCorrect:true}, {text:"Às vezes", isCorrect:false}, {text:"Raramente", isCorrect:false}], rationale: "Eventually = finalmente (não 'eventualmente'). Falso cognato!"},
+                {q: "'Parents' significa:", options: [{text:"Parentes", isCorrect:false}, {text:"Pais", isCorrect:true}, {text:"Amigos", isCorrect:false}, {text:"Filhos", isCorrect:false}], rationale: "Parents = pais (não 'parentes'). Relatives = parentes."},
+                {q: "'Sensible' significa:", options: [{text:"Sensível", isCorrect:false}, {text:"Sensato / prudente", isCorrect:true}, {text:"Emocional", isCorrect:false}, {text:"Triste", isCorrect:false}], rationale: "Sensible = sensato (não 'sensível'). Sensitive = sensível."}
+            ],
+            22: [
+                {q: "Se você concorda com alguém, você pode dizer:", options: [{text:"I don't think so.", isCorrect:false}, {text:"I agree.", isCorrect:true}, {text:"No way.", isCorrect:false}, {text:"Not really.", isCorrect:false}], rationale: "'I agree' = Eu concordo."},
+                {q: "Para discordar educadamente:", options: [{text:"I'm not sure about that.", isCorrect:true}, {text:"Exactly!", isCorrect:false}, {text:"That's true.", isCorrect:false}, {text:"I agree completely.", isCorrect:false}], rationale: "'I'm not sure about that' é uma forma educada de discordar."},
+                {q: "A: 'English is important.' B: ____", options: [{text:"I agree.", isCorrect:true}, {text:"I don't like pizza.", isCorrect:false}, {text:"Maybe yesterday.", isCorrect:false}, {text:"I am teacher.", isCorrect:false}], rationale: "'I agree' = concordar com a afirmação."},
+                {q: "Escolha a forma correta de discordar:", options: [{text:"Exactly!", isCorrect:false}, {text:"That's right!", isCorrect:false}, {text:"I don't agree.", isCorrect:true}, {text:"Me too!", isCorrect:false}], rationale: "'I don't agree' = Eu não concordo."},
+                {q: "Para concordar fortemente:", options: [{text:"I disagree.", isCorrect:false}, {text:"Absolutely!", isCorrect:true}, {text:"I doubt it.", isCorrect:false}, {text:"Not at all.", isCorrect:false}], rationale: "'Absolutely!' expressa concordância forte."},
+                {q: "A: 'I think coffee is better than tea.' B (discordando):", options: [{text:"I don't think so.", isCorrect:true}, {text:"Me too!", isCorrect:false}, {text:"Exactly!", isCorrect:false}, {text:"That's right!", isCorrect:false}], rationale: "'I don't think so' = Eu não acho / Discordo."},
+                {q: "'Me too!' é usado quando:", options: [{text:"Você discorda", isCorrect:false}, {text:"Você concorda com algo positivo", isCorrect:true}, {text:"Você está confuso", isCorrect:false}, {text:"Você quer sair", isCorrect:false}], rationale: "'Me too!' = Eu também! (concordar com algo positivo)."},
+                {q: "A: 'This movie is amazing!' B: _____!", options: [{text:"I agree", isCorrect:true}, {text:"I disagree no", isCorrect:false}, {text:"I not agree", isCorrect:false}, {text:"I am agree", isCorrect:false}], rationale: "'I agree' é a forma correta de concordar."},
+                {q: "Para discordar de forma mais suave:", options: [{text:"You're wrong!", isCorrect:false}, {text:"I see your point, but…", isCorrect:true}, {text:"Impossible!", isCorrect:false}, {text:"No!", isCorrect:false}], rationale: "'I see your point, but...' = Entendo seu ponto, mas... (suave)."},
+                {q: "A: 'Math is very easy.' B (discordando):", options: [{text:"I don't agree.", isCorrect:true}, {text:"Exactly!", isCorrect:false}, {text:"That's true!", isCorrect:false}, {text:"Me too!", isCorrect:false}], rationale: "'I don't agree' = Eu não concordo."}
+            ],
+            23: [
+                {q: "A person who is not short is:", options: [{text:"slim", isCorrect:false}, {text:"tall", isCorrect:true}, {text:"shy", isCorrect:false}, {text:"quiet", isCorrect:false}], rationale: "Tall = alto(a). O oposto de short."},
+                {q: "A person who is not tall is:", options: [{text:"short", isCorrect:true}, {text:"curly", isCorrect:false}, {text:"friendly", isCorrect:false}, {text:"serious", isCorrect:false}], rationale: "Short = baixo(a). O oposto de tall."},
+                {q: "If someone has cabelo cacheado, we say:", options: [{text:"straight hair", isCorrect:false}, {text:"curly hair", isCorrect:true}, {text:"long hair", isCorrect:false}, {text:"dark hair", isCorrect:false}], rationale: "Curly hair = cabelo cacheado."},
+                {q: "If someone has cabelo liso, we say:", options: [{text:"curly hair", isCorrect:false}, {text:"straight hair", isCorrect:true}, {text:"beard", isCorrect:false}, {text:"mustache", isCorrect:false}], rationale: "Straight hair = cabelo liso."},
+                {q: "A person who likes talking a lot is:", options: [{text:"shy", isCorrect:false}, {text:"quiet", isCorrect:false}, {text:"talkative", isCorrect:true}, {text:"serious", isCorrect:false}], rationale: "Talkative = falante, que gosta de conversar."},
+                {q: "Someone who doesn't talk much is:", options: [{text:"funny", isCorrect:false}, {text:"creative", isCorrect:false}, {text:"quiet", isCorrect:true}, {text:"friendly", isCorrect:false}], rationale: "Quiet = quieto(a), calado(a)."},
+                {q: "A person who makes people laugh is:", options: [{text:"serious", isCorrect:false}, {text:"funny", isCorrect:true}, {text:"shy", isCorrect:false}, {text:"overweight", isCorrect:false}], rationale: "Funny = engraçado(a)."},
+                {q: "A man with hair on his chin has a:", options: [{text:"mustache", isCorrect:false}, {text:"beard", isCorrect:true}, {text:"glasses", isCorrect:false}, {text:"fringe", isCorrect:false}], rationale: "Beard = barba (pelo no queixo)."},
+                {q: "A man with hair above his lips has a:", options: [{text:"beard", isCorrect:false}, {text:"mustache", isCorrect:true}, {text:"curly hair", isCorrect:false}, {text:"straight hair", isCorrect:false}], rationale: "Mustache = bigode (pelo acima dos lábios)."},
+                {q: "If someone uses glasses, we say:", options: [{text:"He has blue eyes.", isCorrect:false}, {text:"He wears glasses.", isCorrect:true}, {text:"He is glasses.", isCorrect:false}, {text:"He have glasses.", isCorrect:false}], rationale: "'Wears glasses' = usa óculos. He/She wears glasses."}
+            ],
+            24: [
+                {q: "A movie with explosions, fights, and adventure is an:", options: [{text:"comedy", isCorrect:false}, {text:"action movie", isCorrect:true}, {text:"romance", isCorrect:false}, {text:"documentary", isCorrect:false}], rationale: "Action movie = filme de ação."},
+                {q: "A movie that makes you laugh is a:", options: [{text:"horror", isCorrect:false}, {text:"comedy", isCorrect:true}, {text:"thriller", isCorrect:false}, {text:"drama", isCorrect:false}], rationale: "Comedy = comédia. Faz você rir."},
+                {q: "A scary movie with ghosts or monsters is a:", options: [{text:"horror movie", isCorrect:true}, {text:"romance", isCorrect:false}, {text:"cartoon", isCorrect:false}, {text:"documentary", isCorrect:false}], rationale: "Horror movie = filme de terror."},
+                {q: "A movie about love is a:", options: [{text:"action", isCorrect:false}, {text:"romance", isCorrect:true}, {text:"horror", isCorrect:false}, {text:"thriller", isCorrect:false}], rationale: "Romance = filme romântico, sobre amor."},
+                {q: "A movie based on real facts is a:", options: [{text:"documentary", isCorrect:true}, {text:"comedy", isCorrect:false}, {text:"cartoon", isCorrect:false}, {text:"action", isCorrect:false}], rationale: "Documentary = documentário. Baseado em fatos reais."},
+                {q: "A movie with animated characters is a:", options: [{text:"thriller", isCorrect:false}, {text:"cartoon", isCorrect:true}, {text:"drama", isCorrect:false}, {text:"horror", isCorrect:false}], rationale: "Cartoon = desenho animado."},
+                {q: "A serious movie with emotional situations is a:", options: [{text:"comedy", isCorrect:false}, {text:"drama", isCorrect:true}, {text:"action", isCorrect:false}, {text:"cartoon", isCorrect:false}], rationale: "Drama = drama. Filme sério e emocional."},
+                {q: "A movie full of suspense and tension is a:", options: [{text:"romance", isCorrect:false}, {text:"thriller", isCorrect:true}, {text:"documentary", isCorrect:false}, {text:"comedy", isCorrect:false}], rationale: "Thriller = suspense. Cheio de tensão."},
+                {q: "If you like superheroes and fights, you probably like:", options: [{text:"action movies", isCorrect:true}, {text:"documentaries", isCorrect:false}, {text:"romances", isCorrect:false}, {text:"dramas", isCorrect:false}], rationale: "Action movies = filmes de ação com super-heróis e lutas."},
+                {q: "If you want to laugh a lot, you should watch a:", options: [{text:"horror movie", isCorrect:false}, {text:"comedy", isCorrect:true}, {text:"thriller", isCorrect:false}, {text:"documentary", isCorrect:false}], rationale: "Comedy = comédia. Para rir muito!"}
+            ],
+            27: [
+                {q: "A cheeseburger is usually:", options: [{text:"sweet", isCorrect:false}, {text:"savory", isCorrect:true}, {text:"bitter", isCorrect:false}, {text:"bland", isCorrect:false}], rationale: "Savory = salgado. Cheeseburger é salgado."},
+                {q: "French fries are usually:", options: [{text:"crunchy", isCorrect:true}, {text:"liquid", isCorrect:false}, {text:"sweet-and-sour", isCorrect:false}, {text:"bitter", isCorrect:false}], rationale: "Crunchy = crocante. Batata frita é crocante."},
+                {q: "If food has a lot of oil, it is:", options: [{text:"greasy", isCorrect:true}, {text:"spicy", isCorrect:false}, {text:"bland", isCorrect:false}, {text:"juicy", isCorrect:false}], rationale: "Greasy = gorduroso. Muita gordura/óleo."},
+                {q: "If food has no flavor, it is:", options: [{text:"spicy", isCorrect:false}, {text:"tangy", isCorrect:false}, {text:"bland", isCorrect:true}, {text:"crunchy", isCorrect:false}], rationale: "Bland = sem sabor, insosso."},
+                {q: "Hot sauce makes food:", options: [{text:"bland", isCorrect:false}, {text:"spicy", isCorrect:true}, {text:"sweet", isCorrect:false}, {text:"bitter", isCorrect:false}], rationale: "Spicy = picante/apimentado. Molho picante = hot sauce."},
+                {q: "A milkshake is usually:", options: [{text:"spicy", isCorrect:false}, {text:"crunchy", isCorrect:false}, {text:"sweet", isCorrect:true}, {text:"greasy", isCorrect:false}], rationale: "Sweet = doce. Milkshake é doce."},
+                {q: "If the chicken is not cooked enough, it is:", options: [{text:"overcooked", isCorrect:false}, {text:"undercooked", isCorrect:true}, {text:"crunchy", isCorrect:false}, {text:"juicy", isCorrect:false}], rationale: "Undercooked = mal passado, cru demais."},
+                {q: "If the meat is cooked too much, it is:", options: [{text:"undercooked", isCorrect:false}, {text:"overcooked", isCorrect:true}, {text:"tangy", isCorrect:false}, {text:"sweet", isCorrect:false}], rationale: "Overcooked = cozido demais, passado demais."},
+                {q: "A taco with lemon flavor can be:", options: [{text:"tangy", isCorrect:true}, {text:"bland", isCorrect:false}, {text:"bitter", isCorrect:false}, {text:"greasy", isCorrect:false}], rationale: "Tangy = azedinho, com sabor cítrico."},
+                {q: "Fried chicken can be:", options: [{text:"crunchy and juicy", isCorrect:true}, {text:"sweet and liquid", isCorrect:false}, {text:"bland and soft", isCorrect:false}, {text:"bitter and cold", isCorrect:false}], rationale: "Crunchy = crocante, juicy = suculento. Frango frito!"}
+            ],
+            28: [
+                {q: "When there is a lot of water falling from the sky, it is:", options: [{text:"windy", isCorrect:false}, {text:"rainy", isCorrect:true}, {text:"cloudy", isCorrect:false}, {text:"snowy", isCorrect:false}], rationale: "Rainy = chuvoso. Água caindo do céu = chuva."},
+                {q: "When the temperature is very low, the weather is:", options: [{text:"hot", isCorrect:false}, {text:"warm", isCorrect:false}, {text:"cold", isCorrect:true}, {text:"dry", isCorrect:false}], rationale: "Cold = frio. Temperatura muito baixa."},
+                {q: "When the sun is shining and there are no clouds, it is:", options: [{text:"foggy", isCorrect:false}, {text:"sunny", isCorrect:true}, {text:"stormy", isCorrect:false}, {text:"windy", isCorrect:false}], rationale: "Sunny = ensolarado. Sol brilhando, sem nuvens."},
+                {q: "When there are many clouds in the sky, it is:", options: [{text:"cloudy", isCorrect:true}, {text:"sunny", isCorrect:false}, {text:"snowy", isCorrect:false}, {text:"dry", isCorrect:false}], rationale: "Cloudy = nublado. Muitas nuvens no céu."},
+                {q: "When the wind is strong, the weather is:", options: [{text:"rainy", isCorrect:false}, {text:"windy", isCorrect:true}, {text:"foggy", isCorrect:false}, {text:"hot", isCorrect:false}], rationale: "Windy = ventoso. Vento forte."},
+                {q: "When snow falls from the sky, it is:", options: [{text:"raining", isCorrect:false}, {text:"snowing", isCorrect:true}, {text:"shining", isCorrect:false}, {text:"storming", isCorrect:false}], rationale: "Snowing = nevando. Neve caindo do céu."},
+                {q: "When you can't see well because of thick air, it is:", options: [{text:"foggy", isCorrect:true}, {text:"sunny", isCorrect:false}, {text:"dry", isCorrect:false}, {text:"warm", isCorrect:false}], rationale: "Foggy = nevoeiro. Ar espesso, difícil de ver."},
+                {q: "A very strong storm with thunder and lightning is a:", options: [{text:"breeze", isCorrect:false}, {text:"heatwave", isCorrect:false}, {text:"thunderstorm", isCorrect:true}, {text:"rainbow", isCorrect:false}], rationale: "Thunderstorm = tempestade com trovões e relâmpagos."},
+                {q: "If the temperature is very high, the weather is:", options: [{text:"cold", isCorrect:false}, {text:"hot", isCorrect:true}, {text:"cloudy", isCorrect:false}, {text:"snowy", isCorrect:false}], rationale: "Hot = quente. Temperatura muito alta."},
+                {q: "Escolha a frase correta:", options: [{text:"It is make hot today.", isCorrect:false}, {text:"It is very hot today.", isCorrect:true}, {text:"It very hot today.", isCorrect:false}, {text:"Is very hot today.", isCorrect:false}], rationale: "'It is very hot today' = Está muito quente hoje. Estrutura correta com 'it is'."}
             ],
             26: [
                 {q: "Complete: 'I wake up ____ 7 o'clock.'", options: [{text:"at", isCorrect:true}, {text:"in", isCorrect:false}, {text:"on", isCorrect:false}, {text:"to", isCorrect:false}], rationale: "Usamos AT para horas específicas. 'At 7 o'clock.'"},
@@ -4203,9 +4337,18 @@
             };
         }
 
+        function showStudyView() {
+            document.getElementById('study-content-area').innerHTML = '';
+            document.getElementById('main-header').classList.add('hidden');
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('generator-view').classList.add('hidden');
+            document.getElementById('study-view').classList.remove('hidden');
+        }
+
         window.showDashboard = function() {
             if (wsTimer) { clearInterval(wsTimer); wsTimer = null; }
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            document.getElementById('study-content-area').innerHTML = '';
             document.getElementById('main-header').classList.remove('hidden');
             document.getElementById('dashboard-view').classList.remove('hidden');
             document.getElementById('generator-view').classList.add('hidden');
@@ -4425,9 +4568,7 @@
         window.openStudy = function(id) {
             const aula = getActiveAulas().find(a => a.id === id);
             currentAulaId = id;
-            document.getElementById('main-header').classList.add('hidden');
-            document.getElementById('dashboard-view').classList.add('hidden');
-            document.getElementById('study-view').classList.remove('hidden');
+            showStudyView();
             const titleArea = document.getElementById('study-title');
             const instrArea = document.getElementById('study-instruction');
             const contentArea = document.getElementById('study-content-area');
@@ -4472,9 +4613,7 @@
         window.openFlashcards = function(id) {
             const aula = getActiveAulas().find(a => a.id === id);
             currentStudyMode = 'flashcards';
-            document.getElementById('main-header').classList.add('hidden');
-            document.getElementById('dashboard-view').classList.add('hidden');
-            document.getElementById('study-view').classList.remove('hidden');
+            showStudyView();
             document.getElementById('study-title').textContent = "Flashcards: Holidays";
             document.getElementById('study-instruction').textContent = "";
             currentFlashcardIdx = 0; currentShuffledCards = shuffle([...getActiveFlashcards()[id]]); renderFlashcards();
@@ -4484,9 +4623,7 @@
             const aula = getActiveAulas().find(a => a.id === id);
             currentAulaId = id;
             currentStudyMode = 'chunks';
-            document.getElementById('main-header').classList.add('hidden');
-            document.getElementById('dashboard-view').classList.add('hidden');
-            document.getElementById('study-view').classList.remove('hidden');
+            showStudyView();
             document.getElementById('study-title').textContent = "CHUNKS OF LANGUAGE";
             document.getElementById('study-instruction').textContent = "";
             renderChunksGrid(getActiveChunks()[id]);
@@ -4500,9 +4637,7 @@
              currentStudyMode = 'dictation';
              isSpellingMode = gamesData[id].isSpelling || false;
              isNumberComboMode = gamesData[id].isNumberCombo || false;
-             document.getElementById('main-header').classList.add('hidden');
-             document.getElementById('dashboard-view').classList.add('hidden');
-             document.getElementById('study-view').classList.remove('hidden');
+             showStudyView();
              document.getElementById('study-title').textContent = "Ditado";
              document.getElementById('study-instruction').textContent = "";
              currentShuffledData = shuffle([...gamesData[id].dictation]);
@@ -4587,9 +4722,7 @@
             currentAulaId = moduleId;
             currentStudyMode = 'hangman';
             currentHangmanList = hangmanWordLists[moduleId] || hangmanWordLists[6];
-            document.getElementById('main-header').classList.add('hidden');
-            document.getElementById('dashboard-view').classList.add('hidden');
-            document.getElementById('study-view').classList.remove('hidden');
+            showStudyView();
             document.getElementById('study-title').textContent = "Forca";
             document.getElementById('study-instruction').textContent = "";
             currentStreak = 0;
@@ -4794,9 +4927,7 @@
             currentFillInData = fillInDataStarter2[moduleId] || [];
             fillInStreak = 0;
             fillInUsedIndices = [];
-            document.getElementById('main-header').classList.add('hidden');
-            document.getElementById('dashboard-view').classList.add('hidden');
-            document.getElementById('study-view').classList.remove('hidden');
+            showStudyView();
             document.getElementById('study-title').textContent = "Fill In";
             document.getElementById('study-instruction').textContent = "";
             loadNextFillIn();
@@ -4895,9 +5026,7 @@
             currentWordSearchList = wordSearchData[moduleId] || [];
             wordSearchStreak = 0;
             usedWordSearchIndices = [];
-            document.getElementById('main-header').classList.add('hidden');
-            document.getElementById('dashboard-view').classList.add('hidden');
-            document.getElementById('study-view').classList.remove('hidden');
+            showStudyView();
             document.getElementById('study-title').textContent = "Caça-Palavras";
             document.getElementById('study-instruction').textContent = "";
             startNewWordSearch();
@@ -5555,7 +5684,6 @@
              }
         }
 
-        // Number mappings for dictation (extenso <-> numeral)
         const numberMap = {
             'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5',
             'six': '6', 'seven': '7', 'eight': '8', 'nine': '9', 'ten': '10',
@@ -5565,6 +5693,57 @@
             'sixth': '6th', 'seventh': '7th', 'eighth': '8th', 'ninth': '9th', 'tenth': '10th'
         };
         const reverseNumberMap = Object.fromEntries(Object.entries(numberMap).map(([k, v]) => [v, k]));
+
+        function wordsToNumber(str) {
+            str = str.toLowerCase().trim().replace(/\band\b/g, '').replace(/,/g, '').replace(/\s+/g, ' ').trim();
+            var ones = { zero:0, one:1, two:2, three:3, four:4, five:5, six:6, seven:7, eight:8, nine:9,
+                ten:10, eleven:11, twelve:12, thirteen:13, fourteen:14, fifteen:15, sixteen:16, seventeen:17,
+                eighteen:18, nineteen:19 };
+            var tens = { twenty:20, thirty:30, forty:40, fifty:50, sixty:60, seventy:70, eighty:80, ninety:90 };
+            var scales = { hundred:100, thousand:1000, million:1000000 };
+            var parts = str.split(/[\s-]+/);
+            var total = 0;
+            var current = 0;
+            for (var i = 0; i < parts.length; i++) {
+                var w = parts[i];
+                if (ones[w] !== undefined) { current += ones[w]; }
+                else if (tens[w] !== undefined) { current += tens[w]; }
+                else if (w === 'hundred') { current = (current === 0 ? 1 : current) * 100; }
+                else if (w === 'thousand') { current = (current === 0 ? 1 : current) * 1000; total += current; current = 0; }
+                else if (w === 'million') { current = (current === 0 ? 1 : current) * 1000000; total += current; current = 0; }
+                else { return null; }
+            }
+            total += current;
+            return total > 0 ? total : null;
+        }
+
+        function numberToWords(n) {
+            if (typeof n === 'string') {
+                n = parseInt(n.replace(/,/g, ''), 10);
+            }
+            if (isNaN(n) || n < 0) return null;
+            if (n === 0) return 'zero';
+            var ones = ['','one','two','three','four','five','six','seven','eight','nine',
+                'ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+            var tens = ['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+            function chunk(num) {
+                if (num === 0) return '';
+                if (num < 20) return ones[num];
+                if (num < 100) return tens[Math.floor(num/10)] + (num%10 ? ' ' + ones[num%10] : '');
+                return ones[Math.floor(num/100)] + ' hundred' + (num%100 ? ' and ' + chunk(num%100) : '');
+            }
+            if (n >= 1000000) {
+                var m = Math.floor(n/1000000);
+                var rest = n % 1000000;
+                return chunk(m) + ' million' + (rest ? ' ' + numberToWords(rest) : '');
+            }
+            if (n >= 1000) {
+                var t = Math.floor(n/1000);
+                var rest = n % 1000;
+                return chunk(t) + ' thousand' + (rest ? ' ' + (rest < 100 ? 'and ' : '') + chunk(rest) : '');
+            }
+            return chunk(n);
+        }
 
         const contractionMap = {
             "what's": "what is", "that's": "that is", "it's": "it is", "he's": "he is", "she's": "she is",
@@ -5592,11 +5771,23 @@
             correct = correct.toLowerCase().trim();
             if (val === correct) return true;
             if (expandContractions(val) === expandContractions(correct)) return true;
-            // Check if user typed number instead of word
             if (numberMap[correct] && val === numberMap[correct]) return true;
-            // Check if user typed word instead of number
             if (reverseNumberMap[correct] && val === reverseNumberMap[correct]) return true;
-            // Handle multi-number combos (e.g. "one two three" vs "1 2 3" or mixed)
+            var valNum = wordsToNumber(val);
+            var correctNum = wordsToNumber(correct);
+            var valAsDigits = val.replace(/,/g, '');
+            var correctAsDigits = correct.replace(/,/g, '');
+            if (correctNum !== null && valAsDigits === String(correctNum)) return true;
+            if (valNum !== null && correctAsDigits === String(valNum)) return true;
+            if (valNum !== null && correctNum !== null && valNum === correctNum) return true;
+            if (/^\d[\d,]*$/.test(correct)) {
+                var cw = numberToWords(correct);
+                if (cw && val.replace(/\band\b/g,'').replace(/\s+/g,' ').trim() === cw.replace(/\band\b/g,'').replace(/\s+/g,' ').trim()) return true;
+            }
+            if (/^\d[\d,]*$/.test(val)) {
+                var vw = numberToWords(val);
+                if (vw && correct.replace(/\band\b/g,'').replace(/\s+/g,' ').trim() === vw.replace(/\band\b/g,'').replace(/\s+/g,' ').trim()) return true;
+            }
             if (correct.includes(' ')) {
                 const correctParts = correct.split(' ');
                 const valParts = val.split(' ');
