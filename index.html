@@ -509,8 +509,7 @@
             color: #44403c;
             line-height: 1.2;
             font-family: 'DM Sans', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.02em;
         }
         .jmap-snode.jmap-locked .jmap-name {
             color: #a8a29e;
@@ -1411,8 +1410,7 @@
                     syncChunksStreaks();
                     const displayName = cred.user.displayName || cred.user.email.split('@')[0];
                     document.getElementById('journey-user-name').textContent = displayName;
-                    const lvl = userData.currentLevel || 'starter1';
-                    updateJourneyMap(lvl);
+                    updateJourneyMap('acc');
                     showScreen('journey');
                     return;
                 }
@@ -2403,7 +2401,7 @@
                     syncChunksStreaks();
                     const displayName = user.displayName || user.email.split('@')[0];
                     document.getElementById('journey-user-name').textContent = displayName;
-                    updateJourneyMap(result.currentLevel || 'starter1');
+                    updateJourneyMap('acc');
                     showScreen('journey');
                 } else if (result.approved) {
                     await loadUserStreaks();
