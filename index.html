@@ -1329,6 +1329,7 @@
                     <label style="font-size: 0.75rem; font-weight: 700; color: #44403c;">Selecionar Alunos</label>
                     <button onclick="toggleAllExamStudents()" style="font-size: 0.65rem; font-weight: 700; color: #8671d1; background: none; border: none; cursor: pointer;" data-testid="button-select-all-students">Selecionar Todos</button>
                 </div>
+                <input type="text" id="exam-student-search" placeholder="Buscar aluno..." oninput="filterExamStudents()" style="width: 100%; padding: 0.4rem 0.6rem; border: 1px solid #d6d3d1; border-radius: 0.5rem; font-size: 0.8rem; font-family: 'DM Sans', sans-serif; margin-bottom: 0.4rem;" data-testid="input-exam-student-search">
                 <div id="exam-students-list" style="max-height: 200px; overflow-y: auto; border: 1px solid #e7e5e4; border-radius: 0.5rem; padding: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem;">
                 </div>
             </div>
@@ -2492,8 +2493,6 @@
                     updateJourneyMap('acc');
                     showScreen('journey');
                 } else if (result.approved) {
-                    var hasExam = await showStudentExamIfAvailable();
-                    if (hasExam) return;
                     await loadUserStreaks();
                     syncChunksStreaks();
                     const displayName = user.displayName || user.email.split('@')[0];
@@ -3019,6 +3018,7 @@
 
         // --- APP DATA ---
         var currentLevel = 'starter1';
+        var studentActiveExam = null;
 
         const aulaStarter2 = [
             { id: 1, name: "Open House", hasHomework: false, desc: "Aula introdut\u00f3ria do Starter 2." },
@@ -4536,7 +4536,8 @@
             }
         }
 
-        function renderDashboard() {
+        async function renderDashboard() {
+            studentActiveExam = await checkStudentExam();
             const container = document.getElementById('level-cards-container');
             const activeAulas = getActiveAulas();
             const activeQuiz = getActiveQuizData();
@@ -4559,6 +4560,8 @@
                 const fiBtn = aula.fourthBtn === 'fillin' ? `<button class="secondary-button-sm" onclick="openFillIn(${aula.id})">FILL IN</button>` : '';
                 const catBtn = (aula.thirdBtn === 'categorize' || categorizeData[aula.id]) ? `<button class="secondary-button-sm" onclick="openCategorize(${aula.id})">CATEGORIZING</button>` : '';
                 const boxBtn = boxesData[aula.id] ? `<button class="secondary-button-sm" onclick="openBoxes(${aula.id})">BOXES</button>` : '';
+                const examKey = aula.name === 'Midterm Test' ? currentLevel + '_midterm' : null;
+                const examBtn = (examKey && examBank[examKey] && studentActiveExam) ? `<button class="action-button-sm" onclick="startStudentExam(studentActiveExam)" data-testid="button-start-exam-${aula.id}">ABRIR PROVA</button>` : '';
 
                 let allStreaks = [];
                 if (aula.hasHomework && activeQuiz[aula.id]) allStreaks.push({ label: 'Homework', done: isStreakDone(aula.id, 'homework') });
@@ -4577,8 +4580,8 @@
                 ).join('')}</div>` : '';
 
                 return `
-                <div class="level-card relative ${!aula.hasHomework ? 'locked' : ''}" id="module-${aula.id}">
-                    ${!aula.hasHomework ? `
+                <div class="level-card relative ${(!aula.hasHomework && !examBtn) ? 'locked' : ''}" id="module-${aula.id}">
+                    ${(!aula.hasHomework && !examBtn) ? `
                         <div class="lock-overlay">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                         </div>
@@ -4590,8 +4593,8 @@
                         ${streakHtml}
                     </div>
                     <div class="flex flex-wrap gap-1.5">
-                        ${sBtn} ${tBtn} ${dBtn} ${chBtn} ${hBtn} ${cBtn} ${fiBtn} ${catBtn} ${boxBtn}
-                        <button class="action-button-sm uppercase" ${(!aula.hasHomework || !activeQuiz[aula.id]) ? 'disabled' : `onclick="openPractice(${aula.id})"`}>HOMEWORK</button>
+                        ${sBtn} ${tBtn} ${dBtn} ${chBtn} ${hBtn} ${cBtn} ${fiBtn} ${catBtn} ${boxBtn} ${examBtn}
+                        ${examBtn ? '' : `<button class="action-button-sm uppercase" ${(!aula.hasHomework || !activeQuiz[aula.id]) ? 'disabled' : `onclick="openPractice(${aula.id})"`}>HOMEWORK</button>`}
                     </div>
                 </div>`
             }).join('');
@@ -6532,6 +6535,14 @@
             document.getElementById('exam-create-modal').style.display = 'none';
         }
 
+        window.filterExamStudents = function() {
+            var query = (document.getElementById('exam-student-search').value || '').toLowerCase();
+            document.querySelectorAll('#exam-students-list label').forEach(function(label) {
+                var name = label.textContent.toLowerCase();
+                label.style.display = name.includes(query) ? '' : 'none';
+            });
+        }
+
         window.toggleAllExamStudents = function() {
             var cbs = document.querySelectorAll('.exam-student-cb');
             var allChecked = Array.from(cbs).every(cb => cb.checked);
@@ -6690,14 +6701,17 @@
         async function checkStudentExam() {
             if (!currentUser || !firebaseDb) return null;
             try {
-                var snap = await firebaseDb.collection('examSessions').where('active', '==', true).where('students', 'array-contains', currentUser.uid).get();
+                var snap = await firebaseDb.collection('examSessions').where('active', '==', true).get();
                 if (snap.empty) return null;
                 for (var doc of snap.docs) {
-                    var subCheck = await firebaseDb.collection('examSubmissions').where('sessionId', '==', doc.id).where('studentUid', '==', currentUser.uid).get();
-                    if (subCheck.empty) return { sessionId: doc.id, ...doc.data() };
+                    var d = doc.data();
+                    if (!(d.students || []).includes(currentUser.uid)) continue;
+                    var subCheck = await firebaseDb.collection('examSubmissions').where('sessionId', '==', doc.id).get();
+                    var alreadySubmitted = subCheck.docs.some(sd => sd.data().studentUid === currentUser.uid);
+                    if (!alreadySubmitted) return { sessionId: doc.id, ...d };
                 }
                 return null;
-            } catch(e) { console.error(e); return null; }
+            } catch(e) { console.error('Erro ao verificar prova:', e); return null; }
         }
 
         async function showStudentExamIfAvailable() {
