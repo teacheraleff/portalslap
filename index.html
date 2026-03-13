@@ -6502,26 +6502,29 @@
                 name: 'Starter 1 — Midterm Test',
                 level: 'starter1',
                 questions: [
-                    { q: "Choose the correct option: 'She ___ a student.'", type: 'multiple', options: ['am','is','are','be'], answer: 'is' },
-                    { q: "What is the plural of 'child'?", type: 'multiple', options: ['childs','childrens','children','childes'], answer: 'children' },
-                    { q: "Complete: 'They ___ from Brazil.'", type: 'multiple', options: ['is','am','are','be'], answer: 'are' },
-                    { q: "Which sentence is correct?", type: 'multiple', options: ["He don't like pizza.","He doesn't likes pizza.","He doesn't like pizza.","He not like pizza."], answer: "He doesn't like pizza." },
-                    { q: "Choose the correct possessive: 'This is ___ book.' (she)", type: 'multiple', options: ['she','her','hers','his'], answer: 'her' },
-                    { q: "What time is it? 3:45", type: 'multiple', options: ['Three forty-five','Quarter to three','Three and forty-five','Fifteen to four'], answer: 'Three forty-five' },
-                    { q: "Complete: 'I ___ breakfast every morning.'", type: 'multiple', options: ['has','have','having','haves'], answer: 'have' },
-                    { q: "Which is NOT a color?", type: 'multiple', options: ['Purple','Yellow','Desk','Orange'], answer: 'Desk' },
-                    { q: "Choose the correct question: '_____ is your name?'", type: 'multiple', options: ['Who','What','Where','When'], answer: 'What' },
-                    { q: "What is the opposite of 'hot'?", type: 'multiple', options: ['warm','cool','cold','big'], answer: 'cold' },
-                    { q: "Choose the correct sentence:", type: 'multiple', options: ["I have 20 years old.","I am 20 years old.","I have 20 years.","I got 20 years old."], answer: "I am 20 years old." },
-                    { q: "Which word is a verb?", type: 'multiple', options: ['Beautiful','Quickly','Table','Run'], answer: 'Run' },
-                    { q: "Complete: 'There ___ two cats on the sofa.'", type: 'multiple', options: ['is','has','are','have'], answer: 'are' },
-                    { q: "Choose the correct preposition: 'She is ___ home.'", type: 'multiple', options: ['in','on','at','to'], answer: 'at' },
-                    { q: "Which is the correct negative form? 'I ___ like coffee.'", type: 'multiple', options: ["don't","doesn't","isn't","am not"], answer: "don't" },
-                    { q: "Write the number in English: 15", type: 'text', answer: 'fifteen' },
-                    { q: "Complete with 'a' or 'an': '___ apple'", type: 'text', answer: 'an' },
-                    { q: "Write the correct form: 'She (go) ___ to school every day.'", type: 'text', answer: 'goes' },
-                    { q: "What is the day after Monday?", type: 'text', answer: 'tuesday' },
-                    { q: "Write the month that comes after July.", type: 'text', answer: 'august' }
+                    // --- 10 MULTIPLE CHOICE (tricky) ---
+                    { q: "Which country is Pierre from?", type: 'multiple', passage: "Marta is from Madrid but she works for a British company in Liverpool. Her husband, Pierre, is French. Mahmoud is from Cairo. His sister, Fatima, is planning to study medicine in Australia. Ying Mei is from Shanghai and is learning Korean.", options: ['Pierre is from the UK.','Pierre is from France.','Pierre is from Cairo.','Pierre is from South Korea.','Pierre is from Brazil.'], answer: 'Pierre is from France.' },
+                    { q: "Choose the correct sentence:", type: 'multiple', options: ["My sister have 22 years old.","My sister is 22 years old.","My sister has 22 years old.","My sister are 22 years old."], answer: "My sister is 22 years old." },
+                    { q: "'There ___ a lot of people at the party last night.' Choose the correct option:", type: 'multiple', options: ['was','were','is','has'], answer: 'were' },
+                    { q: "Which sentence uses the possessive correctly?", type: 'multiple', options: ["The childrens' toys are here.","The children's toys are here.","The childrens toys are here.","The children toys are here."], answer: "The children's toys are here." },
+                    { q: "'She ___ her homework every evening.' Choose the correct verb:", type: 'multiple', options: ['do','does','doing','is do'], answer: 'does' },
+                    { q: "Choose the correct question form:", type: 'multiple', options: ["Where does he lives?","Where does he live?","Where do he live?","Where he does live?"], answer: "Where does he live?" },
+                    { q: "'I need ___ umbrella because it's raining.' Choose the correct article:", type: 'multiple', options: ['a','an','the','—'], answer: 'an' },
+                    { q: "Which sentence is correct?", type: 'multiple', options: ["He doesn't can swim.","He can't swim.","He don't can swim.","He no can swim."], answer: "He can't swim." },
+                    { q: "'It's 7:45.' How do you say this time?", type: 'multiple', options: ['Quarter to seven','Quarter past seven','Quarter to eight','Seven and forty-five'], answer: 'Quarter to eight' },
+                    { q: "'My parents ___ from Brazil, but they ___ in Portugal now.' Choose the correct pair:", type: 'multiple', options: ['is / lives','are / live','are / lives','is / live'], answer: 'are / live' },
+                    // --- 5 WRITTEN (open) ---
+                    { q: "Complete the sentences: 1) People speak German in ___. 2) The language of Argentina is ___. 3) I don't speak ___ (Tokyo). 4) People born in the United States are ___.", type: 'text', answer: 'germany, spanish, japanese, americans' },
+                    { q: "How do you say \"Estes são os celulares do meu primo\" in English?", type: 'text', answer: "these are my cousin's phones" },
+                    { q: "Write the correct form: 'She (not/like) ___ chocolate.'", type: 'text', answer: "doesn't like" },
+                    { q: "Rewrite the sentence in the negative form: 'They play soccer on Saturdays.'", type: 'text', answer: "they don't play soccer on saturdays" },
+                    { q: "Write this time in words: 6:30", type: 'text', answer: 'six thirty' },
+                    // --- 5 LISTENING ---
+                    { q: "Listen to the audio and answer: What is the speaker's name?", type: 'text', audio: 'AUDIO_URL_1', answer: '' },
+                    { q: "Listen to the audio and choose the correct answer:", type: 'multiple', audio: 'AUDIO_URL_2', options: ['He is a teacher.','He is a doctor.','He is a student.','He is an engineer.'], answer: '' },
+                    { q: "Listen and complete the sentence you hear:", type: 'text', audio: 'AUDIO_URL_3', answer: '' },
+                    { q: "Listen to the audio and answer: Where is the woman from?", type: 'text', audio: 'AUDIO_URL_4', answer: '' },
+                    { q: "Listen to the dialogue and choose what they are talking about:", type: 'multiple', audio: 'AUDIO_URL_5', options: ['Food and drinks','Family members','Daily routine','Hobbies and sports'], answer: '' }
                 ]
             }
         };
@@ -6582,6 +6585,7 @@
                     students: students.map(s => s.uid),
                     studentNames: students.reduce((acc, s) => { acc[s.uid] = s.name; return acc; }, {}),
                     createdBy: currentUser.uid,
+                    createdByName: currentUser.displayName || currentUser.email || 'Professor',
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     active: true
                 });
@@ -6609,14 +6613,18 @@
                     var total = (d.students || []).length;
                     var statusColor = d.active ? '#16a34a' : '#a8a29e';
                     var statusText = d.active ? 'Ativa' : 'Encerrada';
-                    var date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : '';
+                    var dateObj = d.createdAt ? new Date(d.createdAt.seconds * 1000) : null;
+                    var date = dateObj ? dateObj.toLocaleDateString('pt-BR') : '';
+                    var time = dateObj ? dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+                    var teacherName = d.createdByName || 'Professor';
 
                     html += `
                     <div style="background: white; border: 1px solid #e7e5e4; border-radius: 0.75rem; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);" data-testid="exam-session-${doc.id}">
                         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
                             <div>
                                 <p style="font-weight: 800; color: #1c1917; font-size: 0.9rem;">${d.examName}</p>
-                                <p style="font-size: 0.7rem; color: #78716c;">${date} · ${d.duration}min · ${total} aluno(s)</p>
+                                <p style="font-size: 0.7rem; color: #78716c;">${date} às ${time} · ${d.duration}min · ${total} aluno(s)</p>
+                                <p style="font-size: 0.65rem; color: #a8a29e; margin-top: 0.15rem;">Aberto por: <strong style="color: #8671d1;">${teacherName}</strong></p>
                             </div>
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
                                 <span style="font-size: 0.65rem; font-weight: 700; color: ${statusColor}; background: ${d.active ? '#f0fdf4' : '#fafaf9'}; padding: 0.15rem 0.5rem; border-radius: 1rem; border: 1px solid ${d.active ? '#bbf7d0' : '#e7e5e4'};">${statusText}</span>
@@ -6710,6 +6718,8 @@
                                             : 'Resposta: ' + (studentAns || '(vazio)') + ' ' + (correct ? '✓' : '✗ Correto: ' + qq.answer);
                                         var savedComment = (sub.teacherComments || {})[idx] || '';
                                         return '<div style="padding: 0.5rem; border-radius: 0.375rem; background: ' + bgColor + '; border: 1px solid ' + borderColor + ';">' +
+                                            (qq.passage ? '<div style="background:#f5f5f4;border-left:2px solid #8671d1;padding:0.3rem 0.5rem;border-radius:0.25rem;margin-bottom:0.3rem;font-size:0.6rem;color:#44403c;line-height:1.4;font-style:italic;">' + qq.passage + '</div>' : '') +
+                                            (qq.audio ? '<div style="display:flex;align-items:center;gap:0.3rem;margin-bottom:0.3rem;background:#f5f3ff;padding:0.2rem 0.4rem;border-radius:0.25rem;border:1px solid #ddd6fe;"><span style="font-size:0.55rem;font-weight:700;color:#8671d1;">🎧</span><audio controls controlsList="nodownload" style="height:1.5rem;flex:1;"><source src="' + qq.audio + '" type="audio/mpeg"></audio></div>' : '') +
                                             '<p style="font-size: 0.7rem; font-weight: 600; color: #44403c; margin-bottom: 0.2rem;">' + (idx + 1) + '. ' + qq.q + (isText ? ' <span style="font-size:0.55rem;background:#ede9fe;color:#7c3aed;padding:0.1rem 0.3rem;border-radius:0.25rem;font-weight:700;margin-left:0.3rem;">ESCRITA</span>' : '') + '</p>' +
                                             '<p style="font-size: 0.65rem; color: ' + ansColor + '; margin-bottom: 0.3rem;">' + ansText + '</p>' +
                                             '<div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.3rem;">' +
@@ -6837,6 +6847,8 @@
 
                     return '<div style="padding:12px;border-radius:8px;background:' + bgColor + ';border:1px solid ' + borderColor + ';margin-bottom:8px;">' +
                         '<p style="font-size:13px;font-weight:700;color:#1c1917;margin:0 0 4px;">' + statusIcon + ' Questão ' + (idx + 1) + (isText ? ' <span style="font-size:10px;background:#ede9fe;color:#7c3aed;padding:2px 6px;border-radius:4px;">ESCRITA</span>' : '') + '</p>' +
+                        (qq.passage ? '<div style="background:#f5f5f4;border-left:3px solid #8671d1;padding:8px 10px;border-radius:6px;margin-bottom:6px;font-size:11px;color:#44403c;line-height:1.5;font-style:italic;">' + qq.passage + '</div>' : '') +
+                        (qq.audio ? '<div style="background:#f5f3ff;border:1px solid #ddd6fe;padding:6px 10px;border-radius:6px;margin-bottom:6px;font-size:11px;color:#8671d1;font-weight:600;">🎧 Questão com áudio</div>' : '') +
                         '<p style="font-size:12px;color:#44403c;margin:0 0 6px;">' + qq.q + '</p>' +
                         '<p style="font-size:11px;color:#57534e;margin:0 0 2px;"><strong>Resposta do aluno:</strong> ' + studentAns + '</p>' +
                         (isText ? '<p style="font-size:11px;color:#78716c;margin:0 0 2px;"><strong>Gabarito:</strong> ' + qq.answer + '</p>' :
@@ -6986,13 +6998,17 @@
         function renderExamDots() {
             var dotsEl = document.getElementById('exam-dots');
             if (!dotsEl) return;
-            dotsEl.innerHTML = examQuestions.map(function(_, i) {
+            var half = Math.ceil(examQuestions.length / 2);
+            var makeDot = function(i) {
                 var answered = examAnswers.hasOwnProperty(i) && examAnswers[i] !== '';
                 var isCurrent = i === examCurrentIdx;
                 var bg = isCurrent ? '#8671d1' : (answered ? '#16a34a' : '#e7e5e4');
                 var txtColor = (isCurrent || answered) ? 'white' : '#78716c';
                 return '<button onclick="examGoTo(' + i + ')" style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background: ' + bg + '; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; padding: 0; font-size: 0.55rem; font-weight: 800; color: ' + txtColor + '; font-family: \'DM Sans\', sans-serif;" title="Questão ' + (i + 1) + '" data-testid="exam-dot-' + i + '">' + (i + 1) + '</button>';
-            }).join('');
+            };
+            var row1 = examQuestions.slice(0, half).map(function(_, i) { return makeDot(i); }).join('');
+            var row2 = examQuestions.slice(half).map(function(_, i) { return makeDot(i + half); }).join('');
+            dotsEl.innerHTML = '<div style="display:flex;gap:0.3rem;justify-content:center;">' + row1 + '</div><div style="display:flex;gap:0.3rem;justify-content:center;margin-top:0.25rem;">' + row2 + '</div>';
         }
 
         window.examGoTo = function(idx) {
@@ -7018,7 +7034,14 @@
             var progEl = document.getElementById('exam-progress-text');
             if (progEl) progEl.textContent = 'Questão ' + (examCurrentIdx + 1) + ' de ' + examQuestions.length;
 
-            document.getElementById('main-question').innerHTML = '<span style="color: #8671d1; font-weight: 800;">' + (examCurrentIdx + 1) + '.</span> ' + qq.q;
+            var questionHtml = '<span style="color: #8671d1; font-weight: 800;">' + (examCurrentIdx + 1) + '.</span> ' + qq.q;
+            if (qq.passage) {
+                questionHtml = '<div style="background: #f5f5f4; border-left: 3px solid #8671d1; padding: 0.6rem 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem; font-size: 0.8rem; color: #44403c; line-height: 1.5; font-style: italic;">' + qq.passage + '</div>' + questionHtml;
+            }
+            if (qq.audio) {
+                questionHtml += '<div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem; background: #f5f3ff; padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #ddd6fe;"><span style="font-size: 0.7rem; font-weight: 700; color: #8671d1;">🎧 Áudio:</span><audio controls controlsList="nodownload" style="height: 2rem; flex: 1;"><source src="' + qq.audio + '" type="audio/mpeg">Seu navegador não suporta áudio.</audio></div>';
+            }
+            document.getElementById('main-question').innerHTML = questionHtml;
             document.getElementById('rationale-display').classList.add('hidden');
             document.getElementById('feedback-alert').classList.add('hidden');
 
