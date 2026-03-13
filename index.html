@@ -6496,6 +6496,7 @@
                 renderDashboard();
             }
         };
+        function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
         // ===== EXAM SYSTEM =====
         const examBank = {
             starter1_midterm: {
@@ -6514,17 +6515,17 @@
                     { q: "'It's 7:45.' How do you say this time?", type: 'multiple', options: ['Quarter to seven','Quarter past seven','Quarter to eight','Seven and forty-five'], answer: 'Quarter to eight' },
                     { q: "'My parents ___ from Brazil, but they ___ in Portugal now.' Choose the correct pair:", type: 'multiple', options: ['is / lives','are / live','are / lives','is / live'], answer: 'are / live' },
                     // --- 5 WRITTEN (open) ---
-                    { q: "Complete the sentences: 1) People speak German in ___. 2) The language of Argentina is ___. 3) I don't speak ___ (Tokyo). 4) People born in the United States are ___.", type: 'text', answer: 'germany, spanish, japanese, americans' },
+                    { q: "Complete the sentences:", type: 'text', passage: '1. People speak German in (1) _______________.\n2. The language of Argentina is (2) _______________.\n3. I don\'t speak (3) _______________ (Tokyo).\n4. People born in the United States are (4) _______________.', answer: 'germany, spanish, japanese, americans' },
                     { q: "How do you say \"Estes são os celulares do meu primo\" in English?", type: 'text', answer: "these are my cousin's phones" },
-                    { q: "Write the correct form: 'She (not/like) ___ chocolate.'", type: 'text', answer: "doesn't like" },
-                    { q: "Rewrite the sentences in the negative form: 1) They play soccer on Saturdays. 2) She speaks French very well. 3) I want a glass of water.", type: 'text', answer: "1) They don't play soccer on Saturdays. 2) She doesn't speak French very well. 3) I don't want a glass of water." },
-                    { q: "Write these times in words: 1) 6:30 — 2) 2:15 — 3) 9:45", type: 'text', answer: '1) six thirty 2) two fifteen / quarter past two 3) nine forty-five / quarter to ten' },
+                    { q: "Write the correct form:", type: 'text', passage: 'She (not/like) (1) _______________ chocolate.', answer: "doesn't like" },
+                    { q: "Rewrite the sentences in the negative form:", type: 'text', passage: '1. They play soccer on Saturdays. → (1) _______________\n2. She speaks French very well. → (2) _______________\n3. I want a glass of water. → (3) _______________', answer: "They don't play soccer on Saturdays., She doesn't speak French very well., I don't want a glass of water." },
+                    { q: "Write these times in words:", type: 'text', passage: '1. 6:30 → (1) _______________\n2. 2:15 → (2) _______________\n3. 9:45 → (3) _______________', answer: 'six thirty, two fifteen / quarter past two, nine forty-five / quarter to ten' },
                     // --- 5 LISTENING ---
                     { q: "Listen to the audio and fill in the gaps:", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/Hello_My_name_is_Joh_ij5lnh.mp3', passage: 'Hello! (1) _______________, and I would like to introduce myself. I am (2) _______________, and I live in a small city. I work at an office, and I really like my job. My coworkers are very friendly, and the environment is nice. In my free time, (3) _______________ listening to music, watching movies, and spending time with (4) _______________. On weekends, I sometimes go to restaurants or walk in the park. I also like learning new things. Right now, I am learning new skills and trying to improve (5) _______________. I am a calm and positive person, and I enjoy meeting new people. It\'s very nice to meet you!', answer: '1) My name is John, 2) 25 years old, 3) I like, 4) my friends, 5) every day' },
                     { q: "Listen to the audio and fill in the phone numbers:", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/numbers_ry86uq.mp3', passage: 'Today I\'m going to tell you some phone numbers of my friends. First, I have my friend Lucas. His phone number is (1) _______________. My friend Maria also gave me her number. Her phone number is (2) _______________. Then there is my friend Daniel. His phone number is (3) _______________. I also have my friend Julia\'s number. Her phone number is (4) _______________. Sometimes I save the numbers in my phone, but I also like to practice saying them in English. It helps me remember numbers better.', answer: '1) 987654321, 2) 991234567, 3) 888765432, 4) 923456789' },
                     { q: "Listen to the audio about family and fill in the gaps:", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/family_b1brj1.mp3', passage: 'I have a small but very nice family. I live with my parents and my (1) _______________. My father is very (2) _______________. He works every day and always helps our family. My mother is very kind and caring. She loves (3) _______________ and spending time with us. I also have a younger sister. She is a student, and she is very funny. Sometimes we watch movies together, play games, or talk about our day. I also have grandparents. My grandfather likes telling (4) _______________ about his life, and my grandmother always makes delicious food when we visit her. Family is very important to me. I love spending time with them, especially on (5) _______________. Sometimes we have lunch together, watch TV, or just talk and laugh. I feel very lucky to have such a loving family.', answer: '1) younger sister, 2) hardworking, 3) cooking, 4) stories, 5) weekends' },
                     { q: "Listen to the audio about food and nationalities, then fill in the gaps:", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/Food_is_a_very_inter_etgacb.mp3', passage: 'Food is a very interesting way to learn about different cultures around the world. For example, people from Italy are called (1) _______________. Italian food is very famous, especially (2) _______________ and pasta. In Japan, people are called (3) _______________. One very popular food there is (4) _______________. Sushi is usually made with rice, fish, and vegetables. If we travel to Mexico, the people are (5) _______________. One popular dish is the (6) _______________. Tacos can have meat, chicken, vegetables, and different sauces. Now let\'s talk about Brazil. People from Brazil are (7) _______________. One traditional Brazilian dish is (8) _______________. It is made with beans and meat and is usually eaten with rice.', answer: '1) Italians, 2) pizza, 3) Japanese, 4) sushi, 5) Mexican, 6) taco, 7) Brazilian, 8) feijoada' },
-                    { q: "Listen to the audio about a neighborhood. Mark each sentence as TRUE or FALSE: 1) The streets are dirty. 2) There is a small park near the house. 3) The supermarket is far from the house. 4) The coffee shop is popular on weekends. 5) There is a modern gym near the house. 6) The neighborhood feels dangerous.", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/neighborhood_amqiex.mp3', answer: '1) False, 2) True, 3) False, 4) True, 5) True, 6) False' }
+                    { q: "Listen to the audio about a neighborhood. Mark each sentence as TRUE or FALSE:", type: 'truefalse', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/neighborhood_amqiex.mp3', statements: ['The streets are dirty.','There is a small park near the house.','The supermarket is far from the house.','The coffee shop is popular on weekends.','There is a modern gym near the house.','The neighborhood feels dangerous.'], answer: ['False','True','False','True','True','False'] }
                 ]
             }
         };
@@ -6684,6 +6685,17 @@
                             var studentAns = (sub.answers || {})[idx];
                             if (!studentAns || studentAns === '') return 0;
                             if (qq.type === 'text') return 0;
+                            if (qq.type === 'truefalse') {
+                                try {
+                                    var tfA = JSON.parse(studentAns);
+                                    if (Array.isArray(tfA) && Array.isArray(qq.answer)) {
+                                        var allOk = true;
+                                        for (var ti = 0; ti < qq.answer.length; ti++) { if (tfA[ti] !== qq.answer[ti]) { allOk = false; break; } }
+                                        return allOk ? 1 : 0;
+                                    }
+                                } catch(e) {}
+                                return 0;
+                            }
                             return studentAns === qq.answer ? 1 : 0;
                         });
                         var currentTotal = defaultScores.reduce(function(a, b) { return a + b; }, 0);
@@ -6708,20 +6720,46 @@
                                     ${examData.questions.map(function(qq, idx) {
                                         var studentAns = (sub.answers || {})[idx];
                                         var isText = qq.type === 'text';
-                                        var correct = isText ? (studentAns || '').toLowerCase().trim() === qq.answer.toLowerCase().trim() : studentAns === qq.answer;
+                                        var isTF = qq.type === 'truefalse';
+                                        var correct;
+                                        if (isTF) {
+                                            try {
+                                                var tfA = JSON.parse(studentAns);
+                                                correct = Array.isArray(tfA) && Array.isArray(qq.answer) && JSON.stringify(tfA) === JSON.stringify(qq.answer);
+                                            } catch(e) { correct = false; }
+                                        } else {
+                                            correct = isText ? (studentAns || '').toLowerCase().trim() === qq.answer.toLowerCase().trim() : studentAns === qq.answer;
+                                        }
                                         var qScore = defaultScores[idx];
                                         var bgColor = isText ? '#f5f3ff' : (correct ? '#f0fdf4' : '#fef2f2');
                                         var borderColor = isText ? '#ddd6fe' : (correct ? '#bbf7d0' : '#fecaca');
                                         var ansColor = isText ? '#5b21b6' : (correct ? '#16a34a' : '#dc2626');
-                                        var ansText = isText
-                                            ? 'Resposta: ' + (studentAns || '(vazio)') + ' &nbsp;|&nbsp; Gabarito: ' + qq.answer
-                                            : 'Resposta: ' + (studentAns || '(vazio)') + ' ' + (correct ? '✓' : '✗ Correto: ' + qq.answer);
+                                        var displayStudentAns = escHtml(studentAns || '(vazio)');
+                                        try {
+                                            var parsed = JSON.parse(studentAns);
+                                            if (Array.isArray(parsed)) displayStudentAns = parsed.map(function(v, gi) { return (gi+1) + ') ' + escHtml(v || '—'); }).join(', ');
+                                        } catch(e) {}
+                                        var ansText;
+                                        if (isTF) {
+                                            var tfStAns = []; try { tfStAns = JSON.parse(studentAns); } catch(e) { tfStAns = []; }
+                                            if (!Array.isArray(tfStAns)) tfStAns = [];
+                                            ansText = qq.statements.map(function(st, si) {
+                                                var got = tfStAns[si] || '—';
+                                                var expected = qq.answer[si];
+                                                var ok = got === expected;
+                                                return '<div style="display:flex;align-items:center;gap:0.3rem;font-size:0.6rem;padding:0.15rem 0;"><span>' + (si+1) + ') ' + escHtml(st) + '</span><span style="font-weight:800;color:' + (ok ? '#16a34a' : '#dc2626') + ';">' + got + (ok ? ' ✓' : ' ✗ (' + expected + ')') + '</span></div>';
+                                            }).join('');
+                                        } else if (isText) {
+                                            ansText = 'Resposta: ' + displayStudentAns + ' &nbsp;|&nbsp; Gabarito: ' + qq.answer;
+                                        } else {
+                                            ansText = 'Resposta: ' + displayStudentAns + ' ' + (correct ? '✓' : '✗ Correto: ' + qq.answer);
+                                        }
                                         var savedComment = (sub.teacherComments || {})[idx] || '';
                                         return '<div style="padding: 0.5rem; border-radius: 0.375rem; background: ' + bgColor + '; border: 1px solid ' + borderColor + ';">' +
-                                            (qq.passage ? '<div style="background:#f5f5f4;border-left:2px solid #8671d1;padding:0.3rem 0.5rem;border-radius:0.25rem;margin-bottom:0.3rem;font-size:0.6rem;color:#44403c;line-height:1.4;font-style:italic;">' + qq.passage + '</div>' : '') +
+                                            (qq.passage ? '<div style="background:#f5f5f4;border-left:2px solid #8671d1;padding:0.3rem 0.5rem;border-radius:0.25rem;margin-bottom:0.3rem;font-size:0.6rem;color:#44403c;line-height:1.4;font-style:italic;">' + qq.passage.replace(/\n/g, '<br>') + '</div>' : '') +
                                             (qq.audio ? '<div style="display:flex;align-items:center;gap:0.3rem;margin-bottom:0.3rem;background:#f5f3ff;padding:0.2rem 0.4rem;border-radius:0.25rem;border:1px solid #ddd6fe;"><span style="font-size:0.55rem;font-weight:700;color:#8671d1;">🎧</span><audio controls controlsList="nodownload" style="height:1.5rem;flex:1;"><source src="' + qq.audio + '" type="audio/mpeg"></audio></div>' : '') +
-                                            '<p style="font-size: 0.7rem; font-weight: 600; color: #44403c; margin-bottom: 0.2rem;">' + (idx + 1) + '. ' + qq.q + (isText ? ' <span style="font-size:0.55rem;background:#ede9fe;color:#7c3aed;padding:0.1rem 0.3rem;border-radius:0.25rem;font-weight:700;margin-left:0.3rem;">ESCRITA</span>' : '') + '</p>' +
-                                            '<p style="font-size: 0.65rem; color: ' + ansColor + '; margin-bottom: 0.3rem;">' + ansText + '</p>' +
+                                            '<p style="font-size: 0.7rem; font-weight: 600; color: #44403c; margin-bottom: 0.2rem;">' + (idx + 1) + '. ' + qq.q + (isText ? ' <span style="font-size:0.55rem;background:#ede9fe;color:#7c3aed;padding:0.1rem 0.3rem;border-radius:0.25rem;font-weight:700;margin-left:0.3rem;">ESCRITA</span>' : '') + (isTF ? ' <span style="font-size:0.55rem;background:#fef3c7;color:#92400e;padding:0.1rem 0.3rem;border-radius:0.25rem;font-weight:700;margin-left:0.3rem;">TRUE / FALSE</span>' : '') + '</p>' +
+                                            '<div style="font-size: 0.65rem; color: ' + ansColor + '; margin-bottom: 0.3rem;">' + ansText + '</div>' +
                                             '<div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.3rem;">' +
                                                 '<label style="font-size: 0.6rem; font-weight: 700; color: #78716c;">Nota:</label>' +
                                                 '<input type="number" min="0" max="1" step="0.1" value="' + qScore + '" ' +
@@ -6836,23 +6874,48 @@
                 var graded = finalGrade !== undefined && finalGrade !== null;
 
                 var questionsHtml = examData.questions.map(function(qq, idx) {
-                    var studentAns = (sub.answers || {})[idx] || '(vazio)';
+                    var rawAns = (sub.answers || {})[idx];
+                    var studentAns = escHtml(rawAns || '(vazio)');
+                    try {
+                        var parsed = JSON.parse(rawAns);
+                        if (Array.isArray(parsed)) studentAns = parsed.map(function(v, gi) { return (gi+1) + ') ' + escHtml(v || '—'); }).join(', ');
+                    } catch(e) {}
                     var isText = qq.type === 'text';
-                    var qScore = scores[idx] !== undefined ? scores[idx] : (isText ? '-' : (studentAns === qq.answer ? 1 : 0));
-                    var correct = isText ? null : (studentAns === qq.answer);
-                    var statusIcon = isText ? '✏️' : (correct ? '✅' : '❌');
+                    var isTF = qq.type === 'truefalse';
+                    var correct;
+                    if (isTF) {
+                        try { var tfA = JSON.parse(rawAns); correct = Array.isArray(tfA) && Array.isArray(qq.answer) && JSON.stringify(tfA) === JSON.stringify(qq.answer); } catch(e) { correct = false; }
+                    } else {
+                        correct = isText ? null : (studentAns === qq.answer);
+                    }
+                    var qScore = scores[idx] !== undefined ? scores[idx] : (isText ? '-' : (correct ? 1 : 0));
+                    var statusIcon = isText ? '✏️' : (isTF ? '⚖️' : (correct ? '✅' : '❌'));
                     var bgColor = isText ? '#f5f3ff' : (correct ? '#f0fdf4' : '#fef2f2');
                     var borderColor = isText ? '#ddd6fe' : (correct ? '#bbf7d0' : '#fecaca');
                     var comment = comments[idx] || '';
 
+                    var ansHtml = '';
+                    if (isTF) {
+                        var tfStAns = []; try { tfStAns = JSON.parse(rawAns); } catch(e) {}
+                        if (!Array.isArray(tfStAns)) tfStAns = [];
+                        ansHtml = qq.statements.map(function(st, si) {
+                            var got = tfStAns[si] || '—';
+                            var expected = qq.answer[si];
+                            var ok = got === expected;
+                            return '<div style="font-size:11px;padding:2px 0;"><span>' + (si+1) + ') ' + escHtml(st) + '</span> <strong style="color:' + (ok ? '#16a34a' : '#dc2626') + ';">' + got + (ok ? ' ✓' : ' ✗ (' + expected + ')') + '</strong></div>';
+                        }).join('');
+                    } else {
+                        ansHtml = '<p style="font-size:11px;color:#57534e;margin:0 0 2px;"><strong>Resposta do aluno:</strong> ' + studentAns + '</p>' +
+                            (isText ? '<p style="font-size:11px;color:#78716c;margin:0 0 2px;"><strong>Gabarito:</strong> ' + qq.answer + '</p>' :
+                                (correct === false ? '<p style="font-size:11px;color:#dc2626;margin:0 0 2px;"><strong>Resposta correta:</strong> ' + qq.answer + '</p>' : ''));
+                    }
+
                     return '<div style="padding:12px;border-radius:8px;background:' + bgColor + ';border:1px solid ' + borderColor + ';margin-bottom:8px;">' +
-                        '<p style="font-size:13px;font-weight:700;color:#1c1917;margin:0 0 4px;">' + statusIcon + ' Questão ' + (idx + 1) + (isText ? ' <span style="font-size:10px;background:#ede9fe;color:#7c3aed;padding:2px 6px;border-radius:4px;">ESCRITA</span>' : '') + '</p>' +
-                        (qq.passage ? '<div style="background:#f5f5f4;border-left:3px solid #8671d1;padding:8px 10px;border-radius:6px;margin-bottom:6px;font-size:11px;color:#44403c;line-height:1.5;font-style:italic;">' + qq.passage + '</div>' : '') +
+                        '<p style="font-size:13px;font-weight:700;color:#1c1917;margin:0 0 4px;">' + statusIcon + ' Questão ' + (idx + 1) + (isText ? ' <span style="font-size:10px;background:#ede9fe;color:#7c3aed;padding:2px 6px;border-radius:4px;">ESCRITA</span>' : '') + (isTF ? ' <span style="font-size:10px;background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:4px;">TRUE / FALSE</span>' : '') + '</p>' +
+                        (qq.passage ? '<div style="background:#f5f5f4;border-left:3px solid #8671d1;padding:8px 10px;border-radius:6px;margin-bottom:6px;font-size:11px;color:#44403c;line-height:1.5;font-style:italic;">' + qq.passage.replace(/\n/g, '<br>') + '</div>' : '') +
                         (qq.audio ? '<div style="background:#f5f3ff;border:1px solid #ddd6fe;padding:6px 10px;border-radius:6px;margin-bottom:6px;font-size:11px;color:#8671d1;font-weight:600;">🎧 Questão com áudio</div>' : '') +
                         '<p style="font-size:12px;color:#44403c;margin:0 0 6px;">' + qq.q + '</p>' +
-                        '<p style="font-size:11px;color:#57534e;margin:0 0 2px;"><strong>Resposta do aluno:</strong> ' + studentAns + '</p>' +
-                        (isText ? '<p style="font-size:11px;color:#78716c;margin:0 0 2px;"><strong>Gabarito:</strong> ' + qq.answer + '</p>' :
-                            (!correct ? '<p style="font-size:11px;color:#dc2626;margin:0 0 2px;"><strong>Resposta correta:</strong> ' + qq.answer + '</p>' : '')) +
+                        ansHtml +
                         '<p style="font-size:11px;font-weight:700;color:#8671d1;margin:4px 0 0;">Nota: ' + qScore + ' / 1</p>' +
                         (comment ? '<p style="font-size:11px;color:#57534e;margin:4px 0 0;padding:6px 8px;background:#fff;border-radius:4px;border-left:3px solid #8671d1;"><strong>Professor:</strong> ' + comment + '</p>' : '') +
                     '</div>';
@@ -7080,12 +7143,31 @@
         function saveCurrentExamAnswer() {
             var qq = examQuestions[examCurrentIdx];
             if (!qq) return;
+            if (qq.type === 'truefalse') {
+                return;
+            }
             if (qq.type === 'multiple') {
                 var sel = document.querySelector('#options-container .option-button.exam-selected');
                 if (sel) examAnswers[examCurrentIdx] = sel.dataset.examValue;
             } else {
-                var input = document.getElementById('exam-text-input');
-                if (input && input.value.trim()) examAnswers[examCurrentIdx] = input.value.trim();
+                var gapInputs = document.querySelectorAll('.exam-gap-input');
+                if (gapInputs.length > 0) {
+                    var gaps = [];
+                    var hasAny = false;
+                    gapInputs.forEach(function(inp) {
+                        var v = inp.value.trim();
+                        gaps[parseInt(inp.dataset.gap)] = v;
+                        if (v) hasAny = true;
+                    });
+                    if (hasAny) {
+                        examAnswers[examCurrentIdx] = JSON.stringify(gaps);
+                    } else {
+                        delete examAnswers[examCurrentIdx];
+                    }
+                } else {
+                    var input = document.getElementById('exam-text-input');
+                    if (input && input.value.trim()) examAnswers[examCurrentIdx] = input.value.trim();
+                }
             }
         }
 
@@ -7094,9 +7176,32 @@
             var progEl = document.getElementById('exam-progress-text');
             if (progEl) progEl.textContent = 'Questão ' + (examCurrentIdx + 1) + ' de ' + examQuestions.length;
 
+            var savedAnswer = examAnswers[examCurrentIdx] || '';
+            var savedGaps = [];
+            try { savedGaps = JSON.parse(savedAnswer); } catch(e) { savedGaps = savedAnswer ? [savedAnswer] : []; }
+            if (!Array.isArray(savedGaps)) savedGaps = savedAnswer ? [savedAnswer] : [];
+            var gapCounter = { n: 0 };
+
+            function renderGapText(text) {
+                var result = text.replace(/\((\d+)\)\s*___+/g, function(match, num) {
+                    var gIdx = gapCounter.n++;
+                    var val = savedGaps[gIdx] || '';
+                    return '<span style="display: inline-flex; align-items: center; gap: 0.2rem; margin: 0.15rem 0.1rem;"><span style="background: #8671d1; color: white; font-size: 0.5rem; font-weight: 800; width: 1rem; height: 1rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">' + num + '</span><input type="text" class="exam-gap-input" data-gap="' + gIdx + '" value="' + val.replace(/"/g, '&quot;') + '" placeholder="..." style="width: 7rem; padding: 0.2rem 0.4rem; border: 2px solid #ddd6fe; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; font-family: DM Sans, sans-serif; text-align: center; background: white; color: #1c1917;" data-testid="exam-gap-' + examCurrentIdx + '-' + gIdx + '"></span>';
+                });
+                result = result.replace(/___+/g, function() {
+                    var gIdx = gapCounter.n++;
+                    var val = savedGaps[gIdx] || '';
+                    return '<span style="display: inline-flex; align-items: center; gap: 0.2rem; margin: 0.15rem 0.1rem;"><span style="background: #8671d1; color: white; font-size: 0.5rem; font-weight: 800; width: 1rem; height: 1rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">' + (gIdx + 1) + '</span><input type="text" class="exam-gap-input" data-gap="' + gIdx + '" value="' + val.replace(/"/g, '&quot;') + '" placeholder="..." style="width: 7rem; padding: 0.2rem 0.4rem; border: 2px solid #ddd6fe; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; font-family: DM Sans, sans-serif; text-align: center; background: white; color: #1c1917;" data-testid="exam-gap-' + examCurrentIdx + '-' + gIdx + '"></span>';
+                });
+                return result;
+            }
+
             var questionHtml = '<span style="color: #8671d1; font-weight: 800;">' + (examCurrentIdx + 1) + '.</span> ' + qq.q;
+            var hasGaps = qq.passage && qq.passage.indexOf('___') !== -1;
             if (qq.passage) {
-                questionHtml = '<div style="background: #f5f5f4; border-left: 3px solid #8671d1; padding: 0.6rem 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem; font-size: 0.8rem; color: #44403c; line-height: 1.5; font-style: italic;">' + qq.passage + '</div>' + questionHtml;
+                var passageRaw = qq.passage.replace(/\n/g, '<br>');
+                var passageContent = hasGaps ? renderGapText(passageRaw) : passageRaw;
+                questionHtml = '<div style="background: #f5f5f4; border-left: 3px solid #8671d1; padding: 0.6rem 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem; font-size: 0.8rem; color: #44403c; line-height: 2; ' + (hasGaps ? '' : 'font-style: italic;') + '">' + passageContent + '</div>' + questionHtml;
             }
             if (qq.audio) {
                 questionHtml += '<div style="margin-top: 0.5rem; background: #f5f3ff; padding: 0.6rem 0.75rem; border-radius: 0.5rem; border: 1px solid #ddd6fe;">' +
@@ -7109,7 +7214,6 @@
                     '</div>' +
                     '<div style="display: flex; align-items: center; gap: 0.3rem;">' +
                         '<span style="font-size: 0.55rem; font-weight: 700; color: #78716c;">Velocidade:</span>' +
-                        '<button onclick="examAudioSpeed(0.75)" class="exam-speed-btn" data-speed="0.75" style="font-size: 0.55rem; padding: 0.1rem 0.35rem; border-radius: 0.25rem; border: 1px solid #ddd6fe; background: white; cursor: pointer; font-weight: 700; color: #78716c; font-family: DM Sans, sans-serif;">0.75x</button>' +
                         '<button onclick="examAudioSpeed(1)" class="exam-speed-btn" data-speed="1" style="font-size: 0.55rem; padding: 0.1rem 0.35rem; border-radius: 0.25rem; border: 1px solid #8671d1; background: #ede9fe; cursor: pointer; font-weight: 700; color: #8671d1; font-family: DM Sans, sans-serif;">1x</button>' +
                         '<button onclick="examAudioSpeed(1.5)" class="exam-speed-btn" data-speed="1.5" style="font-size: 0.55rem; padding: 0.1rem 0.35rem; border-radius: 0.25rem; border: 1px solid #ddd6fe; background: white; cursor: pointer; font-weight: 700; color: #78716c; font-family: DM Sans, sans-serif;">1.5x</button>' +
                         '<button onclick="examAudioSpeed(2)" class="exam-speed-btn" data-speed="2" style="font-size: 0.55rem; padding: 0.1rem 0.35rem; border-radius: 0.25rem; border: 1px solid #ddd6fe; background: white; cursor: pointer; font-weight: 700; color: #78716c; font-family: DM Sans, sans-serif;">2x</button>' +
@@ -7121,18 +7225,43 @@
             document.getElementById('rationale-display').classList.add('hidden');
             document.getElementById('feedback-alert').classList.add('hidden');
 
-            var savedAnswer = examAnswers[examCurrentIdx] || '';
-
             var container = document.getElementById('options-container');
-            if (qq.type === 'multiple') {
+            if (qq.type === 'truefalse') {
+                var tfSaved = [];
+                try { tfSaved = JSON.parse(savedAnswer); } catch(e) { tfSaved = []; }
+                if (!Array.isArray(tfSaved)) tfSaved = [];
+                container.innerHTML = '<div style="display: flex; flex-direction: column; gap: 0.5rem;">' +
+                    qq.statements.map(function(stmt, si) {
+                        var picked = tfSaved[si] || '';
+                        return '<div style="display: flex; align-items: center; gap: 0.5rem; background: #f5f5f4; padding: 0.5rem 0.65rem; border-radius: 0.5rem; border: 1px solid #e7e5e4;" data-testid="tf-row-' + examCurrentIdx + '-' + si + '">' +
+                            '<span style="background: #8671d1; color: white; font-size: 0.55rem; font-weight: 800; width: 1.2rem; height: 1.2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">' + (si + 1) + '</span>' +
+                            '<span style="flex: 1; font-size: 0.8rem; font-weight: 500; color: #1c1917;">' + stmt + '</span>' +
+                            '<button onclick="selectTF(' + si + ',\'True\')" class="tf-btn" data-tf="' + si + '-True" data-testid="tf-true-' + examCurrentIdx + '-' + si + '" style="padding: 0.25rem 0.6rem; border-radius: 0.375rem; font-size: 0.65rem; font-weight: 800; font-family: DM Sans, sans-serif; cursor: pointer; border: 2px solid ' + (picked === 'True' ? '#16a34a' : '#d6d3d1') + '; background: ' + (picked === 'True' ? '#f0fdf4' : 'white') + '; color: ' + (picked === 'True' ? '#16a34a' : '#78716c') + ';">TRUE</button>' +
+                            '<button onclick="selectTF(' + si + ',\'False\')" class="tf-btn" data-tf="' + si + '-False" data-testid="tf-false-' + examCurrentIdx + '-' + si + '" style="padding: 0.25rem 0.6rem; border-radius: 0.375rem; font-size: 0.65rem; font-weight: 800; font-family: DM Sans, sans-serif; cursor: pointer; border: 2px solid ' + (picked === 'False' ? '#ef4444' : '#d6d3d1') + '; background: ' + (picked === 'False' ? '#fef2f2' : 'white') + '; color: ' + (picked === 'False' ? '#ef4444' : '#78716c') + ';">FALSE</button>' +
+                        '</div>';
+                    }).join('') + '</div>';
+            } else if (qq.type === 'multiple') {
+                var mcSaved = typeof savedAnswer === 'string' ? savedAnswer : '';
                 container.innerHTML = qq.options.map(function(opt, i) {
-                    var isSelected = savedAnswer === opt;
+                    var isSelected = mcSaved === opt;
                     return '<button class="option-button w-full border-2 p-4 rounded-xl font-bold text-left transition-all flex items-center ' + (isSelected ? 'exam-selected border-purple-400 bg-purple-50' : 'border-slate-200 hover:border-yellow-400') + '" onclick="selectExamOption(this, \'' + opt.replace(/'/g, "\\'").replace(/"/g, '&quot;') + '\')" data-exam-value="' + opt.replace(/"/g, '&quot;') + '" data-testid="exam-opt-' + examCurrentIdx + '-' + i + '">' +
                         '<span class="w-8 h-8 rounded-full bg-yellow-50 text-amber-700 flex items-center justify-center font-bold mr-3 flex-shrink-0 text-sm border border-yellow-300">' + String.fromCharCode(65 + i) + '</span>' +
                         '<span>' + opt + '</span></button>';
                 }).join('');
+            } else if (hasGaps) {
+                container.innerHTML = '';
+            } else if (qq.q.indexOf('___') !== -1) {
+                gapCounter.n = 0;
+                var qWithGaps = qq.q.replace(/___+/g, function() {
+                    var gIdx = gapCounter.n++;
+                    var val = savedGaps[gIdx] || '';
+                    return '<span style="display: inline-flex; align-items: center; gap: 0.2rem; margin: 0.15rem 0.1rem;"><span style="background: #8671d1; color: white; font-size: 0.5rem; font-weight: 800; width: 1rem; height: 1rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">' + (gIdx + 1) + '</span><input type="text" class="exam-gap-input" data-gap="' + gIdx + '" value="' + val.replace(/"/g, '&quot;') + '" placeholder="..." style="width: 7rem; padding: 0.2rem 0.4rem; border: 2px solid #ddd6fe; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; font-family: DM Sans, sans-serif; text-align: center; background: white; color: #1c1917;" data-testid="exam-gap-' + examCurrentIdx + '-' + gIdx + '"></span>';
+                });
+                document.getElementById('main-question').innerHTML = '<span style="color: #8671d1; font-weight: 800;">' + (examCurrentIdx + 1) + '.</span> ' + qWithGaps;
+                container.innerHTML = '';
             } else {
-                container.innerHTML = '<input type="text" id="exam-text-input" placeholder="Digite sua resposta..." value="' + savedAnswer.replace(/"/g, '&quot;') + '" style="width: 100%; padding: 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.75rem; font-size: 0.95rem; font-family: \'DM Sans\', sans-serif;" data-testid="exam-input-' + examCurrentIdx + '">';
+                var txtSaved = typeof savedAnswer === 'string' ? savedAnswer : (savedGaps[0] || '');
+                container.innerHTML = '<input type="text" id="exam-text-input" placeholder="Digite sua resposta..." value="' + txtSaved.replace(/"/g, '&quot;') + '" style="width: 100%; padding: 0.75rem; border: 2px solid #e7e5e4; border-radius: 0.75rem; font-size: 0.95rem; font-family: \'DM Sans\', sans-serif;" data-testid="exam-input-' + examCurrentIdx + '">';
             }
 
             var navHtml = '<div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">';
@@ -7153,6 +7282,30 @@
             nextContainer.classList.remove('hidden');
             nextContainer.innerHTML = navHtml;
 
+            renderExamDots();
+        }
+
+        window.selectTF = function(stmtIdx, value) {
+            var qq = examQuestions[examCurrentIdx];
+            if (!qq || qq.type !== 'truefalse') return;
+            var tfSaved = [];
+            try { tfSaved = JSON.parse(examAnswers[examCurrentIdx]); } catch(e) { tfSaved = []; }
+            if (!Array.isArray(tfSaved)) tfSaved = [];
+            tfSaved[stmtIdx] = value;
+            examAnswers[examCurrentIdx] = JSON.stringify(tfSaved);
+
+            var trueBtn = document.querySelector('[data-tf="' + stmtIdx + '-True"]');
+            var falseBtn = document.querySelector('[data-tf="' + stmtIdx + '-False"]');
+            if (trueBtn) {
+                trueBtn.style.borderColor = value === 'True' ? '#16a34a' : '#d6d3d1';
+                trueBtn.style.background = value === 'True' ? '#f0fdf4' : 'white';
+                trueBtn.style.color = value === 'True' ? '#16a34a' : '#78716c';
+            }
+            if (falseBtn) {
+                falseBtn.style.borderColor = value === 'False' ? '#ef4444' : '#d6d3d1';
+                falseBtn.style.background = value === 'False' ? '#fef2f2' : 'white';
+                falseBtn.style.color = value === 'False' ? '#ef4444' : '#78716c';
+            }
             renderExamDots();
         }
 
@@ -7200,6 +7353,17 @@
                 var ans = examAnswers[idx] || '';
                 if (qq.type === 'multiple') {
                     if (ans === qq.answer) autoScore++;
+                } else if (qq.type === 'truefalse') {
+                    try {
+                        var tfAns = JSON.parse(ans);
+                        if (Array.isArray(tfAns) && Array.isArray(qq.answer)) {
+                            var allCorrect = true;
+                            for (var ti = 0; ti < qq.answer.length; ti++) {
+                                if (tfAns[ti] !== qq.answer[ti]) { allCorrect = false; break; }
+                            }
+                            if (allCorrect) autoScore++;
+                        }
+                    } catch(e) {}
                 } else {
                     if (ans.toLowerCase() === qq.answer.toLowerCase()) autoScore++;
                 }
