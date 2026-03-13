@@ -6517,14 +6517,14 @@
                     { q: "Complete the sentences: 1) People speak German in ___. 2) The language of Argentina is ___. 3) I don't speak ___ (Tokyo). 4) People born in the United States are ___.", type: 'text', answer: 'germany, spanish, japanese, americans' },
                     { q: "How do you say \"Estes são os celulares do meu primo\" in English?", type: 'text', answer: "these are my cousin's phones" },
                     { q: "Write the correct form: 'She (not/like) ___ chocolate.'", type: 'text', answer: "doesn't like" },
-                    { q: "Rewrite the sentence in the negative form: 'They play soccer on Saturdays.'", type: 'text', answer: "they don't play soccer on saturdays" },
-                    { q: "Write this time in words: 6:30", type: 'text', answer: 'six thirty' },
+                    { q: "Rewrite the sentences in the negative form: 1) They play soccer on Saturdays. 2) She speaks French very well. 3) I want a glass of water.", type: 'text', answer: "1) They don't play soccer on Saturdays. 2) She doesn't speak French very well. 3) I don't want a glass of water." },
+                    { q: "Write these times in words: 1) 6:30 — 2) 2:15 — 3) 9:45", type: 'text', answer: '1) six thirty 2) two fifteen / quarter past two 3) nine forty-five / quarter to ten' },
                     // --- 5 LISTENING ---
-                    { q: "Listen to the audio and answer: What is the speaker's name?", type: 'text', audio: 'AUDIO_URL_1', answer: '' },
-                    { q: "Listen to the audio and choose the correct answer:", type: 'multiple', audio: 'AUDIO_URL_2', options: ['He is a teacher.','He is a doctor.','He is a student.','He is an engineer.'], answer: '' },
-                    { q: "Listen and complete the sentence you hear:", type: 'text', audio: 'AUDIO_URL_3', answer: '' },
-                    { q: "Listen to the audio and answer: Where is the woman from?", type: 'text', audio: 'AUDIO_URL_4', answer: '' },
-                    { q: "Listen to the dialogue and choose what they are talking about:", type: 'multiple', audio: 'AUDIO_URL_5', options: ['Food and drinks','Family members','Daily routine','Hobbies and sports'], answer: '' }
+                    { q: "Listen to the audio and fill in the gaps:", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/Hello_My_name_is_Joh_ij5lnh.mp3', passage: 'Hello! (1) _______________, and I would like to introduce myself. I am (2) _______________, and I live in a small city. I work at an office, and I really like my job. My coworkers are very friendly, and the environment is nice. In my free time, (3) _______________ listening to music, watching movies, and spending time with (4) _______________. On weekends, I sometimes go to restaurants or walk in the park. I also like learning new things. Right now, I am learning new skills and trying to improve (5) _______________. I am a calm and positive person, and I enjoy meeting new people. It\'s very nice to meet you!', answer: '1) My name is John, 2) 25 years old, 3) I like, 4) my friends, 5) every day' },
+                    { q: "Listen to the audio and fill in the phone numbers:", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/numbers_ry86uq.mp3', passage: 'Today I\'m going to tell you some phone numbers of my friends. First, I have my friend Lucas. His phone number is (1) _______________. My friend Maria also gave me her number. Her phone number is (2) _______________. Then there is my friend Daniel. His phone number is (3) _______________. I also have my friend Julia\'s number. Her phone number is (4) _______________. Sometimes I save the numbers in my phone, but I also like to practice saying them in English. It helps me remember numbers better.', answer: '1) 987654321, 2) 991234567, 3) 888765432, 4) 923456789' },
+                    { q: "Listen to the audio about family and fill in the gaps:", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/family_b1brj1.mp3', passage: 'I have a small but very nice family. I live with my parents and my (1) _______________. My father is very (2) _______________. He works every day and always helps our family. My mother is very kind and caring. She loves (3) _______________ and spending time with us. I also have a younger sister. She is a student, and she is very funny. Sometimes we watch movies together, play games, or talk about our day. I also have grandparents. My grandfather likes telling (4) _______________ about his life, and my grandmother always makes delicious food when we visit her. Family is very important to me. I love spending time with them, especially on (5) _______________. Sometimes we have lunch together, watch TV, or just talk and laugh. I feel very lucky to have such a loving family.', answer: '1) younger sister, 2) hardworking, 3) cooking, 4) stories, 5) weekends' },
+                    { q: "Listen to the audio about food and nationalities, then fill in the gaps:", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/Food_is_a_very_inter_etgacb.mp3', passage: 'Food is a very interesting way to learn about different cultures around the world. For example, people from Italy are called (1) _______________. Italian food is very famous, especially (2) _______________ and pasta. In Japan, people are called (3) _______________. One very popular food there is (4) _______________. Sushi is usually made with rice, fish, and vegetables. If we travel to Mexico, the people are (5) _______________. One popular dish is the (6) _______________. Tacos can have meat, chicken, vegetables, and different sauces. Now let\'s talk about Brazil. People from Brazil are (7) _______________. One traditional Brazilian dish is (8) _______________. It is made with beans and meat and is usually eaten with rice.', answer: '1) Italians, 2) pizza, 3) Japanese, 4) sushi, 5) Mexican, 6) taco, 7) Brazilian, 8) feijoada' },
+                    { q: "Listen to the audio about a neighborhood. Mark each sentence as TRUE or FALSE: 1) The streets are dirty. 2) There is a small park near the house. 3) The supermarket is far from the house. 4) The coffee shop is popular on weekends. 5) There is a modern gym near the house. 6) The neighborhood feels dangerous.", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/neighborhood_amqiex.mp3', answer: '1) False, 2) True, 3) False, 4) True, 5) True, 6) False' }
                 ]
             }
         };
@@ -7011,8 +7011,68 @@
             dotsEl.innerHTML = '<div style="display:flex;gap:0.3rem;justify-content:center;">' + row1 + '</div><div style="display:flex;gap:0.3rem;justify-content:center;margin-top:0.25rem;">' + row2 + '</div>';
         }
 
+        var examAudioInterval = null;
+        function examAudioCleanup() {
+            var el = document.getElementById('exam-audio-el');
+            if (el) { el.pause(); el.currentTime = 0; }
+            if (examAudioInterval) { clearInterval(examAudioInterval); examAudioInterval = null; }
+        }
+        function formatAudioTime(s) {
+            if (isNaN(s)) return '0:00';
+            var m = Math.floor(s / 60);
+            var sec = Math.floor(s % 60);
+            return m + ':' + (sec < 10 ? '0' : '') + sec;
+        }
+        window.examAudioToggle = function() {
+            var el = document.getElementById('exam-audio-el');
+            if (!el) return;
+            if (el.paused) {
+                el.play();
+                document.getElementById('exam-audio-icon-play').style.display = 'none';
+                document.getElementById('exam-audio-icon-pause').style.display = '';
+                if (examAudioInterval) clearInterval(examAudioInterval);
+                examAudioInterval = setInterval(function() {
+                    var seek = document.getElementById('exam-audio-seek');
+                    var timeEl = document.getElementById('exam-audio-time');
+                    if (seek && el.duration) seek.value = (el.currentTime / el.duration) * 100;
+                    if (timeEl) timeEl.textContent = formatAudioTime(el.currentTime) + ' / ' + formatAudioTime(el.duration);
+                    if (el.ended) {
+                        document.getElementById('exam-audio-icon-play').style.display = '';
+                        document.getElementById('exam-audio-icon-pause').style.display = 'none';
+                        clearInterval(examAudioInterval); examAudioInterval = null;
+                    }
+                }, 200);
+            } else {
+                el.pause();
+                document.getElementById('exam-audio-icon-play').style.display = '';
+                document.getElementById('exam-audio-icon-pause').style.display = 'none';
+                if (examAudioInterval) { clearInterval(examAudioInterval); examAudioInterval = null; }
+            }
+        }
+        window.examAudioSeek = function(val) {
+            var el = document.getElementById('exam-audio-el');
+            if (el && el.duration) {
+                el.currentTime = (val / 100) * el.duration;
+                var timeEl = document.getElementById('exam-audio-time');
+                if (timeEl) timeEl.textContent = formatAudioTime(el.currentTime) + ' / ' + formatAudioTime(el.duration);
+            }
+        }
+        window.examAudioSpeed = function(speed) {
+            var el = document.getElementById('exam-audio-el');
+            if (el) el.playbackRate = speed;
+            document.querySelectorAll('.exam-speed-btn').forEach(function(btn) {
+                var s = parseFloat(btn.dataset.speed);
+                if (s === speed) {
+                    btn.style.background = '#ede9fe'; btn.style.color = '#8671d1'; btn.style.borderColor = '#8671d1';
+                } else {
+                    btn.style.background = 'white'; btn.style.color = '#78716c'; btn.style.borderColor = '#ddd6fe';
+                }
+            });
+        }
+
         window.examGoTo = function(idx) {
             saveCurrentExamAnswer();
+            examAudioCleanup();
             examCurrentIdx = idx;
             loadExamQuestion();
         }
@@ -7039,7 +7099,23 @@
                 questionHtml = '<div style="background: #f5f5f4; border-left: 3px solid #8671d1; padding: 0.6rem 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem; font-size: 0.8rem; color: #44403c; line-height: 1.5; font-style: italic;">' + qq.passage + '</div>' + questionHtml;
             }
             if (qq.audio) {
-                questionHtml += '<div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem; background: #f5f3ff; padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #ddd6fe;"><span style="font-size: 0.7rem; font-weight: 700; color: #8671d1;">🎧 Áudio:</span><audio controls controlsList="nodownload" style="height: 2rem; flex: 1;"><source src="' + qq.audio + '" type="audio/mpeg">Seu navegador não suporta áudio.</audio></div>';
+                questionHtml += '<div style="margin-top: 0.5rem; background: #f5f3ff; padding: 0.6rem 0.75rem; border-radius: 0.5rem; border: 1px solid #ddd6fe;">' +
+                    '<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">' +
+                        '<button onclick="examAudioToggle()" style="width: 2rem; height: 2rem; border-radius: 50%; background: #8671d1; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" data-testid="button-audio-play" id="exam-audio-play-btn"><svg id="exam-audio-icon-play" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg><svg id="exam-audio-icon-pause" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button>' +
+                        '<div style="flex: 1; display: flex; flex-direction: column; gap: 0.15rem;">' +
+                            '<input type="range" id="exam-audio-seek" min="0" max="100" value="0" style="width: 100%; height: 4px; accent-color: #8671d1; cursor: pointer;" oninput="examAudioSeek(this.value)">' +
+                            '<div style="display: flex; justify-content: space-between;"><span id="exam-audio-time" style="font-size: 0.55rem; color: #78716c; font-weight: 600;">0:00 / 0:00</span></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="display: flex; align-items: center; gap: 0.3rem;">' +
+                        '<span style="font-size: 0.55rem; font-weight: 700; color: #78716c;">Velocidade:</span>' +
+                        '<button onclick="examAudioSpeed(0.75)" class="exam-speed-btn" data-speed="0.75" style="font-size: 0.55rem; padding: 0.1rem 0.35rem; border-radius: 0.25rem; border: 1px solid #ddd6fe; background: white; cursor: pointer; font-weight: 700; color: #78716c; font-family: DM Sans, sans-serif;">0.75x</button>' +
+                        '<button onclick="examAudioSpeed(1)" class="exam-speed-btn" data-speed="1" style="font-size: 0.55rem; padding: 0.1rem 0.35rem; border-radius: 0.25rem; border: 1px solid #8671d1; background: #ede9fe; cursor: pointer; font-weight: 700; color: #8671d1; font-family: DM Sans, sans-serif;">1x</button>' +
+                        '<button onclick="examAudioSpeed(1.5)" class="exam-speed-btn" data-speed="1.5" style="font-size: 0.55rem; padding: 0.1rem 0.35rem; border-radius: 0.25rem; border: 1px solid #ddd6fe; background: white; cursor: pointer; font-weight: 700; color: #78716c; font-family: DM Sans, sans-serif;">1.5x</button>' +
+                        '<button onclick="examAudioSpeed(2)" class="exam-speed-btn" data-speed="2" style="font-size: 0.55rem; padding: 0.1rem 0.35rem; border-radius: 0.25rem; border: 1px solid #ddd6fe; background: white; cursor: pointer; font-weight: 700; color: #78716c; font-family: DM Sans, sans-serif;">2x</button>' +
+                    '</div>' +
+                    '<audio id="exam-audio-el" preload="auto" controlsList="nodownload noplaybackrate"><source src="' + qq.audio + '" type="audio/mpeg"></audio>' +
+                '</div>';
             }
             document.getElementById('main-question').innerHTML = questionHtml;
             document.getElementById('rationale-display').classList.add('hidden');
