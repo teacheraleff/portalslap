@@ -6594,7 +6594,7 @@
                     active: true
                 });
                 closeExamModal();
-                loadExamSessions();
+                await loadExamSessions();
             } catch(e) {
                 console.error('Erro ao criar sessão de teste:', e);
                 alert('Erro ao criar o teste. Tente novamente.');
@@ -6603,6 +6603,9 @@
 
         async function loadExamSessions() {
             var listEl = document.getElementById('exam-sessions-list');
+            if (!listEl.innerHTML.trim() || listEl.innerHTML.indexOf('Nenhum teste') !== -1) {
+                listEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.8rem; padding: 2rem 0;">Carregando testes...</p>';
+            }
             try {
                 var snap = await firebaseDb.collection('examSessions').orderBy('createdAt', 'desc').get();
                 if (snap.empty) {
@@ -6652,7 +6655,7 @@
                 listEl.innerHTML = html;
             } catch(e) {
                 console.error('Erro ao carregar sessões:', e);
-                listEl.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.8rem; padding: 2rem 0;">Erro ao carregar testes.</p>';
+                listEl.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.8rem; padding: 2rem 0;">Erro ao carregar testes. <a href="#" onclick="loadExamSessions(); return false;" style="color: #8671d1; text-decoration: underline;">Tentar novamente</a></p>';
             }
         }
 
@@ -6660,7 +6663,7 @@
             if (!confirm('Encerrar este teste? Alunos não poderão mais acessar.')) return;
             try {
                 await firebaseDb.collection('examSessions').doc(sessionId).update({ active: false });
-                loadExamSessions();
+                await loadExamSessions();
             } catch(e) { console.error(e); }
         }
 
@@ -6678,7 +6681,7 @@
                     return;
                 }
                 await firebaseDb.collection('examSessions').doc(sessionId).update({ extraMinutes: newTotal });
-                loadExamSessions();
+                await loadExamSessions();
                 alert('+' + mins + ' minuto(s) adicionado(s). Total extra: ' + newTotal + ' min.');
             } catch(e) {
                 console.error('Erro ao adicionar tempo:', e);
@@ -6694,7 +6697,7 @@
                 subSnap.docs.forEach(function(doc) { batch.delete(doc.ref); });
                 batch.delete(firebaseDb.collection('examSessions').doc(sessionId));
                 await batch.commit();
-                loadExamSessions();
+                await loadExamSessions();
             } catch(e) {
                 console.error('Erro ao excluir teste:', e);
                 alert('Erro ao excluir o teste. Tente novamente.');
@@ -6841,9 +6844,9 @@
                                                     label += '</span>';
                                                     return label;
                                                 });
-                                                passageHtml = '<div style="background:#fafaf9;border-left:3px solid #8671d1;padding:0.75rem 1rem;border-radius:0.375rem;margin-bottom:0.5rem;font-size:0.9rem;color:#44403c;line-height:2.2;">' + filledPassage + '</div>';
+                                                passageHtml = '<div style="background:#fafaf9;padding:0.75rem 1rem;border-radius:0.375rem;margin-bottom:0.5rem;font-size:0.9rem;color:#44403c;line-height:2.2;border:1px solid #e7e5e4;">' + filledPassage + '</div>';
                                             } else {
-                                                passageHtml = '<div style="background:#f5f5f4;border-left:3px solid #8671d1;padding:0.5rem 0.75rem;border-radius:0.375rem;margin-bottom:0.5rem;font-size:0.85rem;color:#44403c;line-height:1.6;font-style:italic;">' + qq.passage.replace(/\n/g, '<br>') + '</div>';
+                                                passageHtml = '<div style="background:#f5f5f4;padding:0.5rem 0.75rem;border-radius:0.375rem;margin-bottom:0.5rem;font-size:0.85rem;color:#44403c;line-height:1.6;font-style:italic;border:1px solid #e7e5e4;">' + qq.passage.replace(/\n/g, '<br>') + '</div>';
                                             }
                                         }
                                         var savedComment = (sub.teacherComments || {})[idx] || '';
@@ -7004,7 +7007,7 @@
 
                     return '<div style="padding:12px;border-radius:8px;background:' + bgColor + ';border:1px solid ' + borderColor + ';margin-bottom:8px;">' +
                         '<p style="font-size:13px;font-weight:700;color:#1c1917;margin:0 0 4px;">' + statusIcon + ' Questão ' + (idx + 1) + (isText ? ' <span style="font-size:10px;background:#ede9fe;color:#7c3aed;padding:2px 6px;border-radius:4px;">ESCRITA</span>' : '') + (isTF ? ' <span style="font-size:10px;background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:4px;">TRUE / FALSE</span>' : '') + '</p>' +
-                        (qq.passage ? '<div style="background:#f5f5f4;border-left:3px solid #8671d1;padding:8px 10px;border-radius:6px;margin-bottom:6px;font-size:11px;color:#44403c;line-height:1.5;font-style:italic;">' + qq.passage.replace(/\n/g, '<br>') + '</div>' : '') +
+                        (qq.passage ? '<div style="background:#f5f5f4;padding:8px 10px;border-radius:6px;margin-bottom:6px;font-size:11px;color:#44403c;line-height:1.5;font-style:italic;border:1px solid #e7e5e4;">' + qq.passage.replace(/\n/g, '<br>') + '</div>' : '') +
                         (qq.audio ? '<div style="background:#f5f3ff;border:1px solid #ddd6fe;padding:6px 10px;border-radius:6px;margin-bottom:6px;font-size:11px;color:#8671d1;font-weight:600;display:flex;align-items:center;gap:4px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg> Questão com áudio</div>' : '') +
                         '<p style="font-size:12px;color:#44403c;margin:0 0 6px;">' + qq.q + '</p>' +
                         ansHtml +
@@ -7114,7 +7117,11 @@
             if (!examData) return;
 
             currentStudyMode = 'exam';
-            examQuestions = examData.questions.slice();
+            examQuestions = examData.questions.map(function(q, i) {
+                var copy = Object.assign({}, q);
+                copy._originalIdx = i;
+                return copy;
+            });
             for (var si = examQuestions.length - 1; si > 0; si--) {
                 var sj = Math.floor(Math.random() * (si + 1));
                 var tmp = examQuestions[si]; examQuestions[si] = examQuestions[sj]; examQuestions[sj] = tmp;
@@ -7342,10 +7349,10 @@
             var passageHtmlForContainer = '';
             if (qq.passage && !hasGaps) {
                 var passageRaw = qq.passage.replace(/\n/g, '<br>');
-                questionHtml = '<div style="background: #f5f5f4; border-left: 3px solid #8671d1; padding: 0.6rem 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem; font-size: 0.8rem; color: #44403c; line-height: 1.5; font-style: italic;">' + passageRaw + '</div>' + questionHtml;
+                questionHtml = '<div style="background: #f5f5f4; padding: 0.6rem 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem; font-size: 0.8rem; color: #44403c; line-height: 1.5; font-style: italic; border: 1px solid #e7e5e4;">' + passageRaw + '</div>' + questionHtml;
             } else if (hasGaps) {
                 var passageRaw = qq.passage.replace(/\n/g, '<br>');
-                passageHtmlForContainer = '<div style="background: #f5f5f4; border-left: 3px solid #8671d1; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.9rem; color: #44403c; line-height: 2.2;">' + renderGapText(passageRaw) + '</div>';
+                passageHtmlForContainer = '<div style="background: #f5f5f4; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.9rem; color: #44403c; line-height: 2.2; border: 1px solid #e7e5e4;">' + renderGapText(passageRaw) + '</div>';
             }
             if (qq.audio) {
                 questionHtml += '<div style="margin-top: 0.5rem; background: #f5f3ff; padding: 0.6rem 0.75rem; border-radius: 0.5rem; border: 1px solid #ddd6fe;">' +
@@ -7494,8 +7501,14 @@
             var examData = examBank[activeExamSession.examKey];
             var autoScore = 0;
 
+            var mappedAnswers = {};
+            examQuestions.forEach(function(qq, shuffledIdx) {
+                var originalIdx = qq._originalIdx;
+                mappedAnswers[originalIdx] = examAnswers[shuffledIdx] || '';
+            });
+
             examData.questions.forEach(function(qq, idx) {
-                var ans = examAnswers[idx] || '';
+                var ans = mappedAnswers[idx] || '';
                 if (qq.type === 'multiple') {
                     if (ans === qq.answer) autoScore++;
                 } else if (qq.type === 'truefalse') {
@@ -7519,7 +7532,7 @@
                     sessionId: activeExamSession.sessionId,
                     studentUid: currentUser.uid,
                     studentEmail: currentUser.email,
-                    answers: examAnswers,
+                    answers: mappedAnswers,
                     autoScore: autoScore,
                     totalQuestions: examData.questions.length,
                     autoSubmitted: !!autoSubmit,
