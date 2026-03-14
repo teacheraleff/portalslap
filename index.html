@@ -628,7 +628,7 @@
 
                 <button onclick="showTeacherSection('exams'); closeTeacherSidebar();" class="sidebar-item teacher-sidebar-nav" id="teacher-nav-exams" data-testid="button-teacher-nav-exams">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                    Testes
+                    Sessões
                 </button>
             </div>
 
@@ -1377,7 +1377,7 @@
     <div id="exam-results-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 20000; align-items: center; justify-content: center; padding: 1rem;">
         <div style="background: white; border-radius: 1rem; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 2rem; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h3 style="font-size: 1.3rem; font-weight: 800; color: #1c1917;">Resultados do Teste</h3>
+                <h3 id="exam-results-title" style="font-size: 1.3rem; font-weight: 800; color: #1c1917;">Resultados</h3>
                 <button onclick="document.getElementById('exam-results-modal').style.display='none'" style="background: none; border: none; cursor: pointer; color: #78716c; font-size: 1.4rem;">✕</button>
             </div>
             <div id="exam-results-content"></div>
@@ -4605,7 +4605,7 @@
                 const boxBtn = boxesData[aula.id] ? `<button class="secondary-button-sm" onclick="openBoxes(${aula.id})">BOXES</button>` : '';
                 const isMidterm = aula.name === 'Midterm Test';
                 const examKey = isMidterm ? currentLevel + '_midterm' : null;
-                const examBtn = (examKey && examBank[examKey] && studentActiveExam) ? `<button style="background: #16a34a; color: white; border: none; border-radius: 0.5rem; padding: 0.35rem 0.75rem; font-size: 0.7rem; font-weight: 800; cursor: pointer; font-family: 'DM Sans', sans-serif; text-transform: uppercase; animation: pulse 2s infinite;" onclick="startStudentExam(studentActiveExam)" data-testid="button-start-exam-${aula.id}">TESTE DISPONÍVEL</button>` : '';
+                const examBtn = (examKey && studentActiveExam) ? `<button style="background: #16a34a; color: white; border: none; border-radius: 0.5rem; padding: 0.35rem 0.75rem; font-size: 0.7rem; font-weight: 800; cursor: pointer; font-family: 'DM Sans', sans-serif; text-transform: uppercase; animation: pulse 2s infinite;" onclick="startStudentExam(studentActiveExam)" data-testid="button-start-exam-${aula.id}">TESTE DISPONÍVEL</button>` : '';
 
                 let allStreaks = [];
                 if (aula.hasHomework && activeQuiz[aula.id]) allStreaks.push({ label: 'Homework', done: isStreakDone(aula.id, 'homework') });
@@ -6533,37 +6533,20 @@
         };
         function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
         // ===== EXAM SYSTEM =====
-        const examBank = {
-            starter1_midterm: {
-                name: 'Starter 1 — Midterm Test',
-                level: 'starter1',
-                questions: [
-                    // --- 10 MULTIPLE CHOICE (tricky) ---
-                    { q: "According to the text, what's the correct information?", type: 'multiple', passage: "Marta is from Madrid but she works for a British company in Liverpool. Her husband, Pierre, is French. Mahmoud is from Cairo. His sister, Fatima, is planning to study medicine in Australia. Ying Mei is from Shanghai and is learning Korean.", options: ['Marta is british.','Pierre is from France.','Ying Mei is not from Shanghai.','Ying Mei speaks Korean fluently.','Pierre isn\'t French.'], answer: 'Pierre is from France.' },
-                    { q: "Choose the correct sentence:", type: 'multiple', options: ["My sister have 22 years old.","My sister is 22 years old.","My sister has 22 years old.","My sister are 22 years old."], answer: "My sister is 22 years old." },
-                    { q: "'There ___ a lot of people at the museum.' Choose the correct option:", type: 'multiple', options: ['is','are','is not','have'], answer: 'are' },
-                    { q: "'___ books on the table are mine, but ___ ones over there are yours.' Choose the correct pair:", type: 'multiple', options: ['This / that','These / those','That / this','Those / these'], answer: 'These / those' },
-                    { q: "'Look at ___ beautiful flowers in my hand!' Choose the correct option:", type: 'multiple', options: ['that','those','these','this'], answer: 'these' },
-                    { q: "Choose the correct question form:", type: 'multiple', options: ["Where does he lives?","Where does he live?","Where do he live?","Where he does live?"], answer: "Where does he live?" },
-                    { q: "'I need ___ umbrella because it's raining.' Choose the correct article:", type: 'multiple', options: ['a','an','the','—'], answer: 'an' },
-                    { q: "Which sentence is correct?", type: 'multiple', options: ["He doesn't like to swim.","He swim.","He don't swim.","I think he swim every day."], answer: "He doesn't like to swim." },
-                    { q: "'My parents ___ from Brazil, but they ___ in Portugal now.' Choose the correct pair:", type: 'multiple', options: ['is / lives','are / live','are / lives','is / live'], answer: 'are / live' },
-                    // --- 6 WRITTEN (open) ---
-                    { q: "Write these numbers as ordinal numbers (in words):", type: 'text', passage: '1. 1 → (1) _______________\n2. 3 → (2) _______________\n3. 5 → (3) _______________\n4. 12 → (4) _______________\n5. 20 → (5) _______________', answer: '1) first, 2) third, 3) fifth, 4) twelfth, 5) twentieth' },
-                    { q: "Complete the sentences:", type: 'text', passage: '1. People speak German in (1) _______________.\n2. The language of Argentina is (2) _______________.\n3. I don\'t speak (3) _______________ (Tokyo).\n4. People born in the United States are (4) _______________.', answer: 'germany, spanish, japanese, americans' },
-                    { q: "How do you say \"Estes são os celulares do meu primo\" in English?", type: 'text', answer: "these are my cousin's phones" },
-                    { q: "How do you feel? Complete with the correct feeling:", type: 'text', passage: '1. When I get a good grade, I feel (1) _______________.\n2. When I am alone at night, I feel (2) _______________.\n3. When I wait a long time, I feel (3) _______________.\n4. When I eat a lot of food, I feel (4) _______________.', answer: '1) happy, 2) scared / afraid, 3) bored / impatient, 4) full' },
-                    { q: "Rewrite the sentences in the negative form:", type: 'text', passage: '1. She is a teacher. → (1) _______________\n2. They are from Japan. → (2) _______________\n3. I am tall. → (3) _______________', answer: "She is not a teacher. / She isn't a teacher., They are not from Japan. / They aren't from Japan., I am not tall. / I'm not tall." },
-                    { q: "Complete the dialogue with the correct greetings or responses:", type: 'text', passage: 'A: Hello! What is your name?\nB: (1) _______________. Nice to meet you!\nA: Nice to meet you too! (2) _______________?\nB: I am fine, thank you. And you?\nA: I am great! (3) _______________?\nB: I am from Brazil.\nA: Welcome! (4) _______________!\nB: Thank you! See you later!', answer: '1) My name is / I am, 2) How are you, 3) Where are you from, 4) Goodbye / Bye / See you' },
-                    // --- 5 LISTENING ---
-                    { q: "Listen to the audio and fill in the gaps:", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/Hello_My_name_is_Joh_ij5lnh.mp3', passage: 'Hello! (1) _______________, and I would like to introduce myself. I am (2) _______________, and I live in a small city. I work at an office, and I really like my job. My coworkers are very friendly, and the environment is nice. In my free time, (3) _______________ listening to music, watching movies, and spending time with (4) _______________. On weekends, I sometimes go to restaurants or walk in the park. I also like learning new things. Right now, I am learning new skills and trying to improve (5) _______________. I am a calm and positive person, and I enjoy meeting new people. It\'s very nice to meet you!', answer: '1) My name is John, 2) 25 years old, 3) I like, 4) my friends, 5) every day' },
-                    { q: "Listen to the audio and fill in the phone numbers:", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/numbers_ry86uq.mp3', passage: 'Today I\'m going to tell you some phone numbers of my friends. First, I have my friend Lucas. His phone number is (1) _______________. My friend Maria also gave me her number. Her phone number is (2) _______________. Then there is my friend Daniel. His phone number is (3) _______________. I also have my friend Julia\'s number. Her phone number is (4) _______________. Sometimes I save the numbers in my phone, but I also like to practice saying them in English. It helps me remember numbers better.', answer: '1) 987654321, 2) 991234567, 3) 888765432, 4) 923456789' },
-                    { q: "Listen to the audio about family and fill in the gaps:", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/family_b1brj1.mp3', passage: '(1) _______________ is very important to me. I have a small but very nice family. I live with (2) _______________ and my younger sister. My father is very hardworking. He works every day and always helps our family. My mother is very kind and caring. She loves cooking and spending time with us. I also have a younger sister. She is a student, and she is (3) _______________. Sometimes we watch movies together, play games, or talk about our day. I also have (4) _______________. My grandfather likes telling stories about his life, and my (5) _______________ always makes delicious food when we visit her. I love spending time with them, especially on weekends. Sometimes we have lunch together, (6) _______________, or just talk and laugh. I feel very lucky to have such a loving family.', answer: '1) family, 2) my parents, 3) very funny, 4) grandparents, 5) grandmother, 6) watch tv' },
-                    { q: "Listen to the audio about food and nationalities, then fill in the gaps:", type: 'text', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/Food_is_a_very_inter_etgacb.mp3', passage: '(1) _______________ is a very interesting way to learn about different cultures around the world. For example, people from Italy are called (2) _______________. Italian food is very famous, especially (3) _______________ and pasta. In Japan, people are called (4) _______________. One very popular food there is sushi. Sushi is usually made with rice, fish, and vegetables. If we travel to Mexico, the people are (5) _______________. One popular dish is the (6) _______________. Tacos can have meat, chicken, vegetables, and different sauces. Now let\'s talk about Brazil. People from Brazil are (7) _______________. One traditional Brazilian dish is feijoada. It is made with (8) _______________ and meat and is usually eaten with rice. As you can see, every country has its own food and traditions. Learning about food is a fun way to learn about different countries and nationalities.', answer: '1) food, 2) italians, 3) pizza, 4) japanese, 5) mexican, 6) taco, 7) brazilian, 8) beans' },
-                    { q: "Listen to the audio about a neighborhood. Mark each sentence as TRUE or FALSE:", type: 'truefalse', audio: 'https://res.cloudinary.com/dqfi22uz0/video/upload/v1773362300/neighborhood_amqiex.mp3', statements: ['The streets are dirty.','There is a small park near the house.','The supermarket is far from the house.','The coffee shop is popular on weekends.','There is a modern gym near the house.','The neighborhood feels dangerous.'], answer: ['False','True','False','True','True','False'] }
-                ]
-            }
-        };
+        var _EB_D = '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';
+        var _EB_K = 'SL4P_T3ACH3R';
+        function _getEB() {
+            var raw = atob(_EB_D);
+            var bytes = new Uint8Array(raw.length);
+            for (var i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i) ^ _EB_K.charCodeAt(i % _EB_K.length);
+            return JSON.parse(new TextDecoder().decode(bytes));
+        }
+        var _ebCache = null;
+        function _examBank() {
+            if (!currentUser || currentUser.role !== 'teacher') return {};
+            if (!_ebCache) _ebCache = _getEB();
+            return _ebCache;
+        }
 
         var activeExamSession = null;
         var examTimerInterval = null;
@@ -6571,6 +6554,7 @@
         var examSessionCheckInterval = null;
 
         window.showCreateExamModal = function() {
+            document.getElementById('exam-session-title').value = '';
             var listEl = document.getElementById('exam-students-list');
             var students = allStudentsCache.filter(s => s.approved);
             listEl.innerHTML = students.map(s => `
@@ -6612,8 +6596,18 @@
             if (cbs.length === 0) { alert('Selecione pelo menos um aluno.'); return; }
 
             var students = Array.from(cbs).map(cb => ({ uid: cb.value, name: cb.dataset.name }));
-            var exam = examBank[examKey];
+            var eb = _examBank();
+            var exam = eb[examKey];
+            if (!exam) { alert('Prova não encontrada.'); return; }
             var sessionTitle = customTitle || exam.name;
+            var questionsForStudents = exam.questions.map(function(q) {
+                var copy = Object.assign({}, q);
+                delete copy.answer;
+                if (copy.options && copy.type === 'multiple') {
+                    copy.options = copy.options.slice();
+                }
+                return copy;
+            });
 
             try {
                 await firebaseDb.collection('examSessions').add({
@@ -6628,7 +6622,9 @@
                     createdByName: currentUser.displayName || currentUser.email || 'Professor',
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     active: true,
-                    paused: false
+                    paused: false,
+                    questionsForStudents: questionsForStudents,
+                    totalQuestions: exam.questions.length
                 });
                 document.getElementById('exam-session-title').value = '';
                 closeExamModal();
@@ -6683,22 +6679,17 @@
                                 <span style="font-size: 0.7rem; font-weight: 700; color: #44403c;">${submitted}/${total} enviadas</span>
                             </div>
                         </div>
-                        <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; align-items: center;">
-                            <button onclick="viewExamResults('${doc.id}')" class="secondary-button-sm" data-testid="button-view-results-${doc.id}">VER RESULTADOS</button>
-                            ${isActive ? `<button onclick="pauseExamSession('${doc.id}')" class="secondary-button-sm" style="color: #f59e0b; border-color: #fef08a; background: #fefce8; display: inline-flex; align-items: center; gap: 0.25rem;" data-testid="button-pause-exam-${doc.id}"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> PAUSAR</button>
-                            <button onclick="closeExamSession('${doc.id}')" class="secondary-button-sm" style="color: #ef4444; border-color: #fecaca;" data-testid="button-close-exam-${doc.id}">ENCERRAR</button>
-                            <div style="display: inline-flex; align-items: center; gap: 0.3rem;">
-                                <select id="extra-mins-${doc.id}" style="padding: 0.25rem 0.35rem; border: 1px solid #ddd6fe; border-radius: 0.375rem; font-size: 0.75rem; font-family: DM Sans, sans-serif; color: #44403c; background: white; cursor: pointer;" data-testid="select-extra-mins-${doc.id}">
-                                    <option value="1">+1 min</option><option value="2">+2 min</option><option value="3">+3 min</option><option value="4">+4 min</option><option value="5">+5 min</option><option value="6">+6 min</option><option value="7">+7 min</option>
-                                </select>
-                                <button onclick="addExtraTime('${doc.id}')" class="secondary-button-sm" style="color: #8671d1; border-color: #ddd6fe; background: #f5f3ff; display: inline-flex; align-items: center; gap: 0.25rem;" data-testid="button-add-time-${doc.id}"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ADICIONAR TEMPO</button>
-                            </div>` : ''}
-                            ${isPaused ? `<button onclick="resumeExamSession('${doc.id}')" class="secondary-button-sm" style="color: #16a34a; border-color: #bbf7d0; background: #f0fdf4; display: inline-flex; align-items: center; gap: 0.25rem;" data-testid="button-resume-exam-${doc.id}"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> RETOMAR</button>
-                            <button onclick="closeExamSession('${doc.id}')" class="secondary-button-sm" style="color: #ef4444; border-color: #fecaca;" data-testid="button-close-exam-${doc.id}">ENCERRAR</button>` : ''}
-                            <button onclick="openEditExamModal('${doc.id}')" class="secondary-button-sm" style="color: #44403c; border-color: #d6d3d1; display: inline-flex; align-items: center; gap: 0.25rem;" data-testid="button-edit-exam-${doc.id}"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> EDITAR</button>
-                            <button onclick="deleteExamSession('${doc.id}')" class="secondary-button-sm" style="color: #dc2626; border-color: #fecaca; background: #fef2f2; display: inline-flex; align-items: center; gap: 0.3rem;" data-testid="button-delete-exam-${doc.id}"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg> EXCLUIR</button>
+                        <div style="display: flex; gap: 0.4rem; margin-top: 0.75rem; flex-wrap: wrap; align-items: center;">
+                            <button onclick="viewExamResults('${doc.id}')" style="font-size: 0.7rem; font-weight: 700; font-family: 'DM Sans', sans-serif; padding: 0.3rem 0.6rem; border-radius: 0.5rem; cursor: pointer; border: 1px solid #ddd6fe; background: #f5f3ff; color: #8671d1; display: inline-flex; align-items: center; gap: 0.25rem;" data-testid="button-view-results-${doc.id}"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> RESULTADOS</button>
+                            ${isActive ? `<button onclick="pauseExamSession('${doc.id}')" style="font-size: 0.7rem; font-weight: 700; font-family: 'DM Sans', sans-serif; padding: 0.3rem 0.6rem; border-radius: 0.5rem; cursor: pointer; border: 1px solid #fef08a; background: #fefce8; color: #b45309; display: inline-flex; align-items: center; gap: 0.25rem;" data-testid="button-pause-exam-${doc.id}"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> PAUSAR</button>
+                            <button onclick="addExtraTimeQuick('${doc.id}')" style="font-size: 0.7rem; font-weight: 700; font-family: 'DM Sans', sans-serif; padding: 0.3rem 0.6rem; border-radius: 0.5rem; cursor: pointer; border: 1px solid #ddd6fe; background: white; color: #8671d1; display: inline-flex; align-items: center; gap: 0.25rem;" data-testid="button-add-time-${doc.id}"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> +TEMPO</button>
+                            <button onclick="closeExamSession('${doc.id}')" style="font-size: 0.7rem; font-weight: 700; font-family: 'DM Sans', sans-serif; padding: 0.3rem 0.6rem; border-radius: 0.5rem; cursor: pointer; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; display: inline-flex; align-items: center; gap: 0.25rem;" data-testid="button-close-exam-${doc.id}"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> ENCERRAR</button>` : ''}
+                            ${isPaused ? `<button onclick="resumeExamSession('${doc.id}')" style="font-size: 0.7rem; font-weight: 700; font-family: 'DM Sans', sans-serif; padding: 0.3rem 0.6rem; border-radius: 0.5rem; cursor: pointer; border: 1px solid #bbf7d0; background: #f0fdf4; color: #16a34a; display: inline-flex; align-items: center; gap: 0.25rem;" data-testid="button-resume-exam-${doc.id}"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> RETOMAR</button>
+                            <button onclick="closeExamSession('${doc.id}')" style="font-size: 0.7rem; font-weight: 700; font-family: 'DM Sans', sans-serif; padding: 0.3rem 0.6rem; border-radius: 0.5rem; cursor: pointer; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; display: inline-flex; align-items: center; gap: 0.25rem;" data-testid="button-close-exam-${doc.id}"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> ENCERRAR</button>` : ''}
+                            <button onclick="openEditExamModal('${doc.id}')" style="font-size: 0.7rem; font-weight: 700; font-family: 'DM Sans', sans-serif; padding: 0.3rem 0.6rem; border-radius: 0.5rem; cursor: pointer; border: 1px solid #d6d3d1; background: white; color: #78716c; display: inline-flex; align-items: center; gap: 0.25rem;" data-testid="button-edit-exam-${doc.id}"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> EDITAR</button>
+                            <button onclick="deleteExamSession('${doc.id}')" style="font-size: 0.7rem; font-weight: 700; font-family: 'DM Sans', sans-serif; padding: 0.3rem 0.6rem; border-radius: 0.5rem; cursor: pointer; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; display: inline-flex; align-items: center; gap: 0.25rem;" data-testid="button-delete-exam-${doc.id}"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> EXCLUIR</button>
                         </div>
-                        ${(isActive || isPaused) && (d.extraMinutes || 0) > 0 ? `<p style="font-size: 0.7rem; color: #8671d1; font-weight: 600; margin-top: 0.4rem; display: flex; align-items: center; gap: 0.25rem;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> +${d.extraMinutes} min extra adicionado(s)</p>` : ''}
+                        ${(isActive || isPaused) && (d.extraMinutes || 0) > 0 ? `<p style="font-size: 0.65rem; color: #8671d1; font-weight: 600; margin-top: 0.4rem; display: flex; align-items: center; gap: 0.25rem;"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8671d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> +${d.extraMinutes} min extra</p>` : ''}
                     </div>`;
                 }
                 listEl.innerHTML = html;
@@ -6709,18 +6700,111 @@
         }
 
         window.closeExamSession = async function(sessionId) {
-            if (!confirm('Encerrar este teste? Alunos não poderão mais acessar.')) return;
+            if (!confirm('Encerrar esta sessão? Alunos não poderão mais acessar.')) return;
             try {
-                await firebaseDb.collection('examSessions').doc(sessionId).update({ active: false });
+                await firebaseDb.collection('examSessions').doc(sessionId).update({ active: false, paused: false });
                 await loadExamSessions();
             } catch(e) { console.error(e); }
         }
 
-        window.addExtraTime = async function(sessionId) {
-            var selectEl = document.getElementById('extra-mins-' + sessionId);
-            if (!selectEl) return;
-            var mins = parseInt(selectEl.value) || 1;
-            if (!confirm('Adicionar +' + mins + ' minuto(s) extra ao cronometro dos alunos?')) return;
+        window.pauseExamSession = async function(sessionId) {
+            if (!confirm('Pausar esta sessão? Alunos que ainda não enviaram não poderão acessar até ser retomada.')) return;
+            try {
+                await firebaseDb.collection('examSessions').doc(sessionId).update({ paused: true });
+                await loadExamSessions();
+            } catch(e) { console.error(e); }
+        }
+
+        window.resumeExamSession = async function(sessionId) {
+            if (!confirm('Retomar esta sessão? Alunos poderão acessar novamente.')) return;
+            try {
+                await firebaseDb.collection('examSessions').doc(sessionId).update({ paused: false });
+                await loadExamSessions();
+            } catch(e) { console.error(e); }
+        }
+
+        window.openEditExamModal = async function(sessionId) {
+            try {
+                var doc = await firebaseDb.collection('examSessions').doc(sessionId).get();
+                var d = doc.data();
+                document.getElementById('edit-exam-session-id').value = sessionId;
+                document.getElementById('edit-exam-title').value = d.sessionTitle || d.examName || '';
+                document.getElementById('edit-exam-duration').value = d.duration || 60;
+                var existingStudents = d.students || [];
+                var existingNames = d.studentNames || {};
+                var allApproved = allStudentsCache.filter(function(s) { return s.approved; });
+                var listEl = document.getElementById('edit-exam-students-list');
+                listEl.innerHTML = allApproved.map(function(s) {
+                    var alreadyIn = existingStudents.includes(s.uid);
+                    return '<label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0.4rem; border-radius: 0.375rem; cursor: pointer; font-size: 0.8rem; color: #44403c;" data-testid="edit-exam-student-' + s.uid + '">' +
+                        '<input type="checkbox" class="edit-exam-student-cb" value="' + s.uid + '" data-name="' + (s.name || s.email || '').replace(/"/g, '') + '" ' + (alreadyIn ? 'checked disabled' : '') + ' style="accent-color: #8671d1;">' +
+                        (s.name || s.email) +
+                        (alreadyIn ? ' <span style="font-size:0.6rem;color:#16a34a;font-weight:700;">(na sessão)</span>' : '') +
+                        '<span style="font-size: 0.65rem; color: #a8a29e; margin-left: auto;">' + (s.currentLevel || 'starter1').replace(/([a-z])(\d)/, '$1 $2') + '</span>' +
+                    '</label>';
+                }).join('');
+                document.getElementById('exam-edit-modal').style.display = 'flex';
+            } catch(e) { console.error(e); alert('Erro ao carregar dados da sessão.'); }
+        }
+
+        window.filterEditExamStudents = function() {
+            var query = (document.getElementById('edit-exam-student-search').value || '').toLowerCase();
+            document.querySelectorAll('#edit-exam-students-list label').forEach(function(label) {
+                label.style.display = label.textContent.toLowerCase().includes(query) ? '' : 'none';
+            });
+        }
+
+        window.toggleAllEditExamStudents = function() {
+            var cbs = document.querySelectorAll('.edit-exam-student-cb:not(:disabled)');
+            var allChecked = Array.from(cbs).every(function(cb) { return cb.checked; });
+            cbs.forEach(function(cb) { cb.checked = !allChecked; });
+        }
+
+        window.saveEditExamSession = async function() {
+            var sessionId = document.getElementById('edit-exam-session-id').value;
+            var newTitle = (document.getElementById('edit-exam-title').value || '').trim();
+            var newDuration = parseInt(document.getElementById('edit-exam-duration').value) || 60;
+            if (!newTitle) { alert('Digite um título para a sessão.'); return; }
+
+            try {
+                var doc = await firebaseDb.collection('examSessions').doc(sessionId).get();
+                var d = doc.data();
+                var existingStudents = d.students || [];
+                var existingNames = d.studentNames || {};
+
+                var newCbs = document.querySelectorAll('.edit-exam-student-cb:not(:disabled):checked');
+                var newStudents = Array.from(newCbs).map(function(cb) { return cb.value; });
+                var newNames = {};
+                Array.from(newCbs).forEach(function(cb) { newNames[cb.value] = cb.dataset.name; });
+
+                var mergedStudents = existingStudents.slice();
+                var mergedNames = Object.assign({}, existingNames);
+                newStudents.forEach(function(uid) {
+                    if (!mergedStudents.includes(uid)) {
+                        mergedStudents.push(uid);
+                        mergedNames[uid] = newNames[uid];
+                    }
+                });
+
+                await firebaseDb.collection('examSessions').doc(sessionId).update({
+                    sessionTitle: newTitle,
+                    duration: newDuration,
+                    students: mergedStudents,
+                    studentNames: mergedNames
+                });
+                document.getElementById('exam-edit-modal').style.display = 'none';
+                await loadExamSessions();
+            } catch(e) {
+                console.error('Erro ao salvar edição:', e);
+                alert('Erro ao salvar alterações. Tente novamente.');
+            }
+        }
+
+        window.addExtraTimeQuick = async function(sessionId) {
+            var input = prompt('Quantos minutos extras deseja adicionar? (1 a 7)', '1');
+            if (!input) return;
+            var mins = parseInt(input);
+            if (isNaN(mins) || mins < 1 || mins > 7) { alert('Digite um número entre 1 e 7.'); return; }
             try {
                 var doc = await firebaseDb.collection('examSessions').doc(sessionId).get();
                 var current = (doc.data().extraMinutes || 0);
@@ -6756,12 +6840,15 @@
         window.viewExamResults = async function(sessionId) {
             var contentEl = document.getElementById('exam-results-content');
             contentEl.innerHTML = '<p style="text-align: center; color: #a8a29e; padding: 1rem;">Carregando...</p>';
+            document.getElementById('exam-results-title').textContent = 'Resultados';
             document.getElementById('exam-results-modal').style.display = 'flex';
 
             try {
                 var sessionDoc = await firebaseDb.collection('examSessions').doc(sessionId).get();
                 var sessionData = sessionDoc.data();
-                var examData = examBank[sessionData.examKey];
+                var examData = _examBank()[sessionData.examKey];
+                var resultsTitle = sessionData.sessionTitle || sessionData.examName || 'Resultados';
+                document.getElementById('exam-results-title').textContent = resultsTitle;
                 var subSnap = await firebaseDb.collection('examSubmissions').where('sessionId', '==', sessionId).get();
 
                 var studentNames = sessionData.studentNames || {};
@@ -6860,14 +6947,38 @@
                                                 var got = tfStAns[si] || '—';
                                                 var expected = qq.answer[si];
                                                 var ok = got === expected;
-                                                return '<div style="display:flex;align-items:flex-start;gap:0.4rem;font-size:0.85rem;padding:0.2rem 0;flex-wrap:wrap;"><span>' + (si+1) + ') ' + escHtml(st) + '</span><span style="font-weight:800;color:' + (ok ? '#16a34a' : '#dc2626') + ';">' + escHtml(got) + (ok ? ' ✓' : ' ✗ (' + escHtml(expected) + ')') + '</span></div>';
+                                                return '<div style="display:flex;align-items:flex-start;gap:0.4rem;font-size:0.85rem;padding:0.2rem 0;flex-wrap:wrap;"><span>' + (si+1) + ') ' + escHtml(st) + '</span><span style="font-weight:800;color:' + (ok ? '#16a34a' : '#dc2626') + ';">' + escHtml(got) + (ok ? ' <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;"><polyline points="20 6 9 17 4 12"/></svg>' : ' <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" style="display:inline;vertical-align:middle;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> (' + escHtml(expected) + ')') + '</span></div>';
                                             }).join('');
                                         } else if (isText && !hasGapsInPassage) {
                                             ansText = 'Resposta: ' + displayStudentAns + ' &nbsp;|&nbsp; Gabarito: ' + escHtml(qq.answer);
                                         } else if (isText && hasGapsInPassage) {
                                             ansText = '';
+                                        } else if (qq.type === 'multiple' && qq.options) {
+                                            ansText = '<div style="display:flex;flex-direction:column;gap:0.3rem;">';
+                                            qq.options.forEach(function(opt) {
+                                                var isCorrectOpt = opt === qq.answer;
+                                                var isStudentPick = opt === studentAns;
+                                                var optBg = 'white'; var optBorder = '#e7e5e4'; var optColor = '#44403c'; var optIcon = '';
+                                                if (isCorrectOpt && isStudentPick) {
+                                                    optBg = '#f0fdf4'; optBorder = '#16a34a'; optColor = '#16a34a';
+                                                    optIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+                                                } else if (isCorrectOpt) {
+                                                    optBg = '#f0fdf4'; optBorder = '#16a34a'; optColor = '#16a34a';
+                                                    optIcon = '<span style="font-size:0.65rem;font-weight:800;color:#16a34a;">GABARITO</span>';
+                                                } else if (isStudentPick) {
+                                                    optBg = '#fef2f2'; optBorder = '#dc2626'; optColor = '#dc2626';
+                                                    optIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+                                                }
+                                                ansText += '<div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0.6rem;border-radius:0.5rem;background:' + optBg + ';border:1.5px solid ' + optBorder + ';font-size:0.85rem;color:' + optColor + ';font-weight:' + (isCorrectOpt || isStudentPick ? '700' : '400') + ';">' +
+                                                    '<span style="width:1.2rem;height:1.2rem;border-radius:50%;border:2px solid ' + optBorder + ';display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:' + (isStudentPick ? optBorder : 'white') + ';">' + (isStudentPick ? '<span style="width:0.5rem;height:0.5rem;border-radius:50%;background:white;"></span>' : '') + '</span>' +
+                                                    escHtml(opt) +
+                                                    '<span style="margin-left:auto;">' + optIcon + '</span>' +
+                                                '</div>';
+                                            });
+                                            if (!studentAns) ansText += '<p style="font-size:0.75rem;color:#a8a29e;font-style:italic;margin-top:0.2rem;">Aluno não respondeu</p>';
+                                            ansText += '</div>';
                                         } else {
-                                            ansText = 'Resposta: ' + displayStudentAns + ' ' + (correct ? '✓' : '✗ Correto: ' + escHtml(qq.answer));
+                                            ansText = 'Resposta: ' + displayStudentAns + ' ' + (correct ? '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;"><polyline points="20 6 9 17 4 12"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" style="display:inline;vertical-align:middle;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Correto: ' + escHtml(qq.answer));
                                         }
                                         var passageHtml = '';
                                         if (qq.passage) {
@@ -7008,7 +7119,7 @@
                 var sub = subDoc.data();
                 var sessionDoc = await firebaseDb.collection('examSessions').doc(sessionId).get();
                 var sessionData = sessionDoc.data();
-                var examData = examBank[sessionData.examKey];
+                var examData = _examBank()[sessionData.examKey];
                 var studentNames = sessionData.studentNames || {};
                 var name = studentNames[sub.studentUid] || sub.studentEmail || 'Aluno';
                 var scores = sub.teacherScores || {};
@@ -7122,6 +7233,7 @@
                 if (snap.empty) return null;
                 for (var doc of snap.docs) {
                     var d = doc.data();
+                    if (d.paused) continue;
                     if (!(d.students || []).includes(currentUser.uid)) continue;
                     var subCheck = await firebaseDb.collection('examSubmissions').where('sessionId', '==', doc.id).get();
                     var alreadySubmitted = subCheck.docs.some(sd => sd.data().studentUid === currentUser.uid);
@@ -7159,14 +7271,20 @@
                     showDashboard();
                     return;
                 }
+                var freshData = sessionDoc.data();
+                examSession = Object.assign({}, examSession, freshData, { sessionId: examSession.sessionId });
             } catch(e) { console.error('Erro ao verificar sessão:', e); }
 
             activeExamSession = examSession;
-            var examData = examBank[examSession.examKey];
-            if (!examData) return;
+            var sessionQuestions = examSession.questionsForStudents;
+            if (!sessionQuestions || sessionQuestions.length === 0) {
+                alert('Este teste precisa ser recriado pelo professor. Avise seu Teacher.');
+                showDashboard();
+                return;
+            }
 
             currentStudyMode = 'exam';
-            examQuestions = examData.questions.map(function(q, i) {
+            examQuestions = sessionQuestions.map(function(q, i) {
                 var copy = Object.assign({}, q);
                 copy._originalIdx = i;
                 return copy;
@@ -7214,7 +7332,7 @@
                 if (!activeExamSession) { clearInterval(examSessionCheckInterval); return; }
                 try {
                     var doc = await firebaseDb.collection('examSessions').doc(activeExamSession.sessionId).get();
-                    if (!doc.exists || !doc.data().active) {
+                    if (!doc.exists || !doc.data().active || doc.data().paused) {
                         clearInterval(examSessionCheckInterval);
                         examSessionCheckInterval = null;
                         saveCurrentExamAnswer();
@@ -7547,34 +7665,13 @@
             if (examTimerInterval) { clearInterval(examTimerInterval); examTimerInterval = null; }
             if (examSessionCheckInterval) { clearInterval(examSessionCheckInterval); examSessionCheckInterval = null; }
 
-            var examData = examBank[activeExamSession.examKey];
-            var autoScore = 0;
-
             var mappedAnswers = {};
             examQuestions.forEach(function(qq, shuffledIdx) {
                 var originalIdx = qq._originalIdx;
                 mappedAnswers[originalIdx] = examAnswers[shuffledIdx] || '';
             });
 
-            examData.questions.forEach(function(qq, idx) {
-                var ans = mappedAnswers[idx] || '';
-                if (qq.type === 'multiple') {
-                    if (ans === qq.answer) autoScore++;
-                } else if (qq.type === 'truefalse') {
-                    try {
-                        var tfAns = JSON.parse(ans);
-                        if (Array.isArray(tfAns) && Array.isArray(qq.answer)) {
-                            var allCorrect = true;
-                            for (var ti = 0; ti < qq.answer.length; ti++) {
-                                if (tfAns[ti] !== qq.answer[ti]) { allCorrect = false; break; }
-                            }
-                            if (allCorrect) autoScore++;
-                        }
-                    } catch(e) {}
-                } else {
-                    if (ans.toLowerCase() === qq.answer.toLowerCase()) autoScore++;
-                }
-            });
+            var totalQ = activeExamSession.totalQuestions || examQuestions.length;
 
             try {
                 await firebaseDb.collection('examSubmissions').add({
@@ -7582,8 +7679,7 @@
                     studentUid: currentUser.uid,
                     studentEmail: currentUser.email,
                     answers: mappedAnswers,
-                    autoScore: autoScore,
-                    totalQuestions: examData.questions.length,
+                    totalQuestions: totalQ,
                     autoSubmitted: !!autoSubmit,
                     submittedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
