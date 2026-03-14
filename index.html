@@ -7365,7 +7365,7 @@
             document.getElementById('study-view').classList.add('hidden');
             document.getElementById('generator-view').classList.remove('hidden');
 
-            document.getElementById('current-hw-display').textContent = examData.name;
+            document.getElementById('current-hw-display').textContent = examSession.sessionTitle || examSession.examName || 'Teste';
             document.getElementById('quiz-streak-bar').innerHTML = '<div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 0.5rem;"><span id="exam-progress-text" style="font-size: 0.75rem; font-weight: 700; color: #78716c;">Questão 1 de ' + examQuestions.length + '</span><div id="exam-dots" style="display: flex; flex-wrap: wrap; gap: 0.3rem; justify-content: center; flex: 1; margin: 0 0.75rem;"></div><span id="exam-timer-inline" style="background: #1c1917; color: white; padding: 0.25rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 900; font-family: monospace; white-space: nowrap;" data-testid="text-exam-timer">00:00</span></div>';
 
             if (examTimerInterval) clearInterval(examTimerInterval);
