@@ -6649,15 +6649,44 @@
                     return;
                 }
                 var html = '';
+                var eb = _examBank();
                 for (var doc of snap.docs) {
                     var d = doc.data();
+                    if (d.active && !d.paused && d.createdAt) {
+                        var sessionStartMs = d.createdAt.toDate ? d.createdAt.toDate().getTime() : (typeof d.createdAt === 'number' ? d.createdAt : new Date(d.createdAt).getTime());
+                        var totalDurationMs = ((d.duration || 60) + (d.extraMinutes || 0)) * 60 * 1000;
+                        if (Date.now() > sessionStartMs + totalDurationMs) {
+                            try {
+                                await firebaseDb.collection('examSessions').doc(doc.id).update({ active: false, paused: false, autoClosedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                                d.active = false;
+                                d.paused = false;
+                            } catch(ace) { console.warn('Auto-close session failed:', ace); }
+                        }
+                    }
+                    if ((d.active || d.paused) && !d.questionsForStudents && d.examKey && eb[d.examKey]) {
+                        var examTemplate = eb[d.examKey];
+                        var qfs = examTemplate.questions.map(function(q) {
+                            var c = Object.assign({}, q);
+                            delete c.answer;
+                            if (c.options && c.type === 'multiple') c.options = c.options.slice();
+                            return c;
+                        });
+                        try {
+                            await firebaseDb.collection('examSessions').doc(doc.id).update({
+                                questionsForStudents: qfs,
+                                totalQuestions: examTemplate.questions.length
+                            });
+                            d.questionsForStudents = qfs;
+                            d.totalQuestions = examTemplate.questions.length;
+                        } catch(ue) { console.warn('Auto-migrate session failed:', ue); }
+                    }
                     var subSnap = await firebaseDb.collection('examSubmissions').where('sessionId', '==', doc.id).get();
                     var submitted = subSnap.size;
                     var total = (d.students || []).length;
                     var isPaused = !!d.paused;
                     var isActive = !!d.active && !isPaused;
                     var statusColor = isActive ? '#16a34a' : (isPaused ? '#f59e0b' : '#a8a29e');
-                    var statusText = isActive ? 'Ativa' : (isPaused ? 'Pausada' : 'Encerrada');
+                    var statusText = isActive ? 'Ativa' : (isPaused ? 'Pausada' : (d.autoClosedAt ? 'Encerrada (tempo)' : 'Encerrada'));
                     var statusBg = isActive ? '#f0fdf4' : (isPaused ? '#fefce8' : '#fafaf9');
                     var statusBorder = isActive ? '#bbf7d0' : (isPaused ? '#fef08a' : '#e7e5e4');
                     var dateObj = d.createdAt ? new Date(d.createdAt.seconds * 1000) : null;
@@ -6667,13 +6696,24 @@
                     var displayTitle = d.sessionTitle || d.examName;
                     var examSubtitle = d.sessionTitle ? d.examName : '';
 
+                    var timeRemainingHtml = '';
+                    if (isActive && d.createdAt) {
+                        var srMs = d.createdAt.toDate ? d.createdAt.toDate().getTime() : (typeof d.createdAt === 'number' ? d.createdAt : new Date(d.createdAt).getTime());
+                        var totalMs = ((d.duration || 60) + (d.extraMinutes || 0)) * 60 * 1000;
+                        var remainMs = Math.max(0, (srMs + totalMs) - Date.now());
+                        var remainMin = Math.floor(remainMs / 60000);
+                        var remainSec = Math.floor((remainMs % 60000) / 1000);
+                        var remainColor = remainMin < 5 ? '#ef4444' : '#16a34a';
+                        timeRemainingHtml = '<span style="font-size: 0.65rem; font-weight: 700; color: ' + remainColor + '; margin-left: 0.5rem;">⏱ ' + remainMin + 'min ' + String(remainSec).padStart(2,'0') + 's restantes</span>';
+                    }
+
                     html += `
                     <div style="background: white; border: 1px solid #e7e5e4; border-radius: 0.75rem; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);" data-testid="exam-session-${doc.id}">
                         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
                             <div>
                                 <p style="font-weight: 800; color: #1c1917; font-size: 0.9rem;">${escHtml(displayTitle)}</p>
                                 ${examSubtitle ? '<p style="font-size: 0.7rem; color: #8671d1; font-weight: 600;">' + escHtml(examSubtitle) + '</p>' : ''}
-                                <p style="font-size: 0.7rem; color: #78716c;">${date} às ${time} · ${d.duration}min · ${total} aluno(s)</p>
+                                <p style="font-size: 0.7rem; color: #78716c;">${date} às ${time} · ${d.duration}min · ${total} aluno(s)${timeRemainingHtml}</p>
                                 <p style="font-size: 0.65rem; color: #a8a29e; margin-top: 0.15rem;">Aberto por: <strong style="color: #8671d1;">${teacherName}</strong></p>
                             </div>
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -7237,6 +7277,16 @@
                     var d = doc.data();
                     if (d.paused) continue;
                     if (!(d.students || []).includes(currentUser.uid)) continue;
+                    if (d.createdAt) {
+                        var sMs = d.createdAt.toDate ? d.createdAt.toDate().getTime() : (typeof d.createdAt === 'number' ? d.createdAt : new Date(d.createdAt).getTime());
+                        var tDur = ((d.duration || 60) + (d.extraMinutes || 0)) * 60 * 1000;
+                        if (Date.now() > sMs + tDur) {
+                            try {
+                                await firebaseDb.collection('examSessions').doc(doc.id).update({ active: false, paused: false, autoClosedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                            } catch(ae) {}
+                            continue;
+                        }
+                    }
                     var subCheck = await firebaseDb.collection('examSubmissions').where('sessionId', '==', doc.id).get();
                     var alreadySubmitted = subCheck.docs.some(sd => sd.data().studentUid === currentUser.uid);
                     if (!alreadySubmitted) return { sessionId: doc.id, ...d };
@@ -7380,8 +7430,8 @@
             var makeDot = function(i) {
                 var answered = examAnswers.hasOwnProperty(i) && examAnswers[i] !== '';
                 var isCurrent = i === examCurrentIdx;
-                var bg = isCurrent ? '#8671d1' : (answered ? '#16a34a' : '#e7e5e4');
-                var txtColor = (isCurrent || answered) ? 'white' : '#78716c';
+                var bg = answered ? '#8671d1' : (isCurrent ? '#d6d3d1' : '#e7e5e4');
+                var txtColor = answered ? 'white' : '#78716c';
                 return '<button onclick="examGoTo(' + i + ')" style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background: ' + bg + '; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; padding: 0; font-size: 0.55rem; font-weight: 800; color: ' + txtColor + '; font-family: \'DM Sans\', sans-serif;" title="Questão ' + (i + 1) + '" data-testid="exam-dot-' + i + '">' + (i + 1) + '</button>';
             };
             var row1 = examQuestions.slice(0, half).map(function(_, i) { return makeDot(i); }).join('');
