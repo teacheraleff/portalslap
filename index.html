@@ -247,6 +247,9 @@
                     <label class="block text-sm font-bold text-stone-600 mb-1">Senha</label>
                     <input type="password" id="login-password" class="login-input" placeholder="Sua senha" required minlength="6" data-testid="input-login-password">
                 </div>
+                <div style="text-align: right; margin-top: 0.25rem;">
+                    <a href="#" onclick="handleForgotPassword(event)" style="font-size: 0.75rem; color: #8671d1; font-weight: 600; text-decoration: none;" data-testid="link-forgot-password">Esqueci minha senha</a>
+                </div>
                 <p id="login-error" class="login-error" data-testid="text-login-error"></p>
                 <button type="submit" id="login-submit-btn" class="action-button w-full mt-4" data-testid="button-login-submit">ENTRAR COMO ALUNO</button>
             </form>
@@ -1526,6 +1529,28 @@
                 errorEl.style.display = 'block';
                 btn.disabled = false;
                 btn.textContent = btnLabel;
+            }
+        }
+
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            var email = document.getElementById('login-email').value.trim();
+            if (!email) {
+                alert('Digite seu email no campo acima e clique novamente em "Esqueci minha senha".');
+                document.getElementById('login-email').focus();
+                return;
+            }
+            try {
+                await firebaseAuth.sendPasswordResetEmail(email);
+                alert('Email de redefinição enviado para ' + email + '.\n\nVerifique sua caixa de entrada (e a pasta de spam).');
+            } catch (err) {
+                if (err.code === 'auth/user-not-found') {
+                    alert('Nenhuma conta encontrada com este email.');
+                } else if (err.code === 'auth/invalid-email') {
+                    alert('Email inválido. Verifique e tente novamente.');
+                } else {
+                    alert('Erro ao enviar email de redefinição. Tente novamente.');
+                }
             }
         }
 
