@@ -6580,21 +6580,35 @@
         var examTimeLeft = 0;
         var examSessionCheckInterval = null;
 
-        window.showCreateExamModal = function() {
+        window.showCreateExamModal = async function() {
             document.getElementById('exam-session-title').value = '';
             var listEl = document.getElementById('exam-students-list');
-            var students = allStudentsCache.filter(s => s.approved);
-            listEl.innerHTML = students.map(s => `
-                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0.4rem; border-radius: 0.375rem; cursor: pointer; font-size: 0.8rem; color: #44403c;" data-testid="exam-student-${s.uid}">
-                    <input type="checkbox" class="exam-student-cb" value="${s.uid}" data-name="${(s.name || s.email || '').replace(/"/g, '')}" style="accent-color: #8671d1;">
-                    ${s.name || s.email}
-                    <span style="font-size: 0.65rem; color: #a8a29e; margin-left: auto;">${(s.currentLevel || 'starter1').replace(/([a-z])(\d)/, '$1 $2')}</span>
-                </label>
-            `).join('');
-            if (students.length === 0) {
-                listEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.75rem; padding: 0.5rem;">Nenhum aluno aprovado encontrado.</p>';
-            }
+            listEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.75rem; padding: 0.5rem;">Carregando alunos...</p>';
             document.getElementById('exam-create-modal').style.display = 'flex';
+            try {
+                var snap = await firebaseDb.collection('users').where('approved', '==', true).get();
+                var students = [];
+                snap.forEach(function(doc) {
+                    var d = doc.data();
+                    if (d.role !== 'teacher') {
+                        students.push({ uid: doc.id, name: d.name || d.displayName, email: d.email, currentLevel: d.currentLevel || 'starter1' });
+                    }
+                });
+                students.sort(function(a, b) { return (a.name || a.email || '').localeCompare(b.name || b.email || ''); });
+                listEl.innerHTML = students.map(s => `
+                    <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0.4rem; border-radius: 0.375rem; cursor: pointer; font-size: 0.8rem; color: #44403c;" data-testid="exam-student-${s.uid}">
+                        <input type="checkbox" class="exam-student-cb" value="${s.uid}" data-name="${(s.name || s.email || '').replace(/"/g, '')}" style="accent-color: #8671d1;">
+                        ${s.name || s.email}
+                        <span style="font-size: 0.65rem; color: #a8a29e; margin-left: auto;">${(s.currentLevel || 'starter1').replace(/([a-z])(\d)/, '$1 $2')}</span>
+                    </label>
+                `).join('');
+                if (students.length === 0) {
+                    listEl.innerHTML = '<p style="text-align: center; color: #a8a29e; font-size: 0.75rem; padding: 0.5rem;">Nenhum aluno aprovado encontrado.</p>';
+                }
+            } catch(e) {
+                console.error('Erro ao carregar alunos:', e);
+                listEl.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.75rem; padding: 0.5rem;">Erro ao carregar alunos.</p>';
+            }
         }
 
         window.closeExamModal = function() {
