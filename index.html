@@ -6677,10 +6677,20 @@
                 var eb = _examBank();
                 for (var doc of snap.docs) {
                     var d = doc.data();
-                    if (d.active && !d.paused && d.createdAt) {
-                        var sessionStartMs = d.createdAt.toDate ? d.createdAt.toDate().getTime() : (typeof d.createdAt === 'number' ? d.createdAt : new Date(d.createdAt).getTime());
+                    if (d.active && !d.paused) {
+                        var startTimes = d.studentStartTimes || {};
+                        var allStudentIds = d.students || [];
                         var totalDurationMs = ((d.duration || 60) + (d.extraMinutes || 0)) * 60 * 1000;
-                        if (Date.now() > sessionStartMs + totalDurationMs) {
+                        var allExpired = allStudentIds.length > 0 && Object.keys(startTimes).length >= allStudentIds.length;
+                        if (allExpired) {
+                            for (var sid of allStudentIds) {
+                                var st = startTimes[sid];
+                                if (!st) { allExpired = false; break; }
+                                var stMs = st.toDate ? st.toDate().getTime() : (typeof st === 'number' ? st : new Date(st).getTime());
+                                if (Date.now() <= stMs + totalDurationMs) { allExpired = false; break; }
+                            }
+                        }
+                        if (allExpired) {
                             try {
                                 await firebaseDb.collection('examSessions').doc(doc.id).update({ active: false, paused: false, autoClosedAt: firebase.firestore.FieldValue.serverTimestamp() });
                                 d.active = false;
@@ -6722,14 +6732,25 @@
                     var examSubtitle = d.sessionTitle ? d.examName : '';
 
                     var timeRemainingHtml = '';
-                    if (isActive && d.createdAt) {
-                        var srMs = d.createdAt.toDate ? d.createdAt.toDate().getTime() : (typeof d.createdAt === 'number' ? d.createdAt : new Date(d.createdAt).getTime());
+                    if (isActive) {
+                        var stTimes = d.studentStartTimes || {};
+                        var startedCount = Object.keys(stTimes).length;
                         var totalMs = ((d.duration || 60) + (d.extraMinutes || 0)) * 60 * 1000;
-                        var remainMs = Math.max(0, (srMs + totalMs) - Date.now());
-                        var remainMin = Math.floor(remainMs / 60000);
-                        var remainSec = Math.floor((remainMs % 60000) / 1000);
-                        var remainColor = remainMin < 5 ? '#ef4444' : '#16a34a';
-                        timeRemainingHtml = '<span style="font-size: 0.65rem; font-weight: 700; color: ' + remainColor + '; margin-left: 0.5rem;">⏱ ' + remainMin + 'min ' + String(remainSec).padStart(2,'0') + 's restantes</span>';
+                        if (startedCount > 0) {
+                            var latestStart = 0;
+                            for (var sk in stTimes) {
+                                var sv = stTimes[sk];
+                                var svMs = sv.toDate ? sv.toDate().getTime() : (typeof sv === 'number' ? sv : new Date(sv).getTime());
+                                if (svMs > latestStart) latestStart = svMs;
+                            }
+                            var remainMs = Math.max(0, (latestStart + totalMs) - Date.now());
+                            var remainMin = Math.floor(remainMs / 60000);
+                            var remainSec = Math.floor((remainMs % 60000) / 1000);
+                            var remainColor = remainMin < 5 ? '#ef4444' : '#16a34a';
+                            timeRemainingHtml = '<span style="font-size: 0.65rem; font-weight: 700; color: ' + remainColor + '; margin-left: 0.5rem;">⏱ ' + remainMin + 'min ' + String(remainSec).padStart(2,'0') + 's · ' + startedCount + '/' + total + ' iniciaram</span>';
+                        } else {
+                            timeRemainingHtml = '<span style="font-size: 0.65rem; font-weight: 700; color: #78716c; margin-left: 0.5rem;">Nenhum aluno iniciou</span>';
+                        }
                     }
 
                     html += `
@@ -7280,19 +7301,62 @@
                     var comment = comments[idx] || '';
 
                     var ansHtml = '';
+                    var hasGapsExp = (qq.passage && qq.passage.indexOf('___') !== -1) || (qq.q && qq.q.indexOf('___') !== -1);
                     if (isTF) {
                         var tfStAns = []; try { tfStAns = JSON.parse(rawAns); } catch(e) {}
                         if (!Array.isArray(tfStAns)) tfStAns = [];
-                        ansHtml = qq.statements.map(function(st, si) {
+                        ansHtml = '<div style="margin:4px 0 6px;">' + qq.statements.map(function(st, si) {
                             var got = tfStAns[si] || '—';
                             var expected = qq.answer[si];
                             var ok = got === expected;
-                            return '<div style="font-size:11px;padding:2px 0;"><span>' + (si+1) + ') ' + escHtml(st) + '</span> <strong style="color:' + (ok ? '#16a34a' : '#dc2626') + ';">' + got + (ok ? ' ✓' : ' ✗ (' + expected + ')') + '</strong></div>';
-                        }).join('');
+                            var rowBg = ok ? '#f0fdf4' : '#fef2f2';
+                            var rowBorder = ok ? '#bbf7d0' : '#fecaca';
+                            return '<div style="display:flex;align-items:center;gap:6px;font-size:11px;padding:5px 8px;background:' + rowBg + ';border:1px solid ' + rowBorder + ';border-radius:4px;margin-bottom:3px;">' +
+                                '<span style="background:#8671d1;color:white;font-size:9px;font-weight:800;width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">' + (si+1) + '</span>' +
+                                '<span style="flex:1;">' + escHtml(st) + '</span>' +
+                                '<strong style="color:' + (ok ? '#16a34a' : '#dc2626') + ';">' + escHtml(got) + (ok ? ' ✓' : ' ✗') + '</strong>' +
+                                (!ok ? '<span style="font-size:10px;color:#78716c;">(' + escHtml(expected) + ')</span>' : '') +
+                            '</div>';
+                        }).join('') + '</div>';
+                    } else if (qq.type === 'multiple' && qq.options) {
+                        ansHtml = '<div style="margin:4px 0 6px;">' + qq.options.map(function(opt) {
+                            var isCorrectOpt = opt === qq.answer;
+                            var isStudentPick = opt === rawAns;
+                            var optBg = 'white'; var optBorder = '#e7e5e4'; var optColor = '#44403c'; var optMark = '';
+                            if (isCorrectOpt && isStudentPick) {
+                                optBg = '#f0fdf4'; optBorder = '#16a34a'; optColor = '#16a34a'; optMark = ' ✓';
+                            } else if (isCorrectOpt) {
+                                optBg = '#f0fdf4'; optBorder = '#16a34a'; optColor = '#16a34a'; optMark = ' (gabarito)';
+                            } else if (isStudentPick) {
+                                optBg = '#fef2f2'; optBorder = '#dc2626'; optColor = '#dc2626'; optMark = ' ✗';
+                            }
+                            return '<div style="display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:4px;background:' + optBg + ';border:1px solid ' + optBorder + ';font-size:11px;color:' + optColor + ';font-weight:' + (isCorrectOpt || isStudentPick ? '700' : '400') + ';margin-bottom:2px;">' +
+                                '<span style="width:14px;height:14px;border-radius:50%;border:2px solid ' + optBorder + ';display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:' + (isStudentPick ? optBorder : 'white') + ';">' + (isStudentPick ? '<span style="width:6px;height:6px;border-radius:50%;background:white;"></span>' : '') + '</span>' +
+                                escHtml(opt) + '<span style="margin-left:auto;font-weight:800;">' + optMark + '</span></div>';
+                        }).join('') +
+                        (!rawAns ? '<p style="font-size:10px;color:#a8a29e;font-style:italic;margin-top:2px;">Aluno não respondeu</p>' : '') +
+                        '</div>';
+                    } else if (isText && hasGapsExp) {
+                        var gapAnsExp = []; try { gapAnsExp = JSON.parse(rawAns); } catch(e) { gapAnsExp = []; }
+                        if (!Array.isArray(gapAnsExp)) gapAnsExp = [];
+                        var expPartsExport = (typeof qq.answer === 'string') ? qq.answer.split(/,\s*/) : [];
+                        var expectedGapsExport = [];
+                        expPartsExport.forEach(function(p) { var m = p.match(/^\d+\)\s*(.+)/); expectedGapsExport.push(m ? m[1].trim() : p.trim()); });
+                        ansHtml = '<div style="margin:4px 0 6px;">' + expectedGapsExport.map(function(exp, gi) {
+                            var got = gapAnsExp[gi] || '';
+                            var ok = got.toLowerCase().trim() === exp.toLowerCase().trim();
+                            var rowBg = ok ? '#f0fdf4' : '#fef2f2';
+                            var rowBorder = ok ? '#bbf7d0' : '#fecaca';
+                            return '<div style="display:flex;align-items:center;gap:6px;font-size:11px;padding:4px 8px;background:' + rowBg + ';border:1px solid ' + rowBorder + ';border-radius:4px;margin-bottom:2px;">' +
+                                '<span style="background:#8671d1;color:white;font-size:9px;font-weight:800;width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">' + (gi+1) + '</span>' +
+                                '<strong style="color:' + (ok ? '#16a34a' : '#dc2626') + ';">' + escHtml(got || '—') + (ok ? ' ✓' : ' ✗') + '</strong>' +
+                                (!ok ? '<span style="font-size:10px;color:#78716c;">(' + escHtml(exp) + ')</span>' : '') +
+                            '</div>';
+                        }).join('') + '</div>';
                     } else {
                         ansHtml = '<p style="font-size:11px;color:#57534e;margin:0 0 2px;"><strong>Resposta do aluno:</strong> ' + studentAns + '</p>' +
-                            (isText ? '<p style="font-size:11px;color:#78716c;margin:0 0 2px;"><strong>Gabarito:</strong> ' + qq.answer + '</p>' :
-                                (correct === false ? '<p style="font-size:11px;color:#dc2626;margin:0 0 2px;"><strong>Resposta correta:</strong> ' + qq.answer + '</p>' : ''));
+                            (isText ? '<p style="font-size:11px;color:#78716c;margin:0 0 2px;"><strong>Gabarito:</strong> ' + escHtml(qq.answer) + '</p>' :
+                                (correct === false ? '<p style="font-size:11px;color:#dc2626;margin:0 0 2px;"><strong>Resposta correta:</strong> ' + escHtml(qq.answer) + '</p>' : ''));
                     }
 
                     return '<div style="padding:12px;border-radius:8px;background:' + bgColor + ';border:1px solid ' + borderColor + ';margin-bottom:8px;">' +
@@ -7365,15 +7429,11 @@
                     var d = doc.data();
                     if (d.paused) continue;
                     if (!(d.students || []).includes(currentUser.uid)) continue;
-                    if (d.createdAt) {
-                        var sMs = d.createdAt.toDate ? d.createdAt.toDate().getTime() : (typeof d.createdAt === 'number' ? d.createdAt : new Date(d.createdAt).getTime());
+                    var myStart = (d.studentStartTimes || {})[currentUser.uid];
+                    if (myStart) {
+                        var sMs = myStart.toDate ? myStart.toDate().getTime() : (typeof myStart === 'number' ? myStart : new Date(myStart).getTime());
                         var tDur = ((d.duration || 60) + (d.extraMinutes || 0)) * 60 * 1000;
-                        if (Date.now() > sMs + tDur) {
-                            try {
-                                await firebaseDb.collection('examSessions').doc(doc.id).update({ active: false, paused: false, autoClosedAt: firebase.firestore.FieldValue.serverTimestamp() });
-                            } catch(ae) {}
-                            continue;
-                        }
+                        if (Date.now() > sMs + tDur) continue;
                     }
                     var subCheck = await firebaseDb.collection('examSubmissions').where('sessionId', '==', doc.id).get();
                     var alreadySubmitted = subCheck.docs.some(sd => sd.data().studentUid === currentUser.uid);
@@ -7423,6 +7483,20 @@
                 return;
             }
 
+            var studentStartTimes = examSession.studentStartTimes || {};
+            var myStartMs;
+            if (studentStartTimes[currentUser.uid]) {
+                var st = studentStartTimes[currentUser.uid];
+                myStartMs = st.toDate ? st.toDate().getTime() : (typeof st === 'number' ? st : new Date(st).getTime());
+            } else {
+                myStartMs = Date.now();
+                var updateObj = {};
+                updateObj['studentStartTimes.' + currentUser.uid] = firebase.firestore.FieldValue.serverTimestamp();
+                try {
+                    await firebaseDb.collection('examSessions').doc(examSession.sessionId).update(updateObj);
+                } catch(ste) { console.warn('Could not save start time:', ste); }
+            }
+
             currentStudyMode = 'exam';
             examQuestions = sessionQuestions.map(function(q, i) {
                 var copy = Object.assign({}, q);
@@ -7438,14 +7512,8 @@
 
             var extraMins = examSession.extraMinutes || 0;
             var durationSecs = ((examSession.duration || 60) + extraMins) * 60;
-            var startTs = examSession.createdAt || examSession.startedAt;
-            if (startTs) {
-                var startMs = startTs.toDate ? startTs.toDate().getTime() : (typeof startTs === 'number' ? startTs : new Date(startTs).getTime());
-                var elapsed = Math.floor((Date.now() - startMs) / 1000);
-                examTimeLeft = Math.max(0, durationSecs - elapsed);
-            } else {
-                examTimeLeft = durationSecs;
-            }
+            var elapsed = Math.floor((Date.now() - myStartMs) / 1000);
+            examTimeLeft = Math.max(0, durationSecs - elapsed);
             var lastKnownExtraMinutes = extraMins;
 
             document.getElementById('main-header').classList.add('hidden');
